@@ -1,33 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <com.google.android.material.appbar.AppBarLayout
+    android:orientation="vertical"
+    android:gravity="center">
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.StereoscopicVsionAndroid.AppBarOverlay">
+        android:layout_height="50dp"
+        android:orientation="horizontal">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.StereoscopicVsionAndroid.PopupOverlay" />
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <include layout="@layout/content_main" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+        <com.example.stereoscopicvsionandroid.TestScroller
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="30"
+            app:TestScrollerSeeSize="5"
+            app:TestScrollerSelectedTextColor="@color/black"
+            app:TestScrollerSelectedTextSize="40"
+            app:TestScrollerTextColor="@color/purple_200"
+            app:TestScrollerTextSize="30" />
+    </LinearLayout>
+    <TextView
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:text="sssssssssssssssssssss."
+        android:textSize="3dp"
+        android:layout_marginTop="-14dp"
+        android:background="@color/black"
+        />
+    <Button
+        android:id="@+id/Button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:layout_marginTop="15dp"
+        android:background="@drawable/btn_selector"
+        android:textColor="#ffffffff"
+        android:text="@string/main1" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <ImageButton
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="133dp"
+        android:background="#00ffffff"
+        android:src="@mipmap/j3"/>
+
+    <ImageButton
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="-48dp"
+        android:layout_marginLeft="-133dp"
+        android:background="@mipmap/l1"
+        />
+
+</LinearLayout>

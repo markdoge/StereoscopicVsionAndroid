@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TestScroller">
+    <!--可见数目-->
+        <attr name="TestScrollerSeeSize" format="integer"></attr>
+    <!--被选择文字的大小和颜色-->
+        <attr name="TestScrollerSelectedTextSize" format="float"></attr>
+        <attr name="TestScrollerSelectedTextColor" format="color"></attr>
+
+
+    <!--未被被选择文字的大小和颜色-->
+        <attr name="TestScrollerTextSize" format="float"></attr>
+        <attr name="TestScrollerTextColor" format="color"></attr>
+    </declare-styleable>
+</resources>
