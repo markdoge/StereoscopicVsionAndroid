@@ -20,9 +20,7 @@ public class TestScroller extends View{
 
     private Context context;
     private List<String> strings = new ArrayList<String>();//数据源字符串数组
-
     private int seeSize = 1;//可见个数
-
     private int anInt;//每个字母所占的大小；
     private TextPaint textPaint;
     private boolean firstVisible = true;
@@ -37,7 +35,6 @@ public class TestScroller extends View{
     private float textSize;
     private int textColor;
     private Rect rect = new Rect();
-
     private int textWidth = 0;
     private int textHeight = 0;
     private int centerTextHeight = 0;
@@ -46,11 +43,9 @@ public class TestScroller extends View{
     public TestScroller(Context context) {
         this(context, null);
     }
-
     public TestScroller(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
-
     public TestScroller(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.context = context;
@@ -60,7 +55,6 @@ public class TestScroller extends View{
         initPaint();//初始化画笔
         setData();
     }
-
     /**
      * 初始化画笔
      */
@@ -72,8 +66,6 @@ public class TestScroller extends View{
         selectedPaint.setColor(selectedColor);
         selectedPaint.setTextSize(selectedTextSize);
     }
-
-
     /**
      * 初始化属性
      * @param attrs
@@ -91,23 +83,19 @@ public class TestScroller extends View{
         textColor = tta.getColor(R.styleable.TestScroller_TestScrollerTextColor,
                 context.getResources().getColor(android.R.color.darker_gray));
     }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.e("action", "onTouchEvent: " + event.getAction());
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 downX = event.getX();//获得点下去的x坐标
                 break;
             case MotionEvent.ACTION_MOVE://复杂的是移动时的判断
                 float scrollX = event.getX();
-
                 if (n != 0 && n != strings.size() - 1)
                     anOffset = scrollX - downX;//滑动时的偏移量，用于计算每个是数据源文字的坐标值
                 else {
                     anOffset = (float) ((scrollX - downX) / 1.5);//当滑到两端的时候添加一点阻力
                 }
-
                 if (scrollX > downX) {
                     //向右滑动，当滑动距离大于每个单元的长度时，则改变被选中的文字。
                     if (scrollX - downX >= anInt) {
@@ -118,7 +106,6 @@ public class TestScroller extends View{
                         }
                     }
                 } else {
-
                     //向左滑动，当滑动距离大于每个单元的长度时，则改变被选中的文字。
                     if (downX - scrollX >= anInt) {
 
@@ -129,22 +116,18 @@ public class TestScroller extends View{
                         }
                     }
                 }
-
                 invalidate();
                 break;
-
             case MotionEvent.ACTION_UP:
                 //抬起手指时，偏移量归零，相当于回弹。
                 anOffset = 0;
                 invalidate();
-
                 break;
             default:
                 break;
         }
         return super.onTouchEvent(event);
     }
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -232,7 +215,7 @@ public class TestScroller extends View{
     public void setData() {
         strings.add("测距模式");
         strings.add("立体模式");
-        strings.add("本地文件");
+        strings.add("景深合成");
         invalidate();
     }
 
