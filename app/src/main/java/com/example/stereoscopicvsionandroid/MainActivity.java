@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements OnClickAction {
         //surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         //camera=Camera.open();
         ImageButton document=findViewById(R.id.file);
+        document.setBackgroundResource(R.mipmap.document);
         ImageButton btncam = findViewById(R.id.cam);
         TestScroller text=findViewById(R.id.selecteText);
         final int[] ischange = {1};

@@ -51,6 +51,5 @@
         android:layout_height="40dp"
         android:layout_marginTop="-38.5dp"
         android:layout_marginRight="170dp"
-        android:background="@mipmap/documnet"
         android:scaleType="centerCrop"/>
 </LinearLayout>
