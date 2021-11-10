@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import androidx.annotation.Nullable;
@@ -20,6 +19,7 @@ public class TestScroller extends View{
 
     private Context context;
     private List<String> strings = new ArrayList<String>();//数据源字符串数组
+    private OnMoveActionListener mMove = null;//自定义监听器
     private int seeSize = 1;//可见个数
     private int anInt;//每个字母所占的大小；
     private TextPaint textPaint;
@@ -229,5 +229,11 @@ public class TestScroller extends View{
             return strings.get(n);
         }
         return null;
+    }
+    public interface OnMoveActionListener {
+        public void OnMove(View view);
+    }
+    public void setOnMoveActionListener(OnMoveActionListener move) {
+        mMove = move;
     }
 }
