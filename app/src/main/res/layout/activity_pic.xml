@@ -13,43 +13,52 @@
             android:layout_height="30dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:src="@mipmap/document"
+            android:background="@color/transparent"
+            android:src="@mipmap/ext"
             android:scaleType="centerCrop"
             />
         <ImageButton
             android:id="@+id/picSetting"
             android:layout_width="30dp"
+            android:onClick="click"
             android:layout_height="30dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:src="@mipmap/document"
             android:scaleType="centerCrop"
             />
     </RelativeLayout>
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="575dp" />
+        android:layout_height="622dp" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="40dp">
+        <TextView
+            android:id="@+id/fText"
+            android:layout_width="55dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:textSize="20dp"/>
         <SeekBar
-            android:layout_width="match_parent"
+            android:id="@+id/setAperture"
+            android:layout_width="345dp"
             android:layout_height="40dp"
-            android:layout_marginBottom="0dp"
-            android:max="200"/>
+            android:layout_alignParentRight="true"
+            android:min="95"
+            android:max="1100"/>
+    </RelativeLayout>
+    <SeekBar
+        android:id="@+id/setDestece"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="0dp"
+        android:max="200"/>
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical">
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:scaleType="centerCrop"/>
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:scaleType="centerCrop"/>
     </RelativeLayout>
 </LinearLayout>

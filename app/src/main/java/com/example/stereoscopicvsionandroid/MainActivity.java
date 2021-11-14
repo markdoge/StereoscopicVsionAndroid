@@ -8,7 +8,10 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import android.service.autofill.OnClickAction;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -50,11 +53,12 @@ public class MainActivity extends AppCompatActivity implements OnClickAction {
         text=findViewById(R.id.selecteText);
         btncam.setBackgroundResource(R.mipmap.init1);
         pic=findViewById(R.id.pic);
-        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-        //WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        //SurfaceView surfaceView=findViewById(R.id.camView);
-        //SurfaceHolder surfaceHolder=surfaceView.getHolder();
-        //surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        //camera
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+        WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        SurfaceView surfaceView=findViewById(R.id.camView);
+        SurfaceHolder surfaceHolder=surfaceView.getHolder();
+        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         //camera=Camera.open();
     }
     private void Mcam(){
