@@ -18,8 +18,11 @@ public class StdCamera extends AppCompatActivity {
     private SurfaceHolder camViewHolder;
     StdCamera(SurfaceView temp){
         camera1 = Camera.open(0);
+        camera1.setDisplayOrientation(90);
         if (cametacount>2){
             camera2 = Camera.open(1);
+            camera2.setDisplayOrientation(90);//不加的话，预览的图像就是横的
+            //camera2.autoFocus();//自动对焦（焦点）
         }
         camraView=temp;
         camViewHolder= camraView.getHolder();
