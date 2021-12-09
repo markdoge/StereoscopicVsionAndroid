@@ -11,10 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <SurfaceView
-            android:id="@+id/camView"
+            android:id="@+id/view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
         <TextView
             android:id="@+id/pic"
             android:layout_width="match_parent"
