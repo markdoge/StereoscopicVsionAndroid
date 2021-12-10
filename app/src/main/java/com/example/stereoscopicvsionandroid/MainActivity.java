@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity implements OnClickAction {
     private ImageButton document;
     private ImageButton btncam;
     private TestScroller text;
-    private TextView pic;
     final int[] isChange = {1};
     private static final String TAG = "TAG";
     private StdCamera camera;
@@ -77,7 +76,6 @@ public class MainActivity extends AppCompatActivity implements OnClickAction {
         btncam = findViewById(R.id.cam);
         text=findViewById(R.id.selecteText);
         btncam.setBackgroundResource(R.mipmap.init1);
-        pic=findViewById(R.id.pic);
         text.setOnTouchListener((v, event) -> {
             if (camera.getCam()<=2){
                 Toast.makeText(MainActivity.this, "后置摄像头少于2个！", Toast.LENGTH_LONG).show();
@@ -102,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements OnClickAction {
         btncam.setOnTouchListener((v, event) -> {
             if (text.getSelectedString().equals("景深合成")&&event.getAction()==MotionEvent.ACTION_DOWN){
                 btncam.setBackgroundResource(R.drawable.btn_bg_pressed);
-                pic.setBackgroundResource(R.mipmap.pic);
             }
             if (text.getSelectedString().equals("景深合成")&&event.getAction()==MotionEvent.ACTION_UP){
                 try {
@@ -110,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements OnClickAction {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                pic.setBackgroundResource(R.drawable.btn_bg_pressed);
                 btncam.setBackgroundResource(R.mipmap.init3);
             }
             return false;
