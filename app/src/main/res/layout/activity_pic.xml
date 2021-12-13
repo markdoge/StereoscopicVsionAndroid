@@ -17,6 +17,17 @@
             android:src="@mipmap/ext"
             android:scaleType="centerCrop"
             />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="0dp">
+            <ImageButton
+                android:id="@+id/del"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                />
         <ImageButton
             android:id="@+id/picSetting"
             android:layout_width="30dp"
@@ -26,6 +37,7 @@
             android:layout_centerVertical="true"
             android:scaleType="centerCrop"
             />
+        </LinearLayout>
     </RelativeLayout>
 
     <TextView

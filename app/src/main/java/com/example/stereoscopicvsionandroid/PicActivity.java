@@ -21,6 +21,7 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
     private static final String TAG = "PicTAG";
     private SeekBar FData;
     private SeekBar setDestece;
+    private ImageButton del;
     final int[] isSetting={1};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +33,10 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
     private void init(){
         out=findViewById(R.id.outPic);
         FData=findViewById(R.id.setAperture);
+        del=findViewById(R.id.del);
         FData.setProgress(1100);
         picSetting=findViewById(R.id.picSetting);
+        del.setBackgroundResource(R.mipmap.del);
         picSetting.setBackgroundResource(R.mipmap.undo);
         fText=findViewById(R.id.fText);
         setDestece=findViewById(R.id.setDestece);
@@ -50,6 +53,7 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
                     setDestece.setVisibility(setDestece.VISIBLE);
                     FData.setVisibility(FData.VISIBLE);
                     fText.setVisibility(fText.VISIBLE);
+                    del.setVisibility(del.VISIBLE);
                     picSetting.setBackgroundResource(R.mipmap.save);
                     isSetting[0]=0;
                 }
@@ -59,7 +63,14 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
                     setDestece.setVisibility(setDestece.GONE);
                     FData.setVisibility(FData.GONE);
                     fText.setVisibility(fText.GONE);
+                    del.setVisibility(del.GONE);
                 }
+            }
+        });
+        del.setOnClickListener(new View.OnClickListener() {//删除照片的监听器
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG,"del");
             }
         });
         out.setOnClickListener(new View.OnClickListener() {

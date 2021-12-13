@@ -3,13 +3,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <ImageButton
-        android:id="@+id/outVideo"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@mipmap/document"
-        android:scaleType="centerCrop"
-        />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+        <ImageButton
+            android:id="@+id/outVideo"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentLeft="true"
+            android:scaleType="centerCrop" />
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/delVideo"
+            android:layout_alignParentRight="true"
+            android:scaleType="centerCrop"/>
+    </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

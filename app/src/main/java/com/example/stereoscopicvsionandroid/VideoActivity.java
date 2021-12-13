@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 @RequiresApi(api = Build.VERSION_CODES.Q)
 public class VideoActivity extends AppCompatActivity implements OnClickAction {
     private ImageButton outVideo;
+    private ImageButton del;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +23,9 @@ public class VideoActivity extends AppCompatActivity implements OnClickAction {
     }
     private void init(){
         outVideo=findViewById(R.id.outVideo);
+        del=findViewById(R.id.delVideo);
+        outVideo.setBackgroundResource(R.mipmap.ext);
+        del.setBackgroundResource(R.mipmap.del);
     }
     private void jumpOutVideo(){
         outVideo.setOnClickListener(new View.OnClickListener() {
