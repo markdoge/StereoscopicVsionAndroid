@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements OnClickAction {
     private ImageButton document;
     private ImageButton btncam;
     private TestScroller text;
+    private TextView camFocus;
     final int[] isChange = {1};
     private static final String TAG = "TAG";
     private StdCamera camera;
@@ -68,6 +69,9 @@ public class MainActivity extends AppCompatActivity implements OnClickAction {
             Log.i("error:", e + "");
         }*/
         SurfaceView temp = findViewById(R.id.view);
+        camFocus=findViewById(R.id.pic);
+        camFocus.setBackgroundResource(R.mipmap.pic);
+        camFocus.setVisibility(camFocus.GONE);
         camera=new StdCamera(temp);
         //摄像头的SurfaceView
         Log.d(TAG,"camera");
@@ -100,10 +104,12 @@ public class MainActivity extends AppCompatActivity implements OnClickAction {
         btncam.setOnTouchListener((v, event) -> {
             if (text.getSelectedString().equals("景深合成")&&event.getAction()==MotionEvent.ACTION_DOWN){
                 btncam.setBackgroundResource(R.drawable.btn_bg_pressed);
+                camFocus.setVisibility(camFocus.VISIBLE);
             }
             if (text.getSelectedString().equals("景深合成")&&event.getAction()==MotionEvent.ACTION_UP){
                 try {
                     Thread.sleep(400);
+                    camFocus.setVisibility(camFocus.GONE);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

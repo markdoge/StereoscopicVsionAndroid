@@ -53,7 +53,7 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
                     setDestece.setVisibility(setDestece.VISIBLE);
                     FData.setVisibility(FData.VISIBLE);
                     fText.setVisibility(fText.VISIBLE);
-                    del.setVisibility(del.VISIBLE);
+                    del.setVisibility(del.GONE);
                     picSetting.setBackgroundResource(R.mipmap.save);
                     isSetting[0]=0;
                 }
@@ -63,7 +63,7 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
                     setDestece.setVisibility(setDestece.GONE);
                     FData.setVisibility(FData.GONE);
                     fText.setVisibility(fText.GONE);
-                    del.setVisibility(del.GONE);
+                    del.setVisibility(del.VISIBLE);
                 }
             }
         });
