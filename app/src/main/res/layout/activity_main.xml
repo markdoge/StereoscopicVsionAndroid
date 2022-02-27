@@ -1,65 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:background="@color/transparent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--相机预览视图-->
     <FrameLayout
+        android:id="@+id/camera_preview_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <SurfaceView
-            android:id="@+id/view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-        <TextView
-            android:id="@+id/pic"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginTop="190dp"
-            />
-    </FrameLayout>
+        android:layout_height="match_parent" />
+
+    <!--顶部视图-->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="-185dp"
-        android:orientation="vertical"
-        android:layout_gravity="center"
-        android:background="@color/transparent">
-        <com.example.stereoscopicvsionandroid.TestScroller
-            android:id="@+id/selecteText"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="30"
-            app:TestScrollerSeeSize="5"
-            app:TestScrollerSelectedTextColor="@color/white"
-            app:TestScrollerSelectedTextSize="40"
-            app:TestScrollerTextColor="@color/gray"
-            app:TestScrollerTextSize="30" />
+        android:layout_height="80dp"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:padding="15dp">
+
+        <ImageView
+            android:id="@+id/flash_button"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/flash_close" />
     </LinearLayout>
-    <TextView
-        android:layout_width="6dp"
-        android:layout_height="6dp"
-        android:text="sssssssssssssssssssss."
-        android:textSize="3dp"
-        android:layout_marginTop="-4dp"
-        android:background="@color/purple_700"
-        />
-    <ImageButton
-        android:id="@+id/cam"
-        android:layout_width="57dp"
-        android:layout_height="57dp"
-        android:layout_marginTop="15dp"
-        android:scaleType="centerCrop"
-        />
-    <ImageButton
-        android:id="@+id/file"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="-38.5dp"
-        android:layout_marginRight="170dp"
-        android:scaleType="centerCrop"/>
-</LinearLayout>
+
+    <!--拍照完成确定视图-->
+    <RelativeLayout
+        android:id="@+id/ll_confirm_layout"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/grayTrans"
+        android:padding="50dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/undoButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/undo" />
+
+        <ImageView
+            android:id="@+id/saveButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/save" />
+    </RelativeLayout>
+
+    <!--底部拍照按钮-->
+    <RelativeLayout
+        android:id="@+id/ll_photo_layout"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:layout_alignParentBottom="true"
+        android:padding="15dp"
+        android:background="@color/grayTrans"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp">
+            <com.example.stereoscopicvsionandroid.TestScroller
+                android:id="@+id/selecteText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="30"
+                app:TestScrollerSeeSize="5"
+                app:TestScrollerSelectedTextColor="@color/white"
+                app:TestScrollerSelectedTextSize="40"
+                app:TestScrollerTextColor="@color/gray"
+                app:TestScrollerTextSize="30" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/document"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_centerVertical="true"
+            android:background="@color/transparent"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/document"
+            />
+
+        <ImageButton
+            android:id="@+id/btncam"
+            android:layout_width="69dp"
+            android:scaleType="centerCrop"
+            android:background="@color/transparent"
+            android:layout_height="69dp"
+            android:layout_centerInParent="true"
+            />
+    </RelativeLayout>
+
+
+</RelativeLayout>
