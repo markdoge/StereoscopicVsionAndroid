@@ -6,11 +6,9 @@ import android.graphics.*;
 import android.hardware.Camera;
 import android.os.*;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.*;
 import android.widget.*;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
+import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -43,6 +41,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Camera.getNumberOfCameras()<=2){
+            Toast toast=Toast.makeText(MainActivity.this, "后置摄像头少于2个！", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 1920);
+            toast.show();
+            //finish();//调试可以先注释掉
+        }
         setContentView(R.layout.activity_main);
         if (hasPermission())
             requestP();
@@ -73,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         document.setVisibility(document.GONE);
         mPreviewLayout = findViewById(R.id.camera_preview_layout);
         mPhotoLayout = findViewById(R.id.ll_photo_layout);
+        mPhotoLayout.setBackgroundResource(R.color.transparent);
         mConfirmLayout = findViewById(R.id.ll_confirm_layout);
         btncam = findViewById(R.id.btncam);
         btncam.setVisibility(btncam.GONE);
@@ -87,9 +92,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         text.setOnTouchListener((v, event) -> {
             Log.d(TAG,"TouchBar");
-            if (Camera.getNumberOfCameras()<=2){
-                Toast.makeText(MainActivity.this, "后置摄像头少于2个！", Toast.LENGTH_LONG).show();
-            }
             if (text.getSelectedString().equals("立体模式")){
                 Mvideo();
             }
@@ -107,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void Mcam(){
         btncam.setVisibility(btncam.VISIBLE);
         document.setVisibility(document.VISIBLE);
+        mPhotoLayout.setBackgroundResource(R.color.grayTrans);
         btncam.setBackgroundResource(R.mipmap.init3);
         document.setBackgroundResource(R.mipmap.document);
         jump('p');
@@ -126,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void Mvideo(){
         btncam.setVisibility(btncam.VISIBLE);
         document.setVisibility(document.VISIBLE);
+        mPhotoLayout.setBackgroundResource(R.color.grayTrans);
         btncam.setBackgroundResource(R.mipmap.init2);
         document.setBackgroundResource(R.mipmap.document);
         jump('v');
@@ -146,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void Mruler(){
         btncam.setVisibility(btncam.GONE);
         document.setVisibility(document.GONE);
+        mPhotoLayout.setBackgroundResource(R.color.transparent);
         document.setBackgroundResource(R.color.transparent);
     }
     @RequiresApi(api = Build.VERSION_CODES.Q)
