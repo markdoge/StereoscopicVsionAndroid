@@ -16,11 +16,6 @@
 
 package photoFun;
 
-/**
- * 注释：尺寸对象
- * 时间：2019/3/4 0004 11:14
- * 作者：郭翰林
- */
 public class Size implements Comparable<Size> {
 
     private final int mWidth;

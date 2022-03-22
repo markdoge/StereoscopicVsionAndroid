@@ -35,6 +35,8 @@
             android:theme="@style/Theme.Design.Light.NoActionBar"/>
         <activity android:name=".VideoActivity"
             android:theme="@style/Theme.Design.Light.NoActionBar"/>
+        <activity android:name=".customCarmeraActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
     </application>
 
 </manifest>

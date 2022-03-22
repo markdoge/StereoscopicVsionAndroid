@@ -12,7 +12,7 @@
 2.File—>New—>Import Module…
      位置->   ./java
      名字->   OpenCVLibrary3416//OpenCV的版本号3.4.16
-3.OpenCVLibrary340的build.gradle，使其和StereoscopicVsionAndroid的build.gradle对应项一致
+3.OpenCVLibrary3416的build.gradle，使其和StereoscopicVsionAndroid的build.gradle对应项一致
 4.File-Project Structure
 > Modules里找到项目
 > > 点击右边的+
@@ -24,6 +24,8 @@
 > 把OpenCV sdk for Android文件下./OpenCV-android-sdk/sdk/native下的libs文件夹拷贝到\src\main下面 重命名该lib
 > 将OpenCV-android-sdk\samples\image-manipulations\res\layout下的xml文件拷贝到自己的项目\src\main\res下面
 > 将.\src\org\opencv\samples\imagemanipulations下的java文件拷到自己的项目\src\main\java\你MainActivity所在的包名
+> > arm64-v8a: 64位支持，目前主流的版本
+7.导入完成后自己弄个跳转看看ImageManipulationsActivity能不能正常使用，layout文件为image_manipulations_surface_view.xml
 ## **如果还是看不懂** [教程](https://blog.csdn.net/qq_33198758/article/details/82984216)
 ---
 

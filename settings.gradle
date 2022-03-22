@@ -1,2 +1,3 @@
 rootProject.name = "StereoscopicVsionAndroid"
 include ':app'
+include ':OpenCVLibrary3416'

@@ -15,11 +15,6 @@ import androidx.appcompat.widget.AppCompatImageView;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author 郭翰林
- * @date 2019/3/1 0001 9:21
- * 注释:对焦框
- */
 public class OverCameraView extends AppCompatImageView {
     private Context context;
     //焦点附近设置矩形区域作为对焦区域
@@ -58,16 +53,7 @@ public class OverCameraView extends AppCompatImageView {
         isFoucuing = foucuing;
     }
 
-    /**
-     * 注释：对焦并绘制对焦矩形框
-     * 时间：2019/3/1 0001 9:28
-     * 作者：郭翰林
-     *
-     * @param camera
-     * @param autoFocusCallback
-     * @param x
-     * @param y
-     */
+
     public void setTouchFoucusRect(Camera camera, Camera.AutoFocusCallback autoFocusCallback, float x, float y) {
         //以焦点为中心，宽度为200的矩形框
         touchFocusRect = new Rect((int) (x - 100), (int) (y - 100), (int) (x + 100), (int) (y + 100));
@@ -90,15 +76,6 @@ public class OverCameraView extends AppCompatImageView {
         postInvalidate();
     }
 
-    /**
-     * 注释：设置camera参数，并完成对焦
-     * 时间：2019/3/1 0001 9:27
-     * 作者：郭翰林
-     *
-     * @param camera
-     * @param autoFocusCallback
-     * @param tfocusRect
-     */
     public void doTouchFocus(Camera camera, Camera.AutoFocusCallback autoFocusCallback, final Rect tfocusRect) {
         if (camera == null || isFoucuing) {
             return;
@@ -121,11 +98,6 @@ public class OverCameraView extends AppCompatImageView {
         }
     }
 
-    /**
-     * 注释：对焦完成后，清除对焦矩形框
-     * 时间：2019/3/1 0001 9:28
-     * 作者：郭翰林
-     */
     public void disDrawTouchFocusRect() {
         //将对焦区域设置为null，刷新界面后对焦框消失
         touchFocusRect = null;
@@ -140,9 +112,6 @@ public class OverCameraView extends AppCompatImageView {
         super.onDraw(canvas);
     }
 
-    /**
-     * 获取屏幕高度
-     */
     @SuppressWarnings("deprecation")
     public static int getWindowHeight(Context cxt) {
         WindowManager wm = (WindowManager) cxt
@@ -151,9 +120,7 @@ public class OverCameraView extends AppCompatImageView {
 
     }
 
-    /**
-     * 获取屏幕宽度
-     */
+
     @SuppressWarnings("deprecation")
     public static int getWindowWidth(Context cxt) {
         WindowManager wm = (WindowManager) cxt

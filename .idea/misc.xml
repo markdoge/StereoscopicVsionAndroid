@@ -3,7 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android/StereoscopicVsionAndroid/app/src/main/res/layout/TestOpenCV.xml" value="0.22826086956521738" />
         <entry key="..\:/Android/StereoscopicVsionAndroid/app/src/main/res/layout/activity_main.xml" value="0.15" />
+        <entry key="..\:/Android/StereoscopicVsionAndroid/app/src/main/res/layout/image_manipulations_surface_view.xml" value="0.152" />
       </map>
     </option>
   </component>

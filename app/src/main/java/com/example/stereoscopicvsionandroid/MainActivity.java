@@ -1,8 +1,8 @@
 package com.example.stereoscopicvsionandroid;
+
 import android.annotation.SuppressLint;
 import android.content.*;
 import android.content.pm.PackageManager;
-import android.graphics.*;
 import android.hardware.Camera;
 import android.os.*;
 import android.util.Log;
@@ -10,34 +10,27 @@ import android.view.*;
 import android.widget.*;
 import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
-import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import photoFun.*;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    public static final String KEY_IMAGE_PATH = "imagePath";
-    private FrameLayout mPreviewLayout;
-    private RelativeLayout mPhotoLayout;
-    private RelativeLayout mConfirmLayout;
-    private ImageView mFlashButton;
+    private FrameLayout previewLayout;
+    private RelativeLayout toolbar;
+    private RelativeLayout saveLayout;
+    private ImageView flashButton;
     private ImageView btncam;
-    private ImageView mCancleSaveButton;
+    private ImageView cancleSaveButton;
     private static final String TAG = "TAG";
     private ImageView mSaveButton;
     private TestScroller text;
-    private OverCameraView mOverCameraView;
-    private Camera mCamera;
-    private Handler mHandler = new Handler();
-    private Runnable mRunnable;
+    private OverCameraView overCameraView;
+    private Camera monitor;//当监视器
+    private Handler handler = new Handler();
+    private Runnable runnable;
     private ImageButton document;
     private boolean isFlashing;
-    private byte[] imageData;
     final int[] isChange = {1};
-    private boolean isTakePhoto;
     private boolean isFoucing;
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,27 +64,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
     private void init() {
         document = findViewById(R.id.document);
         document.setVisibility(document.GONE);
-        mPreviewLayout = findViewById(R.id.camera_preview_layout);
-        mPhotoLayout = findViewById(R.id.ll_photo_layout);
-        mPhotoLayout.setBackgroundResource(R.color.transparent);
-        mConfirmLayout = findViewById(R.id.ll_confirm_layout);
+        previewLayout = findViewById(R.id.camera0Preview);
+        toolbar = findViewById(R.id.toolBar);
+        toolbar.setBackgroundResource(R.color.transparent);
+        saveLayout = findViewById(R.id.savePhotoBar);
         btncam = findViewById(R.id.btncam);
         btncam.setVisibility(btncam.GONE);
-        mCancleSaveButton = findViewById(R.id.undoButton);
+        cancleSaveButton = findViewById(R.id.undoButton);
         mSaveButton = findViewById(R.id.saveButton);
-        mFlashButton = findViewById(R.id.flash_button);
+        flashButton = findViewById(R.id.flash_button);
         text=findViewById(R.id.selecteText);
 
-        mCancleSaveButton.setOnClickListener(this);
-        mFlashButton.setOnClickListener(this);
+        cancleSaveButton.setOnClickListener(this);
+        flashButton.setOnClickListener(this);
         mSaveButton.setOnClickListener(this);
 
         text.setOnTouchListener((v, event) -> {
-            Log.d(TAG,"TouchBar");
             if (text.getSelectedString().equals("立体模式")){
                 Mvideo();
             }
@@ -104,17 +95,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return false;
         });
     }
-    @RequiresApi(api = Build.VERSION_CODES.Q)
     @SuppressLint("ClickableViewAccessibility")
     private void Mcam(){
         btncam.setVisibility(btncam.VISIBLE);
         document.setVisibility(document.VISIBLE);
-        mPhotoLayout.setBackgroundResource(R.color.grayTrans);
+        toolbar.setBackgroundResource(R.color.grayTrans);
         btncam.setBackgroundResource(R.mipmap.init3);
         document.setBackgroundResource(R.mipmap.document);
         jump('p');
         btncam.setOnTouchListener((v, event) -> {
-            Log.d(TAG,"move");
             if (text.getSelectedString().equals("景深合成")&&event.getAction()==MotionEvent.ACTION_DOWN){
                 btncam.setBackgroundResource(R.drawable.btn_bg_pressed);
                 takePhoto();
@@ -125,11 +114,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return false;
         });
     }
-    @RequiresApi(api = Build.VERSION_CODES.Q)
     private void Mvideo(){
         btncam.setVisibility(btncam.VISIBLE);
         document.setVisibility(document.VISIBLE);
-        mPhotoLayout.setBackgroundResource(R.color.grayTrans);
+        toolbar.setBackgroundResource(R.color.grayTrans);
         btncam.setBackgroundResource(R.mipmap.init2);
         document.setBackgroundResource(R.mipmap.document);
         jump('v');
@@ -150,14 +138,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void Mruler(){
         btncam.setVisibility(btncam.GONE);
         document.setVisibility(document.GONE);
-        mPhotoLayout.setBackgroundResource(R.color.transparent);
+        toolbar.setBackgroundResource(R.color.transparent);
         document.setBackgroundResource(R.color.transparent);
     }
-    @RequiresApi(api = Build.VERSION_CODES.Q)
     private void jump(char a){
         document.setOnClickListener(v -> {
             if (a=='p'){
-                Intent intent=new Intent(MainActivity.this,PicActivity.class);
+                Intent intent=new Intent(MainActivity.this, PicActivity.class);
                 startActivity(intent);
             }
             if (a=='v'){
@@ -169,11 +156,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        mCamera = Camera.open(0);
-        CameraPreview preview = new CameraPreview(this, mCamera);
-        mOverCameraView = new OverCameraView(this);
-        mPreviewLayout.addView(preview);
-        mPreviewLayout.addView(mOverCameraView);
+        monitor = Camera.open(0);
+        CameraPreview preview = new CameraPreview(this, monitor);
+        overCameraView = new OverCameraView(this);
+        previewLayout.addView(preview);
+        previewLayout.addView(overCameraView);
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -182,17 +169,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 float x = event.getX();
                 float y = event.getY();
                 isFoucing = true;
-                if (mCamera != null && !isTakePhoto) {
-                    mOverCameraView.setTouchFoucusRect(mCamera, autoFocusCallback, x, y);
+                if (monitor != null) {
+                    overCameraView.setTouchFoucusRect(monitor, autoFocusCallback, x, y);
                 }
-                mRunnable = () -> {
+                runnable = () -> {
                     Toast.makeText(MainActivity.this, "自动聚焦超时,请调整合适的位置拍摄！", Toast.LENGTH_SHORT);
                     isFoucing = false;
-                    mOverCameraView.setFoucuing(false);
-                    mOverCameraView.disDrawTouchFocusRect();
+                    overCameraView.setFoucuing(false);
+                    overCameraView.disDrawTouchFocusRect();
                 };
                 //设置聚焦超时
-                mHandler.postDelayed(mRunnable, 3000);
+                handler.postDelayed(runnable, 3000);
             }
         }
         return super.onTouchEvent(event);
@@ -202,45 +189,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onAutoFocus(boolean success, Camera camera) {
             isFoucing = false;
-            mOverCameraView.setFoucuing(false);
-            mOverCameraView.disDrawTouchFocusRect();
+            overCameraView.setFoucuing(false);
+            overCameraView.disDrawTouchFocusRect();
             //停止聚焦超时回调
-            mHandler.removeCallbacks(mRunnable);
+            handler.removeCallbacks(runnable);
         }
     };
 
     private void takePhoto() {
-        isTakePhoto = true;
-        //调用相机拍照
-        mCamera.takePicture(null, null, null, (data, camera1) -> {
-            //视图动画
-            mPhotoLayout.setVisibility(View.GONE);
-            mConfirmLayout.setVisibility(View.VISIBLE);
-            imageData = data;
-            //停止预览
-            mCamera.stopPreview();
-        });
+
     }
 
     private void switchFlash() {
         isFlashing = !isFlashing;
-        mFlashButton.setImageResource(isFlashing ? R.mipmap.flash_open : R.mipmap.flash_close);
+        flashButton.setImageResource(isFlashing ? R.mipmap.flash_open : R.mipmap.flash_close);
         try {
-            Camera.Parameters parameters = mCamera.getParameters();
+            Camera.Parameters parameters = monitor.getParameters();
             parameters.setFlashMode(isFlashing ? Camera.Parameters.FLASH_MODE_TORCH : Camera.Parameters.FLASH_MODE_OFF);
-            mCamera.setParameters(parameters);
+            monitor.setParameters(parameters);
         } catch (Exception e) {
             Toast.makeText(this, "该设备不支持闪光灯", Toast.LENGTH_SHORT);
         }
     }
 
     private void cancleSavePhoto() {
-        mPhotoLayout.setVisibility(View.VISIBLE);
-        mConfirmLayout.setVisibility(View.GONE);
-        //开始预览
-        mCamera.startPreview();
-        imageData = null;
-        isTakePhoto = false;
+        toolbar.setVisibility(View.VISIBLE);
+        saveLayout.setVisibility(View.GONE);
+        monitor.startPreview();
+
     }
 
     @Override
@@ -257,43 +233,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
     private void savePhoto() {
-        FileOutputStream fos = null;
-        String cameraPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "DCIM" + File.separator + "Camera";
-        //相册文件夹
-        File cameraFolder = new File(cameraPath);
-        if (!cameraFolder.exists()) {
-            cameraFolder.mkdirs();
-        }
-        //保存的图片文件
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        String imagePath = cameraFolder.getAbsolutePath() + File.separator + "IMG_" + simpleDateFormat.format(new Date()) + ".jpg";
-        File imageFile = new File(imagePath);
-        try {
-            fos = new FileOutputStream(imageFile);
-            fos.write(imageData);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                    Bitmap retBitmap = BitmapFactory.decodeFile(imagePath);
-                    retBitmap = BitmapUtils.setTakePicktrueOrientation(Camera.CameraInfo.CAMERA_FACING_BACK, retBitmap);
-                    BitmapUtils.saveBitmap(retBitmap, imagePath);
-                    Intent intent = new Intent();
-                    intent.putExtra(KEY_IMAGE_PATH, imagePath);
-                    setResult(RESULT_OK, intent);
-                } catch (IOException e) {
-                    setResult(RESULT_FIRST_USER);
-                    e.printStackTrace();
-                }
-            }
-            mPhotoLayout.setVisibility(View.VISIBLE);
-            mConfirmLayout.setVisibility(View.GONE);
-            mCamera.startPreview();
-            imageData = null;
-            isTakePhoto = false;
-        }
+
     }
 
 }

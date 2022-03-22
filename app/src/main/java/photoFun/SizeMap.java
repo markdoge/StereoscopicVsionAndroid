@@ -7,11 +7,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-/**
- * @author 郭翰林
- * @date 2019/3/4 0004 11:13
- * 注释:
- */
 public class SizeMap {
 
     private final ArrayMap<AspectRatio, SortedSet<Size>> mRatios = new ArrayMap<>();
