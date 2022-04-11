@@ -2,25 +2,25 @@
 ---
 
 #计划要做的
-1、测距模式 参照苹果的测距仪 //两个摄像头测距取平均值
-2、立体模式 红蓝3D //有2D渲染3D的技术 但是会造成亮度下降
-3、景深合成 利用深度图对图片不同距离进行线性卷积
+1、测距模式 参照苹果的测距仪 //两个摄像头测距取平均值 \\
+2、立体模式 红蓝3D //有2D渲染3D的技术 但是会造成亮度下降 \\
+3、景深合成 利用深度图对图片不同距离进行线性卷积 \\
 ---
 
 #引入OpenCV
-1.下载好的OpenCV（Android Release） 解压后将文件夹里的java文件夹复制到本文件夹内
-2.File—>New—>Import Module…
-     位置->   ./java
-     名字->   OpenCVLibrary3416//OpenCV的版本号3.4.16
-3.OpenCVLibrary3416的build.gradle，使其和StereoscopicVsionAndroid的build.gradle对应项一致
+1.下载好的OpenCV（Android Release） 解压后将文件夹里的java文件夹复制到本文件夹内 \\
+2.File—>New—>Import Module… \\
+     位置->   ./java \\
+     名字->   OpenCVLibrary3416//OpenCV的版本号3.4.16 \\
+3.OpenCVLibrary3416的build.gradle，使其和StereoscopicVsionAndroid的build.gradle对应项一致 \\
 4.File-Project Structure
 > Modules里找到项目
 > > 点击右边的+
 > > 选择Module dependency
 > 选择openCVLibrary340，导入
 
-5.import org.opencv.android.*;
-6.拼接opencv manager
+5.import org.opencv.android.*; \\
+6.拼接opencv manager \\
 > 把OpenCV sdk for Android文件下./OpenCV-android-sdk/sdk/native下的libs文件夹拷贝到\src\main下面 重命名该lib
 > 将OpenCV-android-sdk\samples\image-manipulations\res\layout下的xml文件拷贝到自己的项目\src\main\res下面
 > 将.\src\org\opencv\samples\imagemanipulations下的java文件拷到自己的项目\src\main\java\你MainActivity所在的包名
