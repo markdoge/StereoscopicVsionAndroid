@@ -1,17 +1,17 @@
 # StereoscopicVsionAndroid
 ---
 
-# 计划要做的
+## 计划要做的
 1、测距模式 参照苹果的测距仪 //两个摄像头测距取平均值 <br>
 2、立体模式 红蓝3D //有2D渲染3D的技术 但是会造成亮度下降 <br>
 3、景深合成 利用深度图对图片不同距离进行线性卷积 <br>
 ---
 
-# 引入OpenCV
+### 引入OpenCV
 1.下载好的OpenCV（Android Release） 解压后将文件夹里的java文件夹复制到本文件夹内 <br>
 2.File—>New—>Import Module… <br>
-     位置->   ./java <br>
-     名字->   OpenCVLibrary3416//OpenCV的版本号3.4.16 <br>
+*Tabspace*位置->   ./java <br>
+*Tabspace*名字->   OpenCVLibrary3416//OpenCV的版本号3.4.16 <br>
 3.OpenCVLibrary3416的build.gradle，使其和StereoscopicVsionAndroid的build.gradle对应项一致 <br>
 4.File-Project Structure
 > Modules里找到项目
