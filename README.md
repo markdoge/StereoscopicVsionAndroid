@@ -10,8 +10,8 @@
 ### 引入OpenCV
 1.下载好的OpenCV（Android Release） 解压后将文件夹里的java文件夹复制到本文件夹内 <br>
 2.File—>New—>Import Module… <br>
-&emsp;位置->   ./java <br>
-&emsp;名字->   OpenCVLibrary3416//OpenCV的版本号3.4.16 <br>
+> 位置->   ./java <br>
+> 名字->   OpenCVLibrary3416//OpenCV的版本号3.4.16 <br>
 3.OpenCVLibrary3416的build.gradle，使其和StereoscopicVsionAndroid的build.gradle对应项一致 <br>
 4.File-Project Structure
 > Modules里找到项目
