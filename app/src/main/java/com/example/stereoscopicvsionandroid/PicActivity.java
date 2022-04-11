@@ -1,28 +1,36 @@
 package com.example.stereoscopicvsionandroid;
 
 import android.content.Intent;
-import android.os.Build;
-import android.os.Bundle;
+import android.graphics.Bitmap;
+import android.os.*;
 import android.service.autofill.OnClickAction;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.SeekBar;
-import android.widget.TextView;
-
+import android.widget.*;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import java.util.ArrayList;
+import albumFun.PhotoLoader;
 
 @RequiresApi(api = Build.VERSION_CODES.Q)
 public class PicActivity extends AppCompatActivity implements OnClickAction {
     private ImageButton out;
-    private TextView fText;
     private ImageButton picSetting;
+    private ImageButton del;
+    private ImageButton lastPic;
+    private ImageButton nextPic;
+    private ImageView imageView;
+    private int photoNum;
+    private int currentNum=0;
+    final int[] isSetting={1};
+    private ArrayList<Bitmap> resources;
+    private TextView fText;
     private static final String TAG = "PicTAG";
     private SeekBar FData;
     private SeekBar setDestece;
-    private ImageButton del;
-    final int[] isSetting={1};
+    private PhotoLoader photoLoader;
+    private Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +42,9 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
         out=findViewById(R.id.outPic);
         FData=findViewById(R.id.setAperture);
         del=findViewById(R.id.del);
+        nextPic=findViewById(R.id.picTurnRight);
+        lastPic=findViewById(R.id.picTurnLeft);
+        imageView=findViewById(R.id.picView);
         FData.setProgress(1100);
         picSetting=findViewById(R.id.picSetting);
         del.setBackgroundResource(R.mipmap.del);
@@ -44,6 +55,16 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
         setDestece.setVisibility(setDestece.GONE);
         FData.setVisibility(FData.GONE);
         fText.setVisibility(fText.GONE);
+        try {
+            photoLoader=new PhotoLoader(Environment.getExternalStorageDirectory().getPath());
+            Log.d("TAG","path is "+Environment.getExternalStorageDirectory().getPath());
+            resources =photoLoader.getBitmap();
+            photoNum= resources.size();
+            imageView.setImageBitmap(resources.get(0));
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.d("TAG","file not found");
+        }
     }
     private void appFunction(){
         picSetting.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +75,8 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
                     FData.setVisibility(FData.VISIBLE);
                     fText.setVisibility(fText.VISIBLE);
                     del.setVisibility(del.GONE);
+                    lastPic.setVisibility(lastPic.GONE);
+                    nextPic.setVisibility(nextPic.GONE);
                     picSetting.setBackgroundResource(R.mipmap.save);
                     isSetting[0]=0;
                 }
@@ -64,6 +87,8 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
                     FData.setVisibility(FData.GONE);
                     fText.setVisibility(fText.GONE);
                     del.setVisibility(del.VISIBLE);
+                    lastPic.setVisibility(lastPic.VISIBLE);
+                    nextPic.setVisibility(nextPic.VISIBLE);
                 }
             }
         });
@@ -103,6 +128,34 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 fText.setText("f"+String.valueOf((double)FData.getProgress()/100));}
+        });
+        nextPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentNum<photoNum){
+                    imageView.setImageBitmap(resources.get(currentNum+1));
+                    currentNum+=1;
+                }
+                else {
+                    Toast toast=Toast.makeText(PicActivity.this, "已经是最后一张照片", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 1920);
+                    toast.show();
+                }
+            }
+        });
+        lastPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentNum!=0){
+                    imageView.setImageBitmap(resources.get(currentNum-1));
+                    currentNum-=1;
+                }
+                else {
+                    Toast toast=Toast.makeText(PicActivity.this, "已经是第一张照片", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 1920);
+                    toast.show();
+                }
+            }
         });
     }
 }

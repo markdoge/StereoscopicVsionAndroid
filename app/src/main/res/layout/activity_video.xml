@@ -3,6 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/videoPreview"/>
+    <VideoView
+        android:id="@+id/videoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,4 +35,32 @@
         android:gravity="center">
 
     </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/lastVideo"
+            android:layout_width="50dp"
+            android:layout_height="450dp"
+            android:layout_centerVertical="true"
+            android:background="@color/transparent"
+            android:src="@mipmap/left" />
+        <ImageButton
+            android:id="@+id/nextVideo"
+            android:layout_width="50dp"
+            android:layout_height="450dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@color/transparent"
+            android:src="@mipmap/right" />
+
+        <ImageButton
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerInParent="true"
+            android:id="@+id/playBtn"
+            android:background="@color/transparent" />
+    </RelativeLayout >
 </FrameLayout>
