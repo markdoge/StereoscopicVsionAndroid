@@ -1,7 +1,6 @@
 package albumFun;
 
 import android.graphics.Bitmap;
-
 import java.util.ArrayList;
 
 public class PhotoLoader {
