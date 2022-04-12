@@ -23,9 +23,9 @@
 5.import org.opencv.android.*;   
 6.拼接opencv manager
 
-> 把OpenCV sdk for Android文件下./OpenCV-android-sdk/sdk/native下的libs文件夹拷贝到\src\main下面 重命名该lib 
-> 将OpenCV-android-sdk\samples\image-manipulations\res\layout下的xml文件拷贝到自己的项目\src\main\res下面
-> 将.\src\org\opencv\samples\imagemanipulations下的java文件拷到自己的项目\src\main\java\你MainActivity所在的包名
+> 把OpenCV sdk for Android文件下./OpenCV-android-sdk/sdk/native下的libs文件夹拷贝到\src\main下面 重命名该lib   
+> 将OpenCV-android-sdk\samples\image-manipulations\res\layout下的xml文件拷贝到自己的项目\src\main\res下面  
+> 将.\src\org\opencv\samples\imagemanipulations下的java文件拷到自己的项目\src\main\java\你MainActivity所在的包名    
 >
 > > arm64-v8a: 64位支持，目前主流的版本
 
