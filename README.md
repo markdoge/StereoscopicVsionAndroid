@@ -10,13 +10,13 @@
 ---
 
 ### 引入OpenCV
-1.下载好的 [OpenCV](https://opencv.org/releases/) Android Release 解压后将文件夹里的java文件夹复制到本文件夹内 
-2.File—>New—>Import Module… 
+1.下载好的 [OpenCV](https://opencv.org/releases/) Android Release 解压后将文件夹里的java文件夹复制到本文件夹内   
+2.File—>New—>Import Module…     
 
 > 位置->   ./java
 > 名字->   OpenCVLibrary3416//OpenCV的版本号3.4.16
 
-3.OpenCVLibrary3416的build.gradle，使其和StereoscopicVsionAndroid的build.gradle对应项一致
+3.OpenCVLibrary3416的build.gradle，使其和StereoscopicVsionAndroid的build.gradle对应项一致  
 4.File-Project Structure
 
 > Modules里找到项目
@@ -24,7 +24,7 @@
 > > 选择Module dependency
 > 选择openCVLibrary340，导入
 
-5.import org.opencv.android.*;
+5.import org.opencv.android.*;   
 6.拼接opencv manager
 
 > 把OpenCV sdk for Android文件下./OpenCV-android-sdk/sdk/native下的libs文件夹拷贝到\src\main下面 重命名该lib 
