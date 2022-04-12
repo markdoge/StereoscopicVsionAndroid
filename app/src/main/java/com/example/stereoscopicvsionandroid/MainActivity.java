@@ -16,8 +16,7 @@ import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import photoFun.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {

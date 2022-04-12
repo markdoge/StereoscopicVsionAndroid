@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!--相机预览视图-->
+    <!--相机预览视图 -->
     <TextureView
         android:id="@+id/textureView0"
         android:layout_width="match_parent"

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class PhotoLoader {
     private String path;
     private ArrayList<Bitmap> bitmaps;
+    private ArrayList<String> picLocation;
     private ArrayList<Bitmap> videoPreview;
     private ArrayList<String> videoLocation;
     public PhotoLoader(String file){

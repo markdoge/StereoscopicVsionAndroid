@@ -4,8 +4,7 @@ package photoFun;
 import android.content.Context;
 import android.hardware.camera2.*;
 import android.util.Log;
-import java.util.Arrays;
-import java.util.Set;
+import java.util.*;
 
 public class GetCamera {
     private Context context;

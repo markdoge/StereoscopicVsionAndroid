@@ -91,7 +91,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentBottom="true"
             android:textSize="20dp" />
-
+        <!--滑动条-->
         <SeekBar
             android:id="@+id/setAperture"
             android:layout_width="345dp"
