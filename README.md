@@ -8,7 +8,7 @@
 ---
 
 ### 引入OpenCV
-1.下载好的OpenCV（Android Release） 解压后将文件夹里的java文件夹复制到本文件夹内 <br>
+1.下载好的 [OpenCV](https://opencv.org/releases/) Android Release 解压后将文件夹里的java文件夹复制到本文件夹内 <br>
 2.File—>New—>Import Module… <br>
 > 位置->   ./java <br>
 > 名字->   OpenCVLibrary3416//OpenCV的版本号3.4.16
