@@ -3,7 +3,17 @@ package photoFun;
 
 import android.content.Context;
 import android.hardware.camera2.*;
+import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.MediaRecorder;
 import android.util.Log;
+import android.util.Size;
+import android.view.Display;
+import android.view.WindowManager;
+
+import com.example.stereoscopicvsionandroid.MainActivity;
+
+import org.opencv.core.Point;
+
 import java.util.*;
 
 public class GetCamera {
@@ -13,6 +23,10 @@ public class GetCamera {
     private String[] cameraIdList;
     private Set<String> physicalCameraIds;
     private String logicCameraId;
+    private CameraCharacteristics characteristics;
+    private StreamConfigurationMap streamConfigurationMap;
+    private Size[]videoSize;
+    private Point point;
 
     public GetCamera(Context context_){
         context=context_;
@@ -41,6 +55,14 @@ public class GetCamera {
     }
     private void setCamera(){
         cameraID = physicalCameraIds.toArray();
+        try {
+            characteristics=manager.getCameraCharacteristics(String.valueOf(cameraID[0]));
+            streamConfigurationMap=characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+            assert streamConfigurationMap!=null;
+            videoSize =streamConfigurationMap.getOutputSizes(MediaRecorder.class);
+        }catch (CameraAccessException e){
+            e.printStackTrace();
+        }
     }
     public String[] getCameraID(){
         String[] camer = new String[cameraID.length];
@@ -50,5 +72,8 @@ public class GetCamera {
     }
     public String getLogicCameraId(){
         return logicCameraId;
+    }
+    public Size[] getVideoSize(){
+        return videoSize;
     }
 }
