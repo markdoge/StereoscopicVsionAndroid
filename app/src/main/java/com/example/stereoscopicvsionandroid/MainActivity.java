@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private GetCamera getCamera;
     private TextureView v1;
