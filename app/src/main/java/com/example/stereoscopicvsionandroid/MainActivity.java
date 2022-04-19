@@ -22,6 +22,9 @@ import android.widget.*;
 import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
+import org.opencv.android.OpenCVLoader;
+
 import photoFun.*;
 
 import java.io.File;
@@ -113,6 +116,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     };
     @SuppressLint("ClickableViewAccessibility")
     private void init() {
+        if (OpenCVLoader.initDebug()) {
+            Log.d("TAG", "OpenCVLoader初始化成功");
+        }else{
+            Log.d("TAG", "OpenCVLoader初始化失败");
+        }
         getCamera = new GetCamera(MainActivity.this);
         videSize=getCamera.getVideoSize();
         v1=findViewById(R.id.textureView0);
