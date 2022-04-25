@@ -178,10 +178,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btncam.setOnClickListener(view -> {
             if (text.getSelectedString().equals("立体模式")){
                 if (isChange[0] ==1){
+                    Log.d("TAG","开始录像");
                     startRecordingVideo();
                 }
                 else{
                     stopRecorder();
+                    Log.d("TAG","停止录像");
                     timer.setVisibility(timer.GONE);
                     //结束录像并保存
                 }
@@ -202,11 +204,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         timer.start();
     }
     private void stopRecorder() {
-        if (mMediaRecorder != null&&mMediaRecorder1!=null) {
+        if (mMediaRecorder != null) {
             mMediaRecorder.stop();
             mMediaRecorder.reset();
-            mMediaRecorder1.stop();
-            mMediaRecorder1.reset();
             //停止计时
             timer.stop();
             timer.setBase(SystemClock.elapsedRealtime());//计时器清零
@@ -378,16 +378,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return selectSize;
     }
     private void configMediaRecorder() {
-        File saveLocation = new File(Environment.getExternalStorageDirectory(),"/DCIM/stereo");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+        Date date = new Date(System.currentTimeMillis());
         File file = new File(Environment.getExternalStorageDirectory() +
-                "/DCIM/stereo" + System.currentTimeMillis() + ".mp4");
+                "/DCIM/stereo " + simpleDateFormat.format(date) + ".mp4");
         if (file.exists()) {
             file.delete();
         }
         if (mMediaRecorder == null) {
             mMediaRecorder = new MediaRecorder();
         }
-        Surface surface = new Surface(v1.getSurfaceTexture());
+        Surface surface = new Surface(v2.getSurfaceTexture());
         Size size = getMatchingSize();
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);//设置音频来源
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);//设置视频来源
