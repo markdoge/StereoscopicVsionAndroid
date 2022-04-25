@@ -23,6 +23,7 @@ public class GetCamera {
     private String[] cameraIdList;
     private Set<String> physicalCameraIds;
     private String logicCameraId;
+    private List<String> logicCameraIds=new ArrayList<>();
     private CameraCharacteristics characteristics;
     private StreamConfigurationMap streamConfigurationMap;
     private Size[]videoSize;
@@ -44,6 +45,14 @@ public class GetCamera {
                         setCamera();
                         logicCameraId=id;
                     }
+                    else{
+                        Log.d("TAG","物理摄像头少于2个！");
+                        logicCameraIds.add(id);
+                        if(logicCameraId==null){
+                            logicCameraId=logicCameraIds.get(0);
+                            setWithLogicCamera();
+                        }
+                    }
 
                 }catch (CameraAccessException e){
                     e.printStackTrace();
@@ -64,7 +73,22 @@ public class GetCamera {
             e.printStackTrace();
         }
     }
+    private void setWithLogicCamera(){
+        try{
+            characteristics=manager.getCameraCharacteristics(String.valueOf(logicCameraId));
+            streamConfigurationMap=characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+            assert streamConfigurationMap!=null;
+            videoSize =streamConfigurationMap.getOutputSizes(MediaRecorder.class);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
     public String[] getCameraID(){
+        if (cameraID==null){
+            String[] camer = new String[1];
+            camer[0]=String.valueOf(logicCameraIds.get(0));
+            return camer;
+        }
         String[] camer = new String[cameraID.length];
         for (int i = 0; i< cameraID.length; i++)
             camer[i]= String.valueOf(cameraID[i]);
@@ -75,5 +99,8 @@ public class GetCamera {
     }
     public Size[] getVideoSize(){
         return videoSize;
+    }
+    public List<String> getLogicCameraIds(){
+        return logicCameraIds;
     }
 }

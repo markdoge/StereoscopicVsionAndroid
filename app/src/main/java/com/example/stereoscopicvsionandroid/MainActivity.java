@@ -2,7 +2,6 @@ package com.example.stereoscopicvsionandroid;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.*;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String savePath1;
     private String depthmapPath;
     private SimpleDateFormat simpleDateFormat;
-    private Size[] videSize;
+    private Size[] videoSize;
     private static final SparseIntArray INVERSE_ORIENTATIONS = new SparseIntArray();
     private MediaRecorder mMediaRecorder;
     private MediaRecorder mMediaRecorder1;
@@ -124,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d("TAG", "OpenCVLoader初始化失败");
         }
         getCamera = new GetCamera(MainActivity.this);
-        videSize=getCamera.getVideoSize();
+        videoSize =getCamera.getVideoSize();
         v1=findViewById(R.id.textureView0);
         v2=findViewById(R.id.textureView1);
         v2.setSurfaceTextureListener(surfaceTextureListener);
@@ -197,8 +196,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d("TAG","video");
         btncam.setBackgroundResource(R.mipmap.shoot);
         isChange[0] =0;
-        for (int i=0;i<videSize.length;i++){
-            Log.d("TAG","size number:"+ i +" size is "+videSize[i]);
+        for (int i = 0; i< videoSize.length; i++){
+            Log.d("TAG","size number:"+ i +" size is "+ videoSize[i]);
         }
 
     }
@@ -280,6 +279,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         new String[]{Manifest.permission.CAMERA},1000);
                 return;
             }
+            Log.i("TAG","try to open camera");
             manager.openCamera(getCamera.getLogicCameraId(),AsyncTask.SERIAL_EXECUTOR, cameraOpenCallBack);
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -391,10 +391,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void config(CameraDevice cameraDevice){
         String cameraID[]=getCamera.getCameraID();
+        Log.i("TAG", cameraID.toString());
         if (cameraID.length<2){
-            Toast toast=Toast.makeText(MainActivity.this, "后置摄像头少于2个！", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER, 0, 1920);
-            toast.show();
+            //Toast会报错
+//            Toast toast=Toast.makeText(MainActivity.this, "后置摄像头少于2个！", Toast.LENGTH_LONG);
+//            toast.setGravity(Gravity.CENTER, 0, 1920);
+//            toast.show();
+            try {
+                mPreViewBuidler = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+                mPreViewBuidler.addTarget(new Surface(v1.getSurfaceTexture()));
+                mPreViewBuidler.addTarget(new Surface(v2.getSurfaceTexture()));
+                mCameraDevice.createCaptureSession(
+                        Arrays.asList(new Surface(v1.getSurfaceTexture()), new Surface(v2.getSurfaceTexture())),
+                        new CameraCaptureSession.StateCallback() {
+                            @Override
+                            public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
+                                // The camera is already closed
+                                if (null == mCameraDevice) {
+                                    return;
+                                }
+                                mCameraCaptureSession = cameraCaptureSession;
+                                try {
+                                    mPreViewBuidler.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+                                    mCameraCaptureSession.setRepeatingRequest(mPreViewBuidler.build(),null,handler);
+                                } catch (CameraAccessException e) {
+                                    e.printStackTrace();
+                                    Log.e("linc","set preview builder failed."+e.getMessage());
+                                }
+                            }
+
+                            @Override
+                            public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
+                            }
+                        },handler);
+
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
+            return;
         }
         try {
             //构建输出参数  在参数中设置物理摄像头
@@ -442,8 +476,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
     private void configMediaRecorder() {
+        File saveLocation = new File(Environment.getExternalStorageDirectory(),"/DCIM/stereo");
+        Log.d("TAG",saveLocation.getPath());
+        boolean success = saveLocation.mkdirs();
         File file = new File(Environment.getExternalStorageDirectory() +
-                "/DCIM/camera/myMp4" + System.currentTimeMillis() + ".mp4");
+                "/DCIM/stereo/myMp4:" + System.currentTimeMillis() + ".mp4");
         if (file.exists()) {
             file.delete();
         }
