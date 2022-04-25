@@ -56,9 +56,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MediaRecorder mMediaRecorder;
     private MediaRecorder mMediaRecorder1;
     private static CameraCaptureSession mCameraCaptureSession;
+    private static CameraCaptureSession mCameraCaptureSession1;
     private Point point;
     private CameraManager manager;
     private CaptureRequest.Builder mPreViewBuidler;
+    private CaptureRequest.Builder mPreViewBuidler1;
     private CameraDevice mCameraDevice;
     private Handler mChildHandler;
     private Chronometer timer; //计时器
@@ -177,12 +179,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (text.getSelectedString().equals("立体模式")){
                 if (isChange[0] ==1){
                     startRecordingVideo();
-                    configSession();
-                    mMediaRecorder.start();
-                    //开始计时
-                    timer.setVisibility(timer.VISIBLE);
-                    timer.setBase(SystemClock.elapsedRealtime());//计时器清零
-                    timer.start();
                 }
                 else{
                     stopRecorder();
@@ -199,12 +195,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for (int i = 0; i< videoSize.length; i++){
             Log.d("TAG","size number:"+ i +" size is "+ videoSize[i]);
         }
-
+        configSession();
+        mMediaRecorder.start();
+        timer.setVisibility(timer.VISIBLE);
+        timer.setBase(SystemClock.elapsedRealtime());//计时器清零
+        timer.start();
     }
     private void stopRecorder() {
-        if (mMediaRecorder != null) {
+        if (mMediaRecorder != null&&mMediaRecorder1!=null) {
             mMediaRecorder.stop();
             mMediaRecorder.reset();
+            mMediaRecorder1.stop();
+            mMediaRecorder1.reset();
             //停止计时
             timer.stop();
             timer.setBase(SystemClock.elapsedRealtime());//计时器清零
@@ -215,27 +217,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     // 广播通知相册更新
     public void broadcast() {
-        Log.d("TAG", "broadcast: success");
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/";
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         Uri uri = Uri.fromFile(new File(path));
         intent.setData(uri);
-    }
-
-    private void setPreviewSize(int height_,int width_){
-        int width = width_;
-        int height = height_;
-        ViewGroup.LayoutParams layoutParams = v1.getLayoutParams();
-        if (layoutParams == null) {
-            layoutParams = new RelativeLayout.LayoutParams(width, height);
-        } else {
-            if (layoutParams.width == width && layoutParams.height == height) {
-                return;
-            }
-            layoutParams.width = width;
-            layoutParams.height = height;
-        }
-        v1.setLayoutParams(layoutParams);
+        Log.d("TAG", "broadcast: success");
     }
     @SuppressLint("ClickableViewAccessibility")
     private void Mcam(){
@@ -279,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         new String[]{Manifest.permission.CAMERA},1000);
                 return;
             }
-            Log.i("TAG","try to open camera");
+            Log.d("TAG","try to open camera");
             manager.openCamera(getCamera.getLogicCameraId(),AsyncTask.SERIAL_EXECUTOR, cameraOpenCallBack);
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -303,10 +289,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d("TAG", "相机打开失败");
         }
     };
+    private CameraCaptureSession.CaptureCallback mSessionCaptureCallback = new CameraCaptureSession.CaptureCallback() {
+        @Override
+        public void onCaptureStarted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request,
+                                     long timestamp, long frameNumber) {
+            super.onCaptureStarted(session, request, timestamp, frameNumber);
+        }
+
+        @Override
+        public void onCaptureProgressed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request,
+                                        @NonNull CaptureResult partialResult) {
+            super.onCaptureProgressed(session, request, partialResult);
+        }
+
+        @Override
+        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request,
+                                       @NonNull TotalCaptureResult result) {
+            super.onCaptureCompleted(session, request, result);
+        }
+
+        @Override
+        public void onCaptureFailed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request,
+                                    @NonNull CaptureFailure failure) {
+            super.onCaptureFailed(session, request, failure);
+        }
+    };
+    //录像时会话状态回调
+    private CameraCaptureSession.StateCallback mSessionStateCallback = new CameraCaptureSession.StateCallback() {
+        @Override
+        public void onConfigured(@NonNull CameraCaptureSession session) {
+            mCameraCaptureSession = session;
+            updatePreview();
+            try {
+                //执行重复获取数据请求，等于一直获取数据呈现预览画面，mSessionCaptureCallback会返回此次操作的信息回调
+                mCameraCaptureSession.setRepeatingRequest(mPreViewBuidler.build(),
+                        mSessionCaptureCallback, mChildHandler);
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+        }
+    };
     private Size getMatchingSize() {
         Size selectSize = null;
         try {
-            CameraCharacteristics cameraCharacteristics = manager.getCameraCharacteristics(getCamera.getCameraID()[0]);
+            CameraCharacteristics cameraCharacteristics = manager.getCameraCharacteristics(String.valueOf(CameraCharacteristics.LENS_FACING_BACK));
             StreamConfigurationMap streamConfigurationMap = cameraCharacteristics.get
                     (CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             Size[] sizes = streamConfigurationMap.getOutputSizes(ImageFormat.JPEG);
@@ -343,55 +373,75 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
-        Log.e("TAG", "getMatchingSize: 选择的分辨率宽度=" + selectSize.getWidth());
-        Log.e("TAG", "getMatchingSize: 选择的分辨率高度=" + selectSize.getHeight());
+        Log.d("TAG", "getMatchingSize: 选择的分辨率宽度=" + selectSize.getWidth());
+        Log.d("TAG", "getMatchingSize: 选择的分辨率高度=" + selectSize.getHeight());
         return selectSize;
     }
-    private CameraCaptureSession.CaptureCallback mSessionCaptureCallback = new CameraCaptureSession.CaptureCallback() {
-        @Override
-        public void onCaptureStarted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request,
-                                     long timestamp, long frameNumber) {
-            super.onCaptureStarted(session, request, timestamp, frameNumber);
+    private void configMediaRecorder() {
+        File saveLocation = new File(Environment.getExternalStorageDirectory(),"/DCIM/stereo");
+        File file = new File(Environment.getExternalStorageDirectory() +
+                "/DCIM/stereo" + System.currentTimeMillis() + ".mp4");
+        if (file.exists()) {
+            file.delete();
         }
-
-        @Override
-        public void onCaptureProgressed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request,
-                                        @NonNull CaptureResult partialResult) {
-            super.onCaptureProgressed(session, request, partialResult);
+        if (mMediaRecorder == null) {
+            mMediaRecorder = new MediaRecorder();
         }
-
-        @Override
-        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request,
-                                       @NonNull TotalCaptureResult result) {
-            super.onCaptureCompleted(session, request, result);
+        Surface surface = new Surface(v1.getSurfaceTexture());
+        Size size = getMatchingSize();
+        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);//设置音频来源
+        mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);//设置视频来源
+        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);//设置输出格式
+        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);//设置音频编码格式选择AAC
+        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);//设置视频编码格式应该选择H264
+        mMediaRecorder.setVideoEncodingBitRate(8 * 1024 * 1920);//设置比特率。
+        mMediaRecorder.setVideoFrameRate(30);//设置帧数
+        mMediaRecorder.setVideoSize(size.getWidth(), size.getHeight());
+        mMediaRecorder.setOrientationHint(90);
+        mMediaRecorder.setPreviewDisplay(surface);
+        mMediaRecorder.setOutputFile(file.getAbsolutePath());
+        //摄像头2
+        Log.d("TAG","Stage 1");
+        try {
+            mMediaRecorder.prepare();
+            Log.d("TAG","prepare 1 success");
+        } catch (IOException e) {
+            Log.d("TAG","prepare 1 fail");
         }
-
-        @Override
-        public void onCaptureFailed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request,
-                                    @NonNull CaptureFailure failure) {
-            super.onCaptureFailed(session, request, failure);
-        }
-    };
-    private CameraCaptureSession.StateCallback mSessionStateCallback = new CameraCaptureSession.StateCallback() {
-        @Override
-        public void onConfigured(@NonNull CameraCaptureSession session) {
-            mCameraCaptureSession = session;
-            try {
-                //执行重复获取数据请求，等于一直获取数据呈现预览画面，mSessionCaptureCallback会返回此次操作的信息回调
-                mCameraCaptureSession.setRepeatingRequest(mPreViewBuidler.build(),
-                        mSessionCaptureCallback, mChildHandler);
-            } catch (CameraAccessException e) {
-                e.printStackTrace();
+    }
+    private void configSession() {
+        try {
+            if (mCameraCaptureSession != null) {
+                mCameraCaptureSession.stopRepeating();//停止预览，准备切换到录制视频
+                mCameraCaptureSession.close();//关闭预览的会话，需要重新创建录制视频的会话
+                mCameraCaptureSession = null;
             }
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
         }
-        @Override
-        public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+        configMediaRecorder();
+        Size cameraSize = getMatchingSize();
+        SurfaceTexture surfaceTexture = v1.getSurfaceTexture();
+        surfaceTexture.setDefaultBufferSize(cameraSize.getWidth(), cameraSize.getHeight());
+        Surface previewSurface = new Surface(surfaceTexture);
+        Surface recorderSurface = mMediaRecorder.getSurface();//从获取录制视频需要的Surface
+        //摄像头2
+        try {
+            mPreViewBuidler = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            mPreViewBuidler.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+            mPreViewBuidler.addTarget(previewSurface);
+            mPreViewBuidler.addTarget(recorderSurface);
+            //请注意这里设置了Arrays.asList(previewSurface,recorderSurface) 2个Surface，很好理解录制视频也需要有画面预览，
+            // 第一个是预览的Surface，第二个是录制视频使用的Surface
+            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, recorderSurface),
+                    mSessionStateCallback, mChildHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
         }
-    };
-
+    }
     public void config(CameraDevice cameraDevice){
         String cameraID[]=getCamera.getCameraID();
-        Log.i("TAG", cameraID.toString());
+        Log.d("TAG", cameraID.toString());
         if (cameraID.length<2){
             //Toast会报错
 //            Toast toast=Toast.makeText(MainActivity.this, "后置摄像头少于2个！", Toast.LENGTH_LONG);
@@ -416,7 +466,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     mCameraCaptureSession.setRepeatingRequest(mPreViewBuidler.build(),null,handler);
                                 } catch (CameraAccessException e) {
                                     e.printStackTrace();
-                                    Log.e("linc","set preview builder failed."+e.getMessage());
+                                    Log.d("linc","set preview builder failed."+e.getMessage());
                                 }
                             }
 
@@ -475,67 +525,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
     }
-    private void configMediaRecorder() {
-        File saveLocation = new File(Environment.getExternalStorageDirectory(),"/DCIM/stereo");
-        Log.d("TAG",saveLocation.getPath());
-        boolean success = saveLocation.mkdirs();
-        File file = new File(Environment.getExternalStorageDirectory() +
-                "/DCIM/stereo/myMp4:" + System.currentTimeMillis() + ".mp4");
-        if (file.exists()) {
-            file.delete();
-        }
-        if (mMediaRecorder == null) {
-            mMediaRecorder = new MediaRecorder();
-        }
-        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC); //设置音频来源
-        mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);//设置视频来源
-        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);//设置输出格式
-        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);//设置音频编码格式
-        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);//设置视频编码格式
-        mMediaRecorder.setVideoEncodingBitRate(8 * 1024 * 1920); //设置比特率 一般是 1*分辨率 到 10*分辨率 之间波动
-        mMediaRecorder.setVideoFrameRate(30);//设置帧数
-        Size size = getMatchingSize();
-        mMediaRecorder.setVideoSize(size.getWidth(), size.getHeight());
-        mMediaRecorder.setOrientationHint(90);
-        Surface surface = new Surface(v1.getSurfaceTexture());
-        mMediaRecorder.setPreviewDisplay(surface);
-        mMediaRecorder.setOutputFile(file.getAbsolutePath());
-        try {
-            mMediaRecorder.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    private void configSession() {
-        try {
-            if (mCameraCaptureSession != null) {
-                mCameraCaptureSession.stopRepeating();//停止预览，准备切换到录制视频
-                mCameraCaptureSession.close();//关闭预览的会话，需要重新创建录制视频的会话
-                mCameraCaptureSession = null;
-            }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-        configMediaRecorder();
-        Size cameraSize = getMatchingSize();
-        SurfaceTexture surfaceTexture = v1.getSurfaceTexture();
-        surfaceTexture.setDefaultBufferSize(cameraSize.getWidth(), cameraSize.getHeight());
-        Surface previewSurface = new Surface(surfaceTexture);
-        Surface recorderSurface = mMediaRecorder.getSurface();//从获取录制视频需要的Surface
-        try {
-            mPreViewBuidler = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            mPreViewBuidler.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-            mPreViewBuidler.addTarget(previewSurface);
-            mPreViewBuidler.addTarget(recorderSurface);
-            //请注意这里设置了Arrays.asList(previewSurface,recorderSurface) 2个Surface，很好理解录制视频也需要有画面预览，
-            // 第一个是预览的Surface，第二个是录制视频使用的Surface
-            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, recorderSurface),
-                    mSessionStateCallback, mChildHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -571,6 +560,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
         } catch (Exception e) {
             Toast.makeText(this, "该设备不支持闪光灯", Toast.LENGTH_SHORT);
+        }
+    }
+    private void updatePreview() {
+        if (null == mCameraDevice) {
+            return;
+        }
+        try {
+            HandlerThread thread = new HandlerThread("CameraPreview");
+            thread.start();
+            mCameraCaptureSession.setRepeatingRequest(mPreViewBuidler.build(), null, mChildHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+    private void stopPreview() {
+        //关闭预览就是关闭捕获会话
+        if (mCameraCaptureSession != null) {
+            mCameraCaptureSession.close();
+            mCameraCaptureSession = null;
         }
     }
 }
