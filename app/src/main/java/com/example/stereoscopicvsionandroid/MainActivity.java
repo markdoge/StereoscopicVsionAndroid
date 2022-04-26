@@ -24,6 +24,7 @@ import androidx.core.app.ActivityCompat;
 
 import org.opencv.android.OpenCVLoader;
 
+import OpenCVFun.RB3D;
 import photoFun.*;
 
 import java.io.File;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private CameraDevice mCameraDevice;
     private Handler mChildHandler;
     private Chronometer timer; //计时器
+    private String fileName;
     static {
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_0, 270);
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_90, 180);
@@ -210,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //停止计时
             timer.stop();
             timer.setBase(SystemClock.elapsedRealtime());//计时器清零
+            new RB3DAsyncTask().execute(fileName,fileName);
         }
         broadcast();
         Intent intent=new Intent(MainActivity.this, MainActivity.class);
@@ -371,11 +374,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void configMediaRecorder() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
         Date date = new Date(System.currentTimeMillis());
+        File saveLocation = new File(Environment.getExternalStorageDirectory(),"/DCIM/stereo");
+        saveLocation.mkdirs();
+        //需要先创建目录，否则会无法保存到对应目录
         File file = new File(Environment.getExternalStorageDirectory() +
-                "/DCIM/stereo " + simpleDateFormat.format(date) + ".mp4");
+                "/DCIM/stereo/" + simpleDateFormat.format(date) + "_left.mp4");
         if (file.exists()) {
             file.delete();
         }
+        fileName=file.getAbsolutePath();
         if (mMediaRecorder == null) {
             mMediaRecorder = new MediaRecorder();
         }
@@ -569,5 +576,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mCameraCaptureSession.close();
             mCameraCaptureSession = null;
         }
+    }
+}
+
+
+class  RB3DAsyncTask extends AsyncTask<String,Void,String>{
+
+    //第一阶段————准备阶段让进度条显示
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        //progressBar.setVisibility(View.VISIBLE);
+    }
+
+    //第二阶段——执行
+    @Override
+    protected String doInBackground(String... params) {
+        return RB3D.createFromVideo(params[0],params[1]);
+    }
+
+    //第三阶段，拿到结果，更新ui
+    @Override
+    protected void onPostExecute(String str) {
+        super.onPostExecute(str);
+        //progressBar.setVisibility(View.GONE);
     }
 }

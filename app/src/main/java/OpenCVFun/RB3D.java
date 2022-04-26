@@ -4,8 +4,11 @@ import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.VideoWriter;
+import com.arthenica.mobileffmpeg.Config;
+import com.arthenica.mobileffmpeg.FFmpeg;
 
 import java.io.File;
+import java.io.IOException;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
@@ -13,19 +16,91 @@ import static org.opencv.videoio.Videoio.*;
 
 public class RB3D {
 
-    final static String output="output\\";//这两个地址记得修改一下
+
+    public static void delete(File file) {
+
+        if (file.isDirectory()) {
+
+            //directory is empty, then delete it
+            if (file.list().length == 0) {
+
+                file.delete();
+                System.out.println("Directory is deleted : "
+                        + file.getAbsolutePath());
+
+            } else {
+
+                //list all the directory contents
+                String files[] = file.list();
+
+                for (String temp : files) {
+                    //construct the file structure
+                    File fileDelete = new File(file, temp);
+
+                    //recursive delete
+                    delete(fileDelete);
+                }
+
+                //check the directory again, if empty then delete it
+                if (file.list().length == 0) {
+                    file.delete();
+                    System.out.println("Directory is deleted : "
+                            + file.getAbsolutePath());
+                }
+            }
+
+        } else {
+            //if file, then delete it
+            file.delete();
+            System.out.println("File is deleted : " + file.getAbsolutePath());
+        }
+    }
+
+
+
     final static String temp="temp\\";
-    static int offset=0;//如果合成的视频红蓝差异明显，可以适当增大offset，以使左图向右图偏移
+    static int offset=-50;//如果合成的视频红蓝差异明显，可以适当增大offset，以使左图向右图偏移
     //上一届基于深度图动态计算offset，但实际上和固定的offset几乎没有区别
 
     //leftVideo:左视频路径，rightVideo右视频路径，format：输出视频的格式，deleted：任务完成后是否删除左右视频
     public static String createFromVideo(String leftVideo, String rightVideo,String format,boolean deleted){
+        int rc;
+
+        String name_left=leftVideo.substring(leftVideo.lastIndexOf("/")+1);
+        String name_right=rightVideo.substring(rightVideo.lastIndexOf("/")+1);
+        String folder=leftVideo.substring(0,leftVideo.lastIndexOf("/")+1);
+        String temp_folder=folder+"temp/";
+        String leftVideo_bak=leftVideo;
+        String rightVideo_bak=rightVideo;
+        File save_location=new File(temp_folder);
+        save_location.mkdirs();
+
+        FFmpeg.execute("-i \""+leftVideo+"\" -vcodec mjpeg \""+temp_folder+"output_left.mjpeg\"");
+        String command="-i \""+temp_folder+"output_left.mjpeg\""+" -c:v copy -c:a copy  \""+temp_folder+name_left.substring(0,name_left.lastIndexOf("."))+".avi\"";
+        System.out.println(command);
+        rc=FFmpeg.execute(command);
+
+        FFmpeg.execute("-i \""+rightVideo+"\" -vcodec mjpeg \""+temp_folder+"output_right.mjpeg\"");
+        command="-i \""+temp_folder+"output_right.mjpeg\""+" -c:v copy -c:a copy  \""+temp_folder+name_right.substring(0,name_right.lastIndexOf("."))+".avi\"";
+        System.out.println(command);
+        rc=FFmpeg.execute(command);
+
+
+        if (rc == Config.RETURN_CODE_SUCCESS) {
+            System.out.println("命令执行成功");
+            leftVideo=temp_folder+name_left.substring(0,name_left.lastIndexOf("."))+".avi";
+            rightVideo=temp_folder+name_right.substring(0,name_right.lastIndexOf("."))+".avi";
+        }
+        leftVideo=temp_folder+name_left.substring(0,name_left.lastIndexOf("."))+".avi";
+        rightVideo=temp_folder+name_right.substring(0,name_right.lastIndexOf("."))+".avi";
+        System.out.println(leftVideo);
         VideoCapture video_L=new VideoCapture(leftVideo);
         VideoCapture video_R=new VideoCapture(rightVideo);
 
         //输出视频配置参数
-        String name=leftVideo.substring(leftVideo.lastIndexOf("\\")+1);
+        String name=leftVideo_bak.substring(leftVideo_bak.lastIndexOf("/")+1);
         name=name.substring(0,name.lastIndexOf("_"));//文件名
+        name=leftVideo_bak.substring(0,leftVideo_bak.lastIndexOf("/")+1)+name;
         int fourcc= (int) video_L.get(CAP_PROP_FOURCC);//编码格式,此参数读取异常，原因未知
         double fps=video_L.get(CAP_PROP_FPS);//帧率
         int width= (int) video_L.get(CAP_PROP_FRAME_WIDTH),height= (int) video_L.get(CAP_PROP_FRAME_HEIGHT);//分辨率
@@ -53,17 +128,17 @@ public class RB3D {
                 new Size(width,height),
                 true
         );
-
+        System.out.println(name);
         //逐帧读取视频
         Mat leftFrame=new Mat();
         Mat rightFrame=new Mat();
         int frame_count=0;
-        //System.out.println("共有"+frame_num+"帧");
+        System.out.println("共有"+frame_num+"帧");
         while (true){
             frame_count++;
             if(video_L.read(leftFrame)&&video_R.read(rightFrame)){
                 if(frame_count%20==0){
-                    //System.out.println("正在处理第"+frame_count+"帧");
+                    System.out.println("正在处理第"+frame_count+"帧");
                 }
 
                 Mat tmp=createFromImg(leftFrame,rightFrame);
@@ -90,12 +165,13 @@ public class RB3D {
 
         //删除中间文件
         if(deleted){
-            File file=new File(leftVideo);
+            File file=new File(leftVideo_bak);
             file.delete();
-            file=new File(rightVideo);
+            file=new File(rightVideo_bak);
             file.delete();
         }
-
+        System.out.println("合成完成");
+        delete(save_location);
 
         return "";
     }
@@ -176,7 +252,7 @@ public class RB3D {
             for(int col=0;col<rowDataLeft.length/leftImg.channels();col++){
                 //顺序为BGR,将左图的R通道覆盖到右图上
                 //一般红蓝眼镜都是左红右蓝
-                if(col+offset<rowDataLeft.length/leftImg.channels()) {
+                if(col+offset>=0&&col+offset<rowDataLeft.length/leftImg.channels()) {
                     rowDataRight[col * 3 + 2] = rowDataLeft[(col+offset) * 3 + 2];
                 }
 
