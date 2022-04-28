@@ -62,9 +62,7 @@
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        opencv:camera_id="any"
-        opencv:show_fps="true" >
+        android:layout_height="80dp">
 
         <ImageView
             android:id="@+id/flash_button"
@@ -91,5 +89,14 @@
         android:format="%s"
         android:gravity="center"
         android:textSize="40sp" />
+
+    <ProgressBar
+        android:id="@+id/rb3dProgressBar"
+        android:layout_width="match_parent"
+        android:layout_marginTop="300dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:max="100"
+        />
 
 </RelativeLayout>

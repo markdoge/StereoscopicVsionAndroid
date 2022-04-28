@@ -75,6 +75,7 @@ public class RB3D {
         File save_location=new File(temp_folder);
         save_location.mkdirs();
 
+        //预处理，转化视频格式为MJPG编码的AVI，同时提取音频
         FFmpeg.execute("-i \""+leftVideo+"\" -vcodec mjpeg \""+temp_folder+"output_left.mjpeg\"");
         String command="-i \""+temp_folder+"output_left.mjpeg\""+" -c:v copy -c:a copy  \""+temp_folder+name_left.substring(0,name_left.lastIndexOf("."))+".avi\"";
         System.out.println(command);
@@ -85,15 +86,17 @@ public class RB3D {
         System.out.println(command);
         rc=FFmpeg.execute(command);
 
+        command="-i \""+leftVideo+"\" -q:a 0 -map a \""+temp_folder+"output.mp3\"";
+        System.out.println(command);
+        rc=FFmpeg.execute(command);
+
 
         if (rc == Config.RETURN_CODE_SUCCESS) {
-            System.out.println("命令执行成功");
             leftVideo=temp_folder+name_left.substring(0,name_left.lastIndexOf("."))+".avi";
             rightVideo=temp_folder+name_right.substring(0,name_right.lastIndexOf("."))+".avi";
         }
         leftVideo=temp_folder+name_left.substring(0,name_left.lastIndexOf("."))+".avi";
         rightVideo=temp_folder+name_right.substring(0,name_right.lastIndexOf("."))+".avi";
-        System.out.println(leftVideo);
         VideoCapture video_L=new VideoCapture(leftVideo);
         VideoCapture video_R=new VideoCapture(rightVideo);
 
@@ -101,6 +104,8 @@ public class RB3D {
         String name=leftVideo_bak.substring(leftVideo_bak.lastIndexOf("/")+1);
         name=name.substring(0,name.lastIndexOf("_"));//文件名
         name=leftVideo_bak.substring(0,leftVideo_bak.lastIndexOf("/")+1)+name;
+        String outputName=name+"_3d";
+
         int fourcc= (int) video_L.get(CAP_PROP_FOURCC);//编码格式,此参数读取异常，原因未知
         double fps=video_L.get(CAP_PROP_FPS);//帧率
         int width= (int) video_L.get(CAP_PROP_FRAME_WIDTH),height= (int) video_L.get(CAP_PROP_FRAME_HEIGHT);//分辨率
@@ -117,9 +122,11 @@ public class RB3D {
             fourcc=VideoWriter.fourcc('X', '2', '6', '4');
         }
         else{
-            name=name+".mp4";
-            fourcc=VideoWriter.fourcc('X', '2', '6', '4');
+            name = name + ".avi";
+            fourcc=VideoWriter.fourcc('M', 'J', 'P', 'G');
         }
+        //outputName=outputName+name.substring(name.lastIndexOf("."));
+        outputName=outputName+".mp4";
 
         VideoWriter outputVideo=new VideoWriter(
                 name,
@@ -143,15 +150,14 @@ public class RB3D {
 
                 Mat tmp=createFromImg(leftFrame,rightFrame);
                 if (tmp==null||tmp.empty()){
-                    //System.out.println(""+frame_count+"null");
+                    System.out.println(""+frame_count+" null");
                     continue;
                 }
 
-                imwrite(String.format("%s%s%4d.jpg",temp,name,frame_count),tmp);
+                //imwrite(String.format("%s%s%4d.jpg",temp,name,frame_count),tmp);
                 outputVideo.write(tmp);
             }
             else{
-                System.out.println(frame_count);
                 break;
             }
         }
@@ -161,14 +167,20 @@ public class RB3D {
         outputVideo.release();
 
 
-        //还原音频流,需要引入ffmpeg库,待实现
+        //还原音频流
+        if(new File(name).exists()){
+            command="-y -i \""+name+"\" -i \""+temp_folder+"output.mp3\""+" -c copy -map 0:v:0 -map 1:a:0 \""+outputName+"\"";
+            System.out.println(command);
+            FFmpeg.execute(command);
+            delete(new File(name));
+        }
 
         //删除中间文件
         if(deleted){
             File file=new File(leftVideo_bak);
-            file.delete();
+            delete(file);
             file=new File(rightVideo_bak);
-            file.delete();
+            delete(file);
         }
         System.out.println("合成完成");
         delete(save_location);

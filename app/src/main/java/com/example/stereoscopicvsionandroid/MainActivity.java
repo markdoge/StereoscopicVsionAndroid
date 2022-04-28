@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Handler mChildHandler;
     private Chronometer timer; //计时器
     private String fileName;
+    private ProgressBar rb3dProgressBar;
     static {
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_0, 270);
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_90, 180);
@@ -145,6 +146,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         flashButton=findViewById(R.id.flash_button);
         timer=findViewById(R.id.timer);
         timer.setVisibility(timer.GONE);
+        rb3dProgressBar=findViewById(R.id.rb3dProgressBar);
+        rb3dProgressBar.setVisibility(View.GONE);
         //控件样式
 
         //设置视频、图片、音频、摄像头规格
@@ -577,28 +580,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mCameraCaptureSession = null;
         }
     }
-}
 
 
-class  RB3DAsyncTask extends AsyncTask<String,Void,String>{
 
-    //第一阶段————准备阶段让进度条显示
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        //progressBar.setVisibility(View.VISIBLE);
+    class  RB3DAsyncTask extends AsyncTask<String,Void,String>{
+
+        //第一阶段————准备阶段让进度条显示
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            rb3dProgressBar.setVisibility(View.VISIBLE);
+        }
+
+        //第二阶段——执行
+        @Override
+        protected String doInBackground(String... params) {
+            return RB3D.createFromVideo(params[0],params[1],"",false);
+        }
+
+        //第三阶段，拿到结果，更新ui
+        @Override
+        protected void onPostExecute(String str) {
+            super.onPostExecute(str);
+            Toast toast= Toast.makeText(MainActivity.this,"视频合成完成！",Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 1920);
+            toast.show();
+            rb3dProgressBar.setVisibility(View.GONE);
+        }
     }
 
-    //第二阶段——执行
-    @Override
-    protected String doInBackground(String... params) {
-        return RB3D.createFromVideo(params[0],params[1]);
-    }
-
-    //第三阶段，拿到结果，更新ui
-    @Override
-    protected void onPostExecute(String str) {
-        super.onPostExecute(str);
-        //progressBar.setVisibility(View.GONE);
-    }
 }
