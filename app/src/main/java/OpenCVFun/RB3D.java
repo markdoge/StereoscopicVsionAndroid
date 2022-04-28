@@ -86,7 +86,7 @@ public class RB3D {
         System.out.println(command);
         rc=FFmpeg.execute(command);
 
-        command="-i \""+leftVideo+"\" -q:a 0 -map a \""+temp_folder+"output.mp3\"";
+        command="-i \""+leftVideo+"\" -q:a 0 -map a \""+temp_folder+"output.aac\"";
         System.out.println(command);
         rc=FFmpeg.execute(command);
 
@@ -169,7 +169,7 @@ public class RB3D {
 
         //还原音频流
         if(new File(name).exists()){
-            command="-y -i \""+name+"\" -i \""+temp_folder+"output.mp3\""+" -c copy -map 0:v:0 -map 1:a:0 \""+outputName+"\"";
+            command="-y -i \""+name+"\" -i \""+temp_folder+"output.aac\""+" -map 0:v -map 1:a -c:v libx264 -c:a aac \""+outputName+"\"";
             System.out.println(command);
             FFmpeg.execute(command);
             delete(new File(name));
