@@ -28,6 +28,7 @@ import androidx.core.app.ActivityCompat;
 import org.opencv.android.OpenCVLoader;
 
 import OpenCVFun.RB3D;
+import OpenCVFun.RB3DAsyncTask2;
 import photoFun.*;
 
 import java.io.File;
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private OrientationEventListener orientationEventListener;
     private RotateAnimation rotationAnimation;
     private ProgressDialog dialog;
+    private Toast videoFinishToast;
     static {
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_0, 270);
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_90, 180);
@@ -169,6 +171,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dialog=new ProgressDialog(MainActivity.this);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);//条形进度条
         dialog.setCancelable(false);//能否在显示过程中关闭
+        videoFinishToast= Toast.makeText(MainActivity.this,"视频合成完成！",Toast.LENGTH_SHORT);
+        videoFinishToast.setGravity(Gravity.CENTER, 0, 1920);
         //控件样式
 
         //设置视频、图片、音频、摄像头规格
@@ -238,9 +242,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //停止计时
             timer.stop();
             timer.setBase(SystemClock.elapsedRealtime());//计时器清零
-            new RB3DAsyncTask().execute(fileName,fileName);
+            //new RB3DAsyncTask().execute(fileName,fileName);
+            new RB3DAsyncTask2(rb3dProgressBar,dialog,videoFinishToast).execute(fileName,fileName);
         }
         broadcast();
+        isChange[0]=1;
+        btncam.setBackgroundResource(R.mipmap.init2);
         startPreview();
     }
     private void startPreview() {
@@ -644,7 +651,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         protected void onPreExecute() {
             super.onPreExecute();
             rb3dProgressBar.setVisibility(View.VISIBLE);
-            dialog.show();
+            //dialog.show();
         }
 
         //第二阶段——执行
@@ -657,7 +664,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(String str) {
             super.onPostExecute(str);
-            dialog.dismiss();
+            //dialog.dismiss();
+
             Toast toast= Toast.makeText(MainActivity.this,"视频合成完成！",Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER, 0, 1920);
             toast.show();
@@ -666,7 +674,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            dialog.setProgress(RB3D.getProgress());
+            //dialog.setProgress(RB3D.getProgress());
         }
     }
 }

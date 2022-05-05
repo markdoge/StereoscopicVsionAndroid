@@ -1,22 +1,34 @@
 package OpenCVFun;
 
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.arthenica.mobileffmpeg.Config;
+import com.arthenica.mobileffmpeg.FFmpeg;
+
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.VideoWriter;
-import com.arthenica.mobileffmpeg.Config;
-import com.arthenica.mobileffmpeg.FFmpeg;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
-import static org.opencv.videoio.Videoio.*;
+import static org.opencv.videoio.Videoio.CAP_PROP_FOURCC;
+import static org.opencv.videoio.Videoio.CAP_PROP_FPS;
+import static org.opencv.videoio.Videoio.CAP_PROP_FRAME_COUNT;
+import static org.opencv.videoio.Videoio.CAP_PROP_FRAME_HEIGHT;
+import static org.opencv.videoio.Videoio.CAP_PROP_FRAME_WIDTH;
 
-import android.util.Log;
-
-public class RB3D {
+public class  RB3DAsyncTask2 extends AsyncTask<String,Integer,String> {
+    private Toast toast;
+    private ProgressBar rb3dProgressBar;
+    private ProgressDialog dialog;
     private static int frame_num;
     private static int frame_count;
     public static void delete(File file) {
@@ -61,9 +73,32 @@ public class RB3D {
     static int offset=-50;//如果合成的视频红蓝差异明显，可以适当增大offset，以使左图向右图偏移
     //上一届基于深度图动态计算offset，但实际上和固定的offset几乎没有区别
 
-    //leftVideo:左视频路径，rightVideo右视频路径，format：输出视频的格式，deleted：任务完成后是否删除左右视频
-    public static String createFromVideo(String leftVideo, String rightVideo,String format,boolean deleted){
+    public RB3DAsyncTask2(ProgressBar pb,ProgressDialog dialog,Toast toast){
+        super();
+        this.rb3dProgressBar=pb;
+        this.dialog=dialog;
+        this.toast=toast;
+    }
+
+    //第一阶段————准备阶段让进度条显示
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        //rb3dProgressBar.setVisibility(View.VISIBLE);
+        dialog.show();
+    }
+
+    //第二阶段——执行
+    @Override
+    protected String doInBackground(String... params) {
+        publishProgress(0);
+
         int rc;
+        String leftVideo=params[0];
+        String rightVideo=params[1];
+        String format=leftVideo.substring(leftVideo.lastIndexOf(".")+1);
+        format=".avi";
+        Boolean deleted=false;
 
         String name_left=leftVideo.substring(leftVideo.lastIndexOf("/")+1);
         String name_right=rightVideo.substring(rightVideo.lastIndexOf("/")+1);
@@ -79,16 +114,18 @@ public class RB3D {
         String command="-i \""+temp_folder+"output_left.mjpeg\""+" -c:v copy -c:a copy  \""+temp_folder+name_left.substring(0,name_left.lastIndexOf("."))+".avi\"";
         System.out.println(command);
         rc=FFmpeg.execute(command);
+        publishProgress(1);
 
         FFmpeg.execute("-i \""+rightVideo+"\" -vcodec mjpeg \""+temp_folder+"output_right.mjpeg\"");
         command="-i \""+temp_folder+"output_right.mjpeg\""+" -c:v copy -c:a copy  \""+temp_folder+name_right.substring(0,name_right.lastIndexOf("."))+".avi\"";
         System.out.println(command);
         rc=FFmpeg.execute(command);
+        publishProgress(3);
 
         command="-i \""+leftVideo+"\" -q:a 0 -map a \""+temp_folder+"output.aac\"";
         System.out.println(command);
         rc=FFmpeg.execute(command);
-
+        publishProgress(4);
 
         if (rc == Config.RETURN_CODE_SUCCESS) {
             leftVideo=temp_folder+name_left.substring(0,name_left.lastIndexOf("."))+".avi";
@@ -114,7 +151,7 @@ public class RB3D {
         format=format.toLowerCase();
         if (format.equals("avi")) {
             name = name + ".avi";
-            fourcc=VideoWriter.fourcc('M', 'J', 'P', 'G');
+            fourcc= VideoWriter.fourcc('M', 'J', 'P', 'G');
         }
         else if(format.equals("mp4")){
             name=name+".mp4";
@@ -140,6 +177,9 @@ public class RB3D {
         Mat rightFrame=new Mat();
         frame_count=0;
         Log.d("TAG","共有"+frame_num+"帧");
+        publishProgress(20);
+
+        int progress_i=20;
         while (true){
             frame_count++;
             if(video_L.read(leftFrame)&&video_R.read(rightFrame)){
@@ -155,6 +195,7 @@ public class RB3D {
 
                 //imwrite(String.format("%s%s%4d.jpg",temp,name,frame_count),tmp);
                 outputVideo.write(tmp);
+                publishProgress(frame_count*50/frame_num+20);
             }
             else{
                 break;
@@ -164,14 +205,18 @@ public class RB3D {
         video_L.release();
         video_R.release();
         outputVideo.release();
-
+        publishProgress(99);
 
         //还原音频流
         if(new File(name).exists()){
             command="-y -i \""+name+"\" -i \""+temp_folder+"output.aac\""+" -map 0:v -map 1:a -c:v libx264 -c:a aac \""+outputName+"\"";
             System.out.println(command);
             FFmpeg.execute(command);
+            publishProgress(99);
             delete(new File(name));
+        }
+        else{
+            System.out.println(name+" not exist");
         }
 
         //删除中间文件
@@ -183,23 +228,25 @@ public class RB3D {
         }
         Log.d("TAG","合成完成");
         delete(save_location);
-
+        publishProgress(100);
         return "";
     }
 
-    //默认以leftVideo的格式作为合成视频的输出格式并删除中间文件,若无法支持该格式则采用mp4输出
-    public static String createFromVideo(String leftVideo, String rightVideo){
-        return createFromVideo(leftVideo,rightVideo,true);
+    //第三阶段，拿到结果，更新ui
+    @Override
+    protected void onPostExecute(String str) {
+        super.onPostExecute(str);
+        toast.show();
+        dialog.dismiss();
+        rb3dProgressBar.setVisibility(View.GONE);
+    }
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+        super.onProgressUpdate(values);
+        rb3dProgressBar.setProgress(values[0]);
+        dialog.setProgress(values[0]);
     }
 
-    public static String createFromVideo(String leftVideo, String rightVideo,String format){
-        return createFromVideo(leftVideo,rightVideo,format,true);
-    }
-
-    public static String createFromVideo(String leftVideo, String rightVideo,boolean deleted){
-        String format=leftVideo.substring(leftVideo.lastIndexOf(".")+1);
-        return createFromVideo(leftVideo,rightVideo,format,deleted);
-    }
 
     //合成单张图片为红蓝3D,作为供用户调用的API
     public static String createFromImg(String leftImg,String rightImg,String format,Boolean deleted){
@@ -245,7 +292,7 @@ public class RB3D {
         return createFromImg(leftImg,rightImg,format,true);
     }
 
-    public static Mat createFromImg(Mat leftImg,Mat rightImg){
+    public static Mat createFromImg(Mat leftImg, Mat rightImg){
 
         if (leftImg.empty()||rightImg.empty())
             return null;
@@ -272,10 +319,5 @@ public class RB3D {
         }
 
         return res;
-    }
-    public static int getProgress(){
-        int Pro=0;
-        Pro=frame_num/frame_count;
-        return Pro;
     }
 }
