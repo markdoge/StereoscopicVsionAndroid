@@ -99,11 +99,6 @@ public class TakePic extends AppCompatActivity implements View.OnClickListener {
     };
     @SuppressLint("ClickableViewAccessibility")
     private void init() {
-        if (OpenCVLoader.initDebug()) {
-            Log.d("TAG", "OpenCVLoader初始化成功");
-        }else{
-            Log.d("TAG", "OpenCVLoader初始化失败");
-        }
         getCamera = new GetCamera(TakePic.this);
         v1=findViewById(R.id.textureView0);
         v2=findViewById(R.id.textureView1);
@@ -323,10 +318,6 @@ public class TakePic extends AppCompatActivity implements View.OnClickListener {
         String cameraID[]=getCamera.getCameraID();
         Log.d("TAG", cameraID.toString());
         if (cameraID.length<2){
-            //Toast会报错
-//            Toast toast=Toast.makeText(MainActivity.this, "后置摄像头少于2个！", Toast.LENGTH_LONG);
-//            toast.setGravity(Gravity.CENTER, 0, 1920);
-//            toast.show();
             try {
                 mPreViewBuidler = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
                 mPreViewBuidler.addTarget(new Surface(v1.getSurfaceTexture()));

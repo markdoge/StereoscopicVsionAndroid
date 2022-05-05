@@ -31,6 +31,9 @@ public class  RB3DAsyncTask2 extends AsyncTask<String,Integer,String> {
     private ProgressDialog dialog;
     private static int frame_num;
     private static int frame_count;
+    static int offset=-50;//如果合成的视频红蓝差异明显，可以适当增大offset，以使左图向右图偏移
+    //上一届基于深度图动态计算offset，但实际上和固定的offset几乎没有区别
+
     public static void delete(File file) {
 
         if (file.isDirectory()) {
@@ -69,9 +72,6 @@ public class  RB3DAsyncTask2 extends AsyncTask<String,Integer,String> {
             System.out.println("File is deleted : " + file.getAbsolutePath());
         }
     }
-
-    static int offset=-50;//如果合成的视频红蓝差异明显，可以适当增大offset，以使左图向右图偏移
-    //上一届基于深度图动态计算offset，但实际上和固定的offset几乎没有区别
 
     public RB3DAsyncTask2(ProgressBar pb,ProgressDialog dialog,Toast toast){
         super();
@@ -127,10 +127,6 @@ public class  RB3DAsyncTask2 extends AsyncTask<String,Integer,String> {
         rc=FFmpeg.execute(command);
         publishProgress(4);
 
-        if (rc == Config.RETURN_CODE_SUCCESS) {
-            leftVideo=temp_folder+name_left.substring(0,name_left.lastIndexOf("."))+".avi";
-            rightVideo=temp_folder+name_right.substring(0,name_right.lastIndexOf("."))+".avi";
-        }
         leftVideo=temp_folder+name_left.substring(0,name_left.lastIndexOf("."))+".avi";
         rightVideo=temp_folder+name_right.substring(0,name_right.lastIndexOf("."))+".avi";
         VideoCapture video_L=new VideoCapture(leftVideo);
@@ -179,7 +175,6 @@ public class  RB3DAsyncTask2 extends AsyncTask<String,Integer,String> {
         Log.d("TAG","共有"+frame_num+"帧");
         publishProgress(20);
 
-        int progress_i=20;
         while (true){
             frame_count++;
             if(video_L.read(leftFrame)&&video_R.read(rightFrame)){
@@ -212,7 +207,6 @@ public class  RB3DAsyncTask2 extends AsyncTask<String,Integer,String> {
             command="-y -i \""+name+"\" -i \""+temp_folder+"output.aac\""+" -map 0:v -map 1:a -c:v libx264 -c:a aac \""+outputName+"\"";
             System.out.println(command);
             FFmpeg.execute(command);
-            publishProgress(99);
             delete(new File(name));
         }
         else{

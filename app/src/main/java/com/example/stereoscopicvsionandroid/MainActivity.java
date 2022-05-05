@@ -242,7 +242,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //停止计时
             timer.stop();
             timer.setBase(SystemClock.elapsedRealtime());//计时器清零
-            //new RB3DAsyncTask().execute(fileName,fileName);
             new RB3DAsyncTask2(rb3dProgressBar,dialog,videoFinishToast).execute(fileName,fileName);
         }
         broadcast();
@@ -301,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         document.setBackgroundResource(R.mipmap.document);
         btncam.setOnTouchListener((v, event) -> {
             if (text.getSelectedString().equals("景深合成")&&event.getAction()==MotionEvent.ACTION_DOWN){
-                Intent intent=new Intent(MainActivity.this,VideoActivity.class);
+                Intent intent=new Intent(MainActivity.this,TakePic.class);
                 startActivity(intent);
             }
             return false;
@@ -641,40 +640,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (mCameraCaptureSession != null) {
             mCameraCaptureSession.close();
             mCameraCaptureSession = null;
-        }
-    }
-
-    class  RB3DAsyncTask extends AsyncTask<String,Integer,String>{
-
-        //第一阶段————准备阶段让进度条显示
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            rb3dProgressBar.setVisibility(View.VISIBLE);
-            //dialog.show();
-        }
-
-        //第二阶段——执行
-        @Override
-        protected String doInBackground(String... params) {
-            return RB3D.createFromVideo(params[0],params[1],"",false);
-        }
-
-        //第三阶段，拿到结果，更新ui
-        @Override
-        protected void onPostExecute(String str) {
-            super.onPostExecute(str);
-            //dialog.dismiss();
-
-            Toast toast= Toast.makeText(MainActivity.this,"视频合成完成！",Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER, 0, 1920);
-            toast.show();
-            rb3dProgressBar.setVisibility(View.GONE);
-        }
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-            //dialog.setProgress(RB3D.getProgress());
         }
     }
 }
