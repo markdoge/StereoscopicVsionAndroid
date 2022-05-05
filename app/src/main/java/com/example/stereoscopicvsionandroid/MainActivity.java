@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.d("TAG","Main activity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (hasPermission())
@@ -171,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dialog=new ProgressDialog(MainActivity.this);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);//条形进度条
         dialog.setCancelable(false);//能否在显示过程中关闭
-        videoFinishToast= Toast.makeText(MainActivity.this,"视频合成完成！",Toast.LENGTH_SHORT);
+        videoFinishToast =Toast.makeText(MainActivity.this, "后置摄像头少于2个！", Toast.LENGTH_LONG);
         videoFinishToast.setGravity(Gravity.CENTER, 0, 1920);
         //控件样式
 
@@ -245,8 +246,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             new RB3DAsyncTask2(rb3dProgressBar,dialog,videoFinishToast).execute(fileName,fileName);
         }
         broadcast();
-        isChange[0]=1;
-        btncam.setBackgroundResource(R.mipmap.init2);
         startPreview();
     }
     private void startPreview() {
@@ -484,15 +483,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         configMediaRecorder();
         Size cameraSize = getMatchingSize();
         SurfaceTexture surfaceTexture = v1.getSurfaceTexture();
+        SurfaceTexture surfaceTexture1 = v2.getSurfaceTexture();
         surfaceTexture.setDefaultBufferSize(cameraSize.getWidth(), cameraSize.getHeight());
+        surfaceTexture1.setDefaultBufferSize(cameraSize.getWidth(), cameraSize.getHeight());
         Surface previewSurface = new Surface(surfaceTexture);
+        Surface previewSurface1 = new Surface(surfaceTexture1);
         Surface recorderSurface = mMediaRecorder.getSurface();//从获取录制视频需要的Surface
+        Surface recorderSurface1 = mMediaRecorder.getSurface();//从获取录制视频需要的Surface
         //摄像头2
         try {
             mPreViewBuidler = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            mPreViewBuidler1 = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mPreViewBuidler.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
             mPreViewBuidler.addTarget(previewSurface);
             mPreViewBuidler.addTarget(recorderSurface);
+            mPreViewBuidler1.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+            mPreViewBuidler1.addTarget(previewSurface1);
+            mPreViewBuidler1.addTarget(recorderSurface1);
             //请注意这里设置了Arrays.asList(previewSurface,recorderSurface) 2个Surface，很好理解录制视频也需要有画面预览，
             // 第一个是预览的Surface，第二个是录制视频使用的Surface
             mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, recorderSurface),
@@ -544,11 +551,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         try {
             //构建输出参数  在参数中设置物理摄像头
+            Size cameraSize = getMatchingSize();
             List<OutputConfiguration> configurations = new ArrayList<>();
             mPreViewBuidler = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
 
             //配置第一个物理摄像头
             SurfaceTexture texture = v1.getSurfaceTexture();
+            texture.setDefaultBufferSize(cameraSize.getWidth(), cameraSize.getHeight());
             OutputConfiguration outputConfiguration = new OutputConfiguration(new Surface(texture));
             outputConfiguration.setPhysicalCameraId(cameraID[0]);
             configurations.add(outputConfiguration);
@@ -556,6 +565,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             //配置第2个物理摄像头
             SurfaceTexture texture2 = v2.getSurfaceTexture();
+            texture2.setDefaultBufferSize(cameraSize.getWidth(), cameraSize.getHeight());
             OutputConfiguration outputConfiguration2 = new OutputConfiguration(new Surface(texture2));
             outputConfiguration2.setPhysicalCameraId(cameraID[1]);
             configurations.add(outputConfiguration2);

@@ -75,6 +75,7 @@ public class TakePic extends AppCompatActivity implements View.OnClickListener {
     }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.d("TAG","take PIC");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
@@ -99,6 +100,11 @@ public class TakePic extends AppCompatActivity implements View.OnClickListener {
     };
     @SuppressLint("ClickableViewAccessibility")
     private void init() {
+        if (OpenCVLoader.initDebug()) {
+            Log.d("TAG", "OpenCVLoader初始化成功");
+        }else{
+            Log.d("TAG", "OpenCVLoader初始化失败");
+        }
         getCamera = new GetCamera(TakePic.this);
         v1=findViewById(R.id.textureView0);
         v2=findViewById(R.id.textureView1);
@@ -146,7 +152,7 @@ public class TakePic extends AppCompatActivity implements View.OnClickListener {
     private void Mvideo(){
         btncam.setVisibility(btncam.VISIBLE);
         document.setVisibility(document.VISIBLE);
-        toolbar.setBackgroundResource(R.color.grayTrans);
+        toolbar.setBackgroundResource(R.color.black);
         btncam.setBackgroundResource(R.mipmap.init2);
         document.setBackgroundResource(R.mipmap.document);
         btncam.setOnClickListener(view -> {
@@ -168,7 +174,7 @@ public class TakePic extends AppCompatActivity implements View.OnClickListener {
     private void Mcam(){
         btncam.setVisibility(btncam.VISIBLE);
         document.setVisibility(document.VISIBLE);
-        toolbar.setBackgroundResource(R.color.grayTrans);
+        toolbar.setBackgroundResource(R.color.black);
         btncam.setBackgroundResource(R.mipmap.init3);
         document.setBackgroundResource(R.mipmap.document);
         btncam.setOnTouchListener((v, event) -> {
@@ -314,10 +320,58 @@ public class TakePic extends AppCompatActivity implements View.OnClickListener {
             super.onCaptureFailed(session, request, failure);
         }
     };
+    private Size getMatchingSize() {
+        Size selectSize = null;
+        try {
+            CameraCharacteristics cameraCharacteristics = manager.getCameraCharacteristics(String.valueOf(CameraCharacteristics.LENS_FACING_BACK));
+            StreamConfigurationMap streamConfigurationMap = cameraCharacteristics.get
+                    (CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+            Size[] sizes = streamConfigurationMap.getOutputSizes(ImageFormat.JPEG);
+            //这里是将预览铺满屏幕,所以直接获取屏幕分辨率
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            //屏幕分辨率宽
+            int deviceWidth = displayMetrics.widthPixels;
+            //屏幕分辨率高
+            int deviceHeight = displayMetrics.heightPixels;
+            /**
+             * 循环40次,让宽度范围从最小逐步增加,找到最符合屏幕宽度的分辨率,
+             * 你要是不放心那就增加循环,肯定会找到一个分辨率,不会出现此方法返回一个null的Size的情况
+             * ,但是循环越大后获取的分辨率就越不匹配
+             */
+            for (int j = 1; j < 41; j++) {
+                for (int i = 0; i < sizes.length; i++) { //遍历所有Size
+                    Size itemSize = sizes[i];
+                    //判断当前Size高度小于屏幕宽度+j*5  &&  判断当前Size高度大于屏幕宽度-j*5  &&  判断当前Size宽度小于当前屏幕高度
+                    if (itemSize.getHeight() < (deviceWidth + j * 5) && itemSize.getHeight() > (deviceWidth - j * 5)) {
+                        if (selectSize != null) { //如果之前已经找到一个匹配的宽度
+                            if (Math.abs(deviceHeight - itemSize.getWidth()) < Math.abs(deviceHeight - selectSize.getWidth())) { //求绝对值算出最接近设备高度的尺寸
+                                selectSize = itemSize;
+                                continue;
+                            }
+                        } else {
+                            selectSize = itemSize;
+                        }
+                    }
+                }
+                if (selectSize != null) { //如果不等于null 说明已经找到了 跳出循环
+                    break;
+                }
+            }
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+        Log.d("TAG", "getMatchingSize: 选择的分辨率宽度=" + selectSize.getWidth());
+        Log.d("TAG", "getMatchingSize: 选择的分辨率高度=" + selectSize.getHeight());
+        return selectSize;
+    }
     public void config(CameraDevice cameraDevice){
         String cameraID[]=getCamera.getCameraID();
         Log.d("TAG", cameraID.toString());
         if (cameraID.length<2){
+            //Toast会报错
+//            Toast toast=Toast.makeText(MainActivity.this, "后置摄像头少于2个！", Toast.LENGTH_LONG);
+//            toast.setGravity(Gravity.CENTER, 0, 1920);
+//            toast.show();
             try {
                 mPreViewBuidler = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
                 mPreViewBuidler.addTarget(new Surface(v1.getSurfaceTexture()));
@@ -355,9 +409,10 @@ public class TakePic extends AppCompatActivity implements View.OnClickListener {
             //构建输出参数  在参数中设置物理摄像头
             List<OutputConfiguration> configurations = new ArrayList<>();
             mPreViewBuidler = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-
+            Size cameraSize = getMatchingSize();
             //配置第一个物理摄像头
             SurfaceTexture texture = v1.getSurfaceTexture();
+            texture.setDefaultBufferSize(cameraSize.getWidth(), cameraSize.getHeight());
             OutputConfiguration outputConfiguration = new OutputConfiguration(new Surface(texture));
             outputConfiguration.setPhysicalCameraId(cameraID[0]);
             configurations.add(outputConfiguration);
@@ -365,6 +420,7 @@ public class TakePic extends AppCompatActivity implements View.OnClickListener {
 
             //配置第2个物理摄像头
             SurfaceTexture texture2 = v2.getSurfaceTexture();
+            texture2.setDefaultBufferSize(cameraSize.getWidth(), cameraSize.getHeight());
             OutputConfiguration outputConfiguration2 = new OutputConfiguration(new Surface(texture2));
             outputConfiguration2.setPhysicalCameraId(cameraID[1]);
             configurations.add(outputConfiguration2);
