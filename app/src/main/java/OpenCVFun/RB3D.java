@@ -14,9 +14,11 @@ import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 import static org.opencv.videoio.Videoio.*;
 
+import android.util.Log;
+
 public class RB3D {
-
-
+    private static int frame_num;
+    private static int frame_count;
     public static void delete(File file) {
 
         if (file.isDirectory()) {
@@ -109,7 +111,7 @@ public class RB3D {
         int fourcc= (int) video_L.get(CAP_PROP_FOURCC);//编码格式,此参数读取异常，原因未知
         double fps=video_L.get(CAP_PROP_FPS);//帧率
         int width= (int) video_L.get(CAP_PROP_FRAME_WIDTH),height= (int) video_L.get(CAP_PROP_FRAME_HEIGHT);//分辨率
-        int frame_num= (int) (Math.min(video_L.get(CAP_PROP_FRAME_COUNT), video_R.get(CAP_PROP_FRAME_COUNT)));//帧数
+        frame_num= (int) (Math.min(video_L.get(CAP_PROP_FRAME_COUNT), video_R.get(CAP_PROP_FRAME_COUNT)));//帧数
 
         //设置输出格式
         format=format.toLowerCase();
@@ -139,18 +141,18 @@ public class RB3D {
         //逐帧读取视频
         Mat leftFrame=new Mat();
         Mat rightFrame=new Mat();
-        int frame_count=0;
-        System.out.println("共有"+frame_num+"帧");
+        frame_count=0;
+        Log.d("TAG","共有"+frame_num+"帧");
         while (true){
             frame_count++;
             if(video_L.read(leftFrame)&&video_R.read(rightFrame)){
                 if(frame_count%20==0){
-                    System.out.println("正在处理第"+frame_count+"帧");
+                    Log.d("TAG","正在处理第"+frame_count+"帧");
                 }
 
                 Mat tmp=createFromImg(leftFrame,rightFrame);
                 if (tmp==null||tmp.empty()){
-                    System.out.println(""+frame_count+" null");
+                    Log.d("TAG",""+frame_count+" null");
                     continue;
                 }
 
@@ -182,7 +184,7 @@ public class RB3D {
             file=new File(rightVideo_bak);
             delete(file);
         }
-        System.out.println("合成完成");
+        Log.d("TAG","合成完成");
         delete(save_location);
 
         return "";
@@ -273,5 +275,10 @@ public class RB3D {
         }
 
         return res;
+    }
+    public static int getProgress(){
+        int Pro=0;
+        Pro=frame_num/frame_count;
+        return Pro;
     }
 }

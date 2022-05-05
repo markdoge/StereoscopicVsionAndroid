@@ -55,7 +55,6 @@ public class TakePic extends AppCompatActivity implements View.OnClickListener {
     private ImageButton btncam;
     private String savePath0;
     private String savePath1;
-    private String depthmapPath;
     private SimpleDateFormat simpleDateFormat;
     private Size mPreviewSize;
     private static final SparseIntArray INVERSE_ORIENTATIONS = new SparseIntArray();
@@ -185,12 +184,11 @@ public class TakePic extends AppCompatActivity implements View.OnClickListener {
                 String time=simpleDateFormat.format(calendar.getTime());
                 savePath0=time+"_1.jpg";
                 savePath1=time+"_2.jpg";
-                depthmapPath=time+"_deep.jpg";
                 //拍照
 
                 //获取深度图
 
-                depthmapPath=savePath0=savePath1=null;
+                savePath0=savePath1=null;
             }
             if (text.getSelectedString().equals("景深合成")&&event.getAction()==MotionEvent.ACTION_UP){
                 btncam.setBackgroundResource(R.mipmap.init3);
@@ -198,107 +196,6 @@ public class TakePic extends AppCompatActivity implements View.OnClickListener {
             return false;
         });
     }
-    /*private void setupCamera() {
-        Log.d("TAG", "setupCamera: success");
-        //获取摄像头的管理者CameraManager
-        CameraManager manager = (CameraManager) TakePic.this.getSystemService(Context.CAMERA_SERVICE);
-        try {
-            //遍历所有摄像头
-            for (String cameraId : manager.getCameraIdList()) {
-                CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId); //获取摄像机的特征
-                //默认打开后置  - 忽略前置 LENS（镜头）
-                if (characteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT)
-                {
-                    continue;
-                }
-                //获取StreamConfigurationMap,他是管理摄像头支持的所有输出格式
-                StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-                mPreviewSize = getOptimalSize(map.getOutputSizes(SurfaceTexture.class),
-                        720, 960); //获取最佳的预览大小
-                //进入回调设置相机然后打开
-                v1.setSurfaceTextureListener(textureListener);
-                break;
-            }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-    private void startPreview() {
-        Log.d("TAG", "startPreview: success");
-        //设置图片阅读器
-        setupImageReader();
-        SurfaceTexture mSurfaceTexture = v1.getSurfaceTexture();
-        //设置TextureView的缓冲区大小
-        mSurfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-        //获取Surface显示预览数据
-        try {
-            //创建预览请求的Builder
-            setPreviewRequestBuilder();
-            mCameraDevice.createCaptureSession(Arrays.asList(mPreviewSurface, mImageReader.getSurface()),
-                    new CameraCaptureSession.StateCallback() {
-                        @Override
-                        public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
-                            mCaptureSession = cameraCaptureSession;
-                            repeatPreview();
-                        }
-
-                        @Override
-                        public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
-                        }
-                    }, null);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-    //设置图片阅读
-    private void setupImageReader() {
-        Log.d("TAG", "setupImageReader: success");
-        //前三个参数分别是需要的尺寸和格式,最后一个参数代表每次最多获取几帧数据
-        mImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.JPEG, 1);
-        //监听ImageReader的事件,当有图像流数据可用时会回调onImageAvailable
-        mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
-            @Override
-            public void onImageAvailable(ImageReader imageReader) {
-                Toast.makeText(TakePic.this, "图片已保存", Toast.LENGTH_SHORT).show();
-                //获得mage
-                Image image = imageReader.acquireNextImage();
-
-                //开启线程一部保存图片
-                ImageSaver imageSaver = new ImageSaver(TakePic.this, image);
-                new Thread(imageSaver).start();
-
-            }
-        }, null);
-    }
-    // 第八步 拍照
-    private void takePhoto() {
-        Log.d("TAG", "takePhoto: success");
-        try {
-            //首先创建拍照的请求 CaptureRequest
-            final CaptureRequest.Builder mCaptureBuilder = mCameraDevice.createCaptureRequest
-                    (CameraDevice.TEMPLATE_STILL_CAPTURE);
-            //获取屏幕方向
-            int rotation = TakePic.this.getWindowManager().getDefaultDisplay().getRotation();
-            //获取到当前预览窗口的图
-            mCaptureBuilder.addTarget(mImageReader.getSurface());
-            mCaptureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATION.get(rotation));
-            //停止预览
-            mCaptureSession.stopRepeating();
-            //开始拍照,然后回调上面的接口重启预览,因为mCaptureBuilder设置ImageReader作为target,
-            // 所以会自动回调ImageReader的onImageAvailable()方法保存图片
-            CameraCaptureSession.CaptureCallback captureCallback = new CameraCaptureSession.CaptureCallback() {
-                @Override
-                public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request,
-                                               @NonNull TotalCaptureResult result) {
-                    super.onCaptureCompleted(session, request, result);
-                    repeatPreview();
-                }
-            };
-            mCaptureSession.capture(mCaptureBuilder.build(), captureCallback, null);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }*/
     public class ImageSaver implements Runnable {
         private Image mImage;//图片
         private Context mContext;

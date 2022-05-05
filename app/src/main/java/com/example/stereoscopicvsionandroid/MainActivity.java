@@ -2,11 +2,13 @@ package com.example.stereoscopicvsionandroid;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.*;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
+import android.hardware.SensorManager;
 import android.hardware.camera2.*;
 import android.hardware.camera2.params.*;
 import android.media.MediaRecorder;
@@ -17,6 +19,7 @@ import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.*;
+import android.view.animation.RotateAnimation;
 import android.widget.*;
 import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -67,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Chronometer timer; //计时器
     private String fileName;
     private ProgressBar rb3dProgressBar;
+    private OrientationEventListener orientationEventListener;
+    private RotateAnimation rotationAnimation;
+    private ProgressDialog dialog;
     static {
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_0, 270);
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_90, 180);
@@ -80,6 +86,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (hasPermission())
             requestP();
         init();
+        orientationEventListener=new OrientationEventListener(this,
+                SensorManager.SENSOR_DELAY_NORMAL) {
+            @Override
+            public void onOrientationChanged(int orientation) {
+                if (((orientation>=0)&&(orientation<=30))||(orientation>=330)) {
+                    mMediaRecorder.setOrientationHint(0);
+                }
+                else {
+                    mMediaRecorder.setOrientationHint(90);
+                }
+            }
+        };
     }
 
     private boolean hasPermission() {
@@ -148,6 +166,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         timer.setVisibility(timer.GONE);
         rb3dProgressBar=findViewById(R.id.rb3dProgressBar);
         rb3dProgressBar.setVisibility(View.GONE);
+        dialog=new ProgressDialog(MainActivity.this);
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);//条形进度条
+        dialog.setCancelable(false);//能否在显示过程中关闭
         //控件样式
 
         //设置视频、图片、音频、摄像头规格
@@ -177,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void Mvideo(){
         btncam.setVisibility(btncam.VISIBLE);
         document.setVisibility(document.VISIBLE);
-        toolbar.setBackgroundResource(R.color.grayTrans);
+        toolbar.setBackgroundResource(R.color.black);
         btncam.setBackgroundResource(R.mipmap.init2);
         document.setBackgroundResource(R.mipmap.document);
         btncam.setOnClickListener(view -> {
@@ -185,11 +206,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (isChange[0] ==1){
                     Log.d("TAG","开始录像");
                     startRecordingVideo();
+                    alterCam();
                 }
                 else{
                     stopRecorder();
                     Log.d("TAG","停止录像");
                     timer.setVisibility(timer.GONE);
+                    alterCam();
                     //结束录像并保存
                 }
             }
@@ -218,8 +241,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             new RB3DAsyncTask().execute(fileName,fileName);
         }
         broadcast();
-        Intent intent=new Intent(MainActivity.this, MainActivity.class);
-        startActivity(intent);
+        startPreview();
+    }
+    private void startPreview() {
+        stopPreview();
+        SurfaceTexture mSurfaceTexture = v1.getSurfaceTexture();
+        Size cameraSize = getMatchingSize();
+        //设置TextureView的缓冲区大小
+        mSurfaceTexture.setDefaultBufferSize(cameraSize.getWidth(),
+                cameraSize.getHeight());
+        //获取Surface显示预览数据
+        Surface previewSurface = new Surface(mSurfaceTexture);
+        try {
+            //创建CaptureRequestBuilder,TEMPLATE_PREVIEW比表示预览请求
+            mPreViewBuidler = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            //设置Surface作为预览数据的显示界面
+            mPreViewBuidler.addTarget(previewSurface);
+            //创建相机捕获会话,第一个参数是捕获数据Surface列表,
+            // 第二个参数是CameraCaptureSession的状态回调接口,
+            //当他创建好后会回调onConfigured方法,第三个参数用来确定Callback在哪个线程执行
+            mCameraDevice.createCaptureSession(Collections.singletonList(previewSurface),
+                    new CameraCaptureSession.StateCallback() {
+                        @Override
+                        public void onConfigured(@NonNull CameraCaptureSession session) {
+                            mCameraCaptureSession = session;
+                            updatePreview();
+                        }
+
+                        @Override
+                        public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+                            Toast.makeText(MainActivity.this.getApplicationContext(), "Faileedsa ", Toast.LENGTH_SHORT).show();
+                        }
+                    }, mChildHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
     }
     // 广播通知相册更新
     public void broadcast() {
@@ -233,17 +289,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void Mcam(){
         btncam.setVisibility(btncam.VISIBLE);
         document.setVisibility(document.VISIBLE);
-        toolbar.setBackgroundResource(R.color.grayTrans);
+        toolbar.setBackgroundResource(R.color.black);
         btncam.setBackgroundResource(R.mipmap.init3);
         document.setBackgroundResource(R.mipmap.document);
         btncam.setOnTouchListener((v, event) -> {
             if (text.getSelectedString().equals("景深合成")&&event.getAction()==MotionEvent.ACTION_DOWN){
-                btncam.setBackgroundResource(R.drawable.btn_bg_pressed);
-                simpleDateFormat=new SimpleDateFormat("yyyyMMddHHmmss");
-
-            }
-            if (text.getSelectedString().equals("景深合成")&&event.getAction()==MotionEvent.ACTION_UP){
-                btncam.setBackgroundResource(R.mipmap.init3);
+                Intent intent=new Intent(MainActivity.this,VideoActivity.class);
+                startActivity(intent);
             }
             return false;
         });
@@ -412,6 +464,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
     private void configSession() {
+        int rotation = MainActivity.this.getWindowManager().getDefaultDisplay().getRotation();
+        mPreViewBuidler.set(CaptureRequest.JPEG_ORIENTATION, INVERSE_ORIENTATIONS.get(rotation));
         try {
             if (mCameraCaptureSession != null) {
                 mCameraCaptureSession.stopRepeating();//停止预览，准备切换到录制视频
@@ -527,19 +581,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
     }
+    private void alterCam(){
+        Log.d("TAG","alterCam!");
+        if (isSwithCam[0]==1){
+            v1.setVisibility(View.GONE);
+            v2.setVisibility(View.VISIBLE);
+            isSwithCam[0]=0;
+        }else {
+            v1.setVisibility(View.VISIBLE);
+            v2.setVisibility(View.GONE);
+            isSwithCam[0]=1;
+        }
+    }
     @Override
     public void onClick(View v) {
         int id = v.getId();
         if (id==R.id.switchCam){
-            if (isSwithCam[0]==1){
-                v1.setVisibility(View.GONE);
-                v2.setVisibility(View.VISIBLE);
-                isSwithCam[0]=0;
-            }else {
-                v1.setVisibility(View.VISIBLE);
-                v2.setVisibility(View.GONE);
-                isSwithCam[0]=1;
-            }
+            alterCam();
         }
         else if (id==R.id.document){
             if (text.getSelectedString().equals("景深合成")){
@@ -558,8 +616,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void switchFlash(){
         isFlash = !isFlash;
         flashButton.setImageResource(isFlash ? R.mipmap.flash_open : R.mipmap.flash_close);
-       Intent intent=new Intent(MainActivity.this,TakePic.class);
-       startActivity(intent);
     }
     private void updatePreview() {
         if (null == mCameraDevice) {
@@ -581,15 +637,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
-
-    class  RB3DAsyncTask extends AsyncTask<String,Void,String>{
+    class  RB3DAsyncTask extends AsyncTask<String,Integer,String>{
 
         //第一阶段————准备阶段让进度条显示
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             rb3dProgressBar.setVisibility(View.VISIBLE);
+            dialog.show();
         }
 
         //第二阶段——执行
@@ -602,11 +657,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(String str) {
             super.onPostExecute(str);
+            dialog.dismiss();
             Toast toast= Toast.makeText(MainActivity.this,"视频合成完成！",Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER, 0, 1920);
             toast.show();
             rb3dProgressBar.setVisibility(View.GONE);
         }
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            dialog.setProgress(RB3D.getProgress());
+        }
     }
-
 }

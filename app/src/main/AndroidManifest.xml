@@ -43,7 +43,7 @@
             android:theme="@style/Theme.Design.Light.NoActionBar"/>
         <activity android:name=".TakePic"
             android:launchMode="singleTask"
-            />
+            android:theme="@style/Theme.Design.Light.NoActionBar"/>
     </application>
 
 </manifest>
