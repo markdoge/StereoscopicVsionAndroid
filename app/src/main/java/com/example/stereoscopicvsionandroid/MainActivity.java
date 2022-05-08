@@ -84,6 +84,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d("TAG","Main activity");
+        if (OpenCVLoader.initDebug()) {
+            Log.d("TAG", "OpenCVLoader初始化成功");
+        }else{
+            Log.d("TAG", "OpenCVLoader初始化失败");
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (hasPermission())
@@ -101,6 +106,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         };
+    }
+
+    public TextureView getV1() {
+        return v1;
     }
 
     private boolean hasPermission() {
@@ -143,11 +152,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     };
     @SuppressLint("ClickableViewAccessibility")
     private void init() {
-        if (OpenCVLoader.initDebug()) {
-            Log.d("TAG", "OpenCVLoader初始化成功");
-        }else{
-            Log.d("TAG", "OpenCVLoader初始化失败");
-        }
         getCamera = new GetCamera(MainActivity.this);
         videoSize =getCamera.getVideoSize();
         v1=findViewById(R.id.textureView0);
