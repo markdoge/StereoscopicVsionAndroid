@@ -4,6 +4,8 @@
         private StereoBMUtil stereoBMUtil;//先定义算法类
 
         UI.setOnClickListener((v, event) -> {//点击屏幕的监听
+            leftBitmap = BitmapFactory.decodeStream(getAssets().open("Left3.bmp")); //传本地图片地址
+            rightBitmap = BitmapFactory.decodeStream(getAssets().open("Right3.bmp"));
             Bitmap result = stereoBMUtil.compute(leftBitmap, rightBitmap); //result是灰度图，不用管，这里传进去左右目摄像头图片，你写下
             // 获取触摸点的坐标 x, y
             float x = event.getX();
