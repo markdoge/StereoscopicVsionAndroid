@@ -59,7 +59,7 @@ public class StereoBMUtil {
         Rect validROIL = new Rect();
         Rect validROIR = new Rect();
         Calib3d.Rodrigues(rec, R);                                   //Rodrigues变换
-        //图像校正之后，会对图像进行裁剪，这里的validROI就是指裁剪之后的区域
+        //图像校正之后，会对图像进行裁剪，这里的validROI指裁剪之后的区域
         Calib3d.stereoRectify(cameraMatrixL, distCoeffL, cameraMatrixR, distCoeffR, imageSize, R, T, Rl, Rr, Pl, Pr, Q, Calib3d.CALIB_ZERO_DISPARITY,
                 0, imageSize, validROIL, validROIR);
         Imgproc.initUndistortRectifyMap(cameraMatrixL, distCoeffL, Rl, Pl, imageSize, CvType.CV_32FC1, mapLx, mapLy);
