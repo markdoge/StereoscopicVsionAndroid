@@ -25,14 +25,13 @@ import static org.opencv.videoio.Videoio.CAP_PROP_FRAME_COUNT;
 import static org.opencv.videoio.Videoio.CAP_PROP_FRAME_HEIGHT;
 import static org.opencv.videoio.Videoio.CAP_PROP_FRAME_WIDTH;
 
-public class  RB3DAsyncTask2 extends AsyncTask<String,Integer,String> {
+public class RB3DAsyncTask extends AsyncTask<String,Integer,String> {
     private Toast toast;
     private ProgressBar rb3dProgressBar;
     private ProgressDialog dialog;
     private static int frame_num;
     private static int frame_count;
     static int offset=-50;//如果合成的视频红蓝差异明显，可以适当增大offset，以使左图向右图偏移
-    //上一届基于深度图动态计算offset，但实际上和固定的offset几乎没有区别
 
     public static void delete(File file) {
 
@@ -73,7 +72,7 @@ public class  RB3DAsyncTask2 extends AsyncTask<String,Integer,String> {
         }
     }
 
-    public RB3DAsyncTask2(ProgressBar pb,ProgressDialog dialog,Toast toast){
+    public RB3DAsyncTask(ProgressBar pb, ProgressDialog dialog, Toast toast){
         super();
         this.rb3dProgressBar=pb;
         this.dialog=dialog;

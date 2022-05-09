@@ -27,8 +27,7 @@ import androidx.core.app.ActivityCompat;
 
 import org.opencv.android.OpenCVLoader;
 
-import OpenCVFun.RB3D;
-import OpenCVFun.RB3DAsyncTask2;
+import OpenCVFun.RB3DAsyncTask;
 import photoFun.*;
 
 import java.io.File;
@@ -59,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Size[] videoSize;
     private static final SparseIntArray INVERSE_ORIENTATIONS = new SparseIntArray();
     private MediaRecorder mMediaRecorder;
-    private MediaRecorder mMediaRecorder1;
     private static CameraCaptureSession mCameraCaptureSession;
     private static CameraCaptureSession mCameraCaptureSession1;
     private Point point;
@@ -75,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private RotateAnimation rotationAnimation;
     private ProgressDialog dialog;
     private Toast videoFinishToast;
+    private int mode=0;//0,1,2分别表示测距、立体、景深
+    private StereoBMUtil stereoBMUtil;
     static {
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_0, 270);
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_90, 180);
@@ -187,13 +187,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //监听器设置
         text.setOnTouchListener((v, event) -> {
             if (text.getSelectedString().equals("立体模式")){
+                mode=1;
                 Mvideo();
             }
             if (text.getSelectedString().equals("景深合成")){
+                mode=2;
                 Mcam();
             }
             if (text.getSelectedString().equals("测距模式")){
+                mode=0;
                 Mruler();
+            }
+            return false;
+        });
+
+        v1.setOnTouchListener((v,event)->{
+            int eventType=event.getAction();
+            if (mode!=0)return false;
+            if(eventType==MotionEvent.ACTION_DOWN){
+                //在这里调用深度图算法
+//                try {
+//                    Bitmap leftBitmap = BitmapFactory.decodeStream(getAssets().open("Left3.bmp"));
+//                    Bitmap rightBitmap = BitmapFactory.decodeStream(getAssets().open("Right3.bmp"));
+//                    Bitmap result = stereoBMUtil.compute(leftBitmap, rightBitmap);
+//                    Log.i("v1 ACTION_DOWN","x:"+event.getX()+" y:"+event.getY());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+            }
+            return false;
+        });
+        v2.setOnTouchListener((v,event)->{
+            int eventType=event.getAction();
+            if (mode!=0)return false;
+            if(eventType==MotionEvent.ACTION_DOWN){
+                //在这里调用深度图算法
+                Log.i("v2 ACTION_DOWN","x:"+event.getX()+" y:"+event.getY());
             }
             return false;
         });
@@ -219,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 else{
                     stopRecorder();
+                    btncam.setBackgroundResource(R.mipmap.init2);
                     Log.d("TAG","停止录像");
                     timer.setVisibility(timer.GONE);
                     alterCam();
@@ -247,7 +277,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //停止计时
             timer.stop();
             timer.setBase(SystemClock.elapsedRealtime());//计时器清零
-            new RB3DAsyncTask2(rb3dProgressBar,dialog,videoFinishToast).execute(fileName,fileName);
+            new RB3DAsyncTask(rb3dProgressBar,dialog,videoFinishToast).execute(fileName,fileName);
+            isChange[0]=1;
+
         }
         broadcast();
         startPreview();
@@ -288,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     // 广播通知相册更新
     public void broadcast() {
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/";
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/stereo";
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         Uri uri = Uri.fromFile(new File(path));
         intent.setData(uri);
@@ -377,14 +409,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onConfigured(@NonNull CameraCaptureSession session) {
             mCameraCaptureSession = session;
+            Log.i("TAG", " startRecordingVideo  正式开始录制 ");
             updatePreview();
-            try {
-                //执行重复获取数据请求，等于一直获取数据呈现预览画面，mSessionCaptureCallback会返回此次操作的信息回调
-                mCameraCaptureSession.setRepeatingRequest(mPreViewBuidler.build(),
-                        mSessionCaptureCallback, mChildHandler);
-            } catch (CameraAccessException e) {
-                e.printStackTrace();
-            }
         }
 
         @Override
@@ -450,7 +476,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (mMediaRecorder == null) {
             mMediaRecorder = new MediaRecorder();
         }
-        Surface surface = new Surface(v2.getSurfaceTexture());
         Size size = getMatchingSize();
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);//设置音频来源
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);//设置视频来源
@@ -461,9 +486,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mMediaRecorder.setVideoFrameRate(30);//设置帧数
         mMediaRecorder.setVideoSize(size.getWidth(), size.getHeight());
         mMediaRecorder.setOrientationHint(90);
-        mMediaRecorder.setPreviewDisplay(surface);
         mMediaRecorder.setOutputFile(file.getAbsolutePath());
-        //摄像头2
+
+//        Surface surface = new Surface(v1.getSurfaceTexture());
+//        mMediaRecorder.setPreviewDisplay(surface);
+
         Log.d("TAG","Stage 1");
         try {
             mMediaRecorder.prepare();
@@ -486,24 +513,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         configMediaRecorder();
         Size cameraSize = getMatchingSize();
-        SurfaceTexture surfaceTexture = v1.getSurfaceTexture();
-        SurfaceTexture surfaceTexture1 = v2.getSurfaceTexture();
+        SurfaceTexture surfaceTexture;
+        if (isSwithCam[0]==1)
+            surfaceTexture = v2.getSurfaceTexture();
+        else
+            surfaceTexture = v1.getSurfaceTexture();
         surfaceTexture.setDefaultBufferSize(cameraSize.getWidth(), cameraSize.getHeight());
-        surfaceTexture1.setDefaultBufferSize(cameraSize.getWidth(), cameraSize.getHeight());
         Surface previewSurface = new Surface(surfaceTexture);
-        Surface previewSurface1 = new Surface(surfaceTexture1);
         Surface recorderSurface = mMediaRecorder.getSurface();//从获取录制视频需要的Surface
-        Surface recorderSurface1 = mMediaRecorder.getSurface();//从获取录制视频需要的Surface
         //摄像头2
         try {
-            mPreViewBuidler = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            mPreViewBuidler1 = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            mPreViewBuidler = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
             mPreViewBuidler.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
             mPreViewBuidler.addTarget(previewSurface);
             mPreViewBuidler.addTarget(recorderSurface);
-            mPreViewBuidler1.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-            mPreViewBuidler1.addTarget(previewSurface1);
-            mPreViewBuidler1.addTarget(recorderSurface1);
             //请注意这里设置了Arrays.asList(previewSurface,recorderSurface) 2个Surface，很好理解录制视频也需要有画面预览，
             // 第一个是预览的Surface，第二个是录制视频使用的Surface
             mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, recorderSurface),
@@ -516,16 +539,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String cameraID[]=getCamera.getCameraID();
         Log.d("TAG", cameraID.toString());
         if (cameraID.length<2){
-            //Toast会报错
-//            Toast toast=Toast.makeText(MainActivity.this, "后置摄像头少于2个！", Toast.LENGTH_LONG);
-//            toast.setGravity(Gravity.CENTER, 0, 1920);
-//            toast.show();
             try {
+                Size cameraSize = getMatchingSize();
                 mPreViewBuidler = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-                mPreViewBuidler.addTarget(new Surface(v1.getSurfaceTexture()));
-                mPreViewBuidler.addTarget(new Surface(v2.getSurfaceTexture()));
+                SurfaceTexture texture1 = v1.getSurfaceTexture();
+                SurfaceTexture texture2 = v2.getSurfaceTexture();
+                texture1.setDefaultBufferSize(cameraSize.getWidth(), cameraSize.getHeight());
+                texture2.setDefaultBufferSize(cameraSize.getWidth(), cameraSize.getHeight());
+                mPreViewBuidler.addTarget(new Surface(texture1));
+                mPreViewBuidler.addTarget(new Surface(texture2));
                 mCameraDevice.createCaptureSession(
-                        Arrays.asList(new Surface(v1.getSurfaceTexture()), new Surface(v2.getSurfaceTexture())),
+                        Arrays.asList(new Surface(texture1), new Surface(texture2)),
                         new CameraCaptureSession.StateCallback() {
                             @Override
                             public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
@@ -633,6 +657,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             switchFlash();
         }
     }
+
+
+
     private void switchFlash(){
         isFlash = !isFlash;
         flashButton.setImageResource(isFlash ? R.mipmap.flash_open : R.mipmap.flash_close);
@@ -644,6 +671,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try {
             HandlerThread thread = new HandlerThread("CameraPreview");
             thread.start();
+            Log.i("TAG", "开始预览 ");
             mCameraCaptureSession.setRepeatingRequest(mPreViewBuidler.build(), null, mChildHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
