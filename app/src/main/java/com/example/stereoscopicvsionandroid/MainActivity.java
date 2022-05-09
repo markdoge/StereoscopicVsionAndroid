@@ -5,7 +5,10 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.*;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.SensorManager;
@@ -29,6 +32,7 @@ import androidx.core.app.ActivityCompat;
 import org.opencv.android.OpenCVLoader;
 
 import OpenCVFun.RB3DAsyncTask;
+import albumFun.PhotoLoader;
 import photoFun.*;
 
 import java.io.File;
@@ -213,18 +217,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         v1.setOnTouchListener((v,event)->{
             int eventType=event.getAction();
             if (mode!=0)return false;
+            double[] c = new double[0];
             if(eventType==MotionEvent.ACTION_DOWN){
                 //在这里调用深度图算法
-                  /*try {
+                  try {
                       PhotoLoader photoloader=new PhotoLoader(Environment.getExternalStorageDirectory().getPath()+"/DCIM/stereo/picture");
-                      ArrayList<String> fileList=photoLoader.getPicLocation();
+                      ArrayList<String> fileList=photoloader.getPicLocation();
                       Bitmap leftBitmap = BitmapFactory.decodeStream(getAssets().open(fileList.get(0)));
                       Bitmap rightBitmap = BitmapFactory.decodeStream(getAssets().open(fileList.get(1)));
                       Bitmap result = stereoBMUtil.compute(leftBitmap, rightBitmap);
+                      float[] dst = new float[2];
+                      Matrix inverseMatrix = new Matrix();
+                      inverseMatrix.mapPoints(dst, new float[]{event.getX(), event.getY()});
+                      int dstX = (int) dst[0];
+                      int dstY = (int) dst[1];
+                      // 获取该点的三维坐标
+                      c = stereoBMUtil.getCoordinate(dstX, dstY);
                       Log.i("v1 ACTION_DOWN","x:"+event.getX()+" y:"+event.getY());
+
                   } catch (IOException e) {
                       e.printStackTrace();
-                  }*/
+                  }
             }
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)textView.getLayoutParams();
             params.setMargins((int)event.getX(), (int)event.getY(), 0, 0);// 通过自定义坐标来放置你的控件
@@ -232,8 +245,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             RelativeLayout.LayoutParams params1 = (RelativeLayout.LayoutParams)textView.getLayoutParams();
             params1.setMargins((int)event.getX(), (int)event.getY()-30, 0, 0);// 通过自定义坐标来放置你的控件
             imageView.setLayoutParams(params1);
-            Random r=new Random();
-            textView.setText(String.valueOf(r.nextInt(18)+5)+"cm");
+            textView.setText(c[2]+"cm");
             imageView.setVisibility(imageView.VISIBLE);
             textView.setVisibility(textView.VISIBLE);
             return false;
