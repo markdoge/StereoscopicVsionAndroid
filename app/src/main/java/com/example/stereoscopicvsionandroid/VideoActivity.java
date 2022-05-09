@@ -3,14 +3,14 @@ package com.example.stereoscopicvsionandroid;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.*;
-import android.service.autofill.OnClickAction;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
-import albumFun.PhotoLoader;
+
+import albumFun.VideoLoader;
 
 @RequiresApi(api = Build.VERSION_CODES.Q)
 public class VideoActivity extends AppCompatActivity implements View.OnClickListener {
@@ -21,11 +21,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
     private ImageButton nextBtn;
     private ImageView imageView;
     private VideoView videoView;
-    private PhotoLoader photoLoader;
+    private VideoLoader videoLoader;
     private MediaController mediaController;
     private ArrayList<Bitmap> videoPreview;
     private ArrayList<String> videoLocation;
-    private int photoNum;
+    private int videoNum;
     private int currentNum=0;
     private boolean isPlaying=false;
     @Override
@@ -55,10 +55,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
         lastBtn.setOnClickListener(this);
         nextBtn.setOnClickListener(this);
         try {
-            photoLoader=new PhotoLoader(Environment.getExternalStorageDirectory().getPath());
-            videoPreview= photoLoader.getVideoPreview();
-            videoLocation=photoLoader.getVideoLocation();
-            photoNum=videoLocation.size();
+            videoLoader=new VideoLoader(Environment.getExternalStorageDirectory().getPath()+"/DCIM/stereo");
+            videoPreview= videoLoader.getVideoPreview();
+            videoLocation=videoLoader.getVideoLocation();
+            videoNum =videoLocation.size();
+            System.out.println(videoNum);
             if (videoPreview.size()>0){
                 playBtn.setVisibility(playBtn.VISIBLE);
                 nextBtn.setVisibility(nextBtn.VISIBLE);
@@ -108,7 +109,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
             }
         }
         else if (id==R.id.nextVideo){
-            if (currentNum<photoNum){
+            if (currentNum< videoNum){
                 imageView.setImageBitmap(videoPreview.get(currentNum+1));
                 currentNum+=1;
             }
