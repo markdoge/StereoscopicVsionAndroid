@@ -5,12 +5,14 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.*;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.SensorManager;
 import android.hardware.camera2.*;
 import android.hardware.camera2.params.*;
+import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.*;
@@ -31,6 +33,8 @@ import OpenCVFun.RB3DAsyncTask;
 import photoFun.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -75,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Toast videoFinishToast;
     private int mode=0;//0,1,2分别表示测距、立体、景深
     private StereoBMUtil stereoBMUtil;
+    private ImageReader imageReader;
     static {
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_0, 270);
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_90, 180);
@@ -335,11 +340,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         document.setBackgroundResource(R.mipmap.document);
         btncam.setOnTouchListener((v, event) -> {
             if (text.getSelectedString().equals("景深合成")&&event.getAction()==MotionEvent.ACTION_DOWN){
-                Intent intent=new Intent(MainActivity.this,TakePic.class);
-                startActivity(intent);
+                btncam.setBackgroundResource(R.drawable.btn_bg_pressed);
+                takePicture();
+                btncam.setBackgroundResource(R.mipmap.init3);
+//                Intent intent=new Intent(MainActivity.this,TakePic.class);
+//                startActivity(intent);
             }
             return false;
         });
+    }
+    private void takePicture(){
+        simpleDateFormat=new SimpleDateFormat("yyyyMMddHHmmss");
+        Calendar calendar = Calendar.getInstance();
+        String time=simpleDateFormat.format(calendar.getTime());
+        savePath0=time+"_left.jpg";
+        savePath1=time+"_right.jpg";
+        Bitmap img_left=v1.getBitmap();
+        Bitmap img_right=v2.getBitmap();
+        try {
+            File saveLocation = new File(Environment.getExternalStorageDirectory(),"/DCIM/stereo/picture");
+            saveLocation.mkdirs();
+            File file = new File(Environment.getExternalStorageDirectory() +
+                    "/DCIM/stereo/picture/" +savePath0);
+            FileOutputStream fos=new FileOutputStream(file);
+            img_left.compress(Bitmap.CompressFormat.JPEG,100,fos);
+            fos.flush();
+            fos.close();
+
+            file=new File(Environment.getExternalStorageDirectory() +
+                    "/DCIM/stereo/picture/" +savePath1);
+            fos=new FileOutputStream(file);
+            img_right.compress(Bitmap.CompressFormat.JPEG,100,fos);
+            fos.flush();
+            fos.close();
+            Log.i("TAG","拍照成功");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     private void openCamera(){
         HandlerThread thread = new HandlerThread("DualCeamera");
