@@ -368,8 +368,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 catch (Exception e){
                     Log.d("TAG","take photo:"+e);
                 }
-                Intent intent=new Intent(MainActivity.this,TakePic.class);
-                startActivity(intent);
             }
             if (text.getSelectedString().equals("景深合成")&&event.getAction()==MotionEvent.ACTION_UP){
                 takePhoto.setVisibility(takePhoto.GONE);
