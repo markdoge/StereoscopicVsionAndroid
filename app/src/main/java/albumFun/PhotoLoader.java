@@ -31,5 +31,9 @@ public class PhotoLoader {
 
         return bitmaps;
     }
+
+    public ArrayList<String> getPicLocation() {
+        return picLocation;
+    }
 }
 

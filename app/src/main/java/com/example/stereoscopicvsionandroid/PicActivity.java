@@ -9,6 +9,8 @@ import android.view.*;
 import android.widget.*;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.File;
 import java.util.ArrayList;
 import albumFun.PhotoLoader;
 
@@ -24,6 +26,7 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
     private int currentNum=0;
     final int[] isSetting={1};
     private ArrayList<Bitmap> resources;
+    private ArrayList<String> fileList;
     private TextView fText;
     private static final String TAG = "PicTAG";
     private SeekBar FData;
@@ -59,6 +62,7 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
             photoLoader=new PhotoLoader(Environment.getExternalStorageDirectory().getPath()+"/DCIM/stereo/picture");
             Log.d("TAG","path is "+Environment.getExternalStorageDirectory().getPath()+"/DCIM/stereo/picture");
             resources =photoLoader.getBitmap();
+            fileList=photoLoader.getPicLocation();
             photoNum= resources.size();
             imageView.setImageBitmap(resources.get(0));
         }catch (Exception e){
@@ -95,7 +99,22 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
         del.setOnClickListener(new View.OnClickListener() {//删除照片的监听器
             @Override
             public void onClick(View v) {
-                Log.d(TAG,"del");
+                Log.d(TAG,"del "+fileList.get(currentNum));
+                new File(fileList.get(currentNum)).delete();
+                photoNum--;
+                fileList.remove(currentNum);
+                resources.remove(currentNum);
+                if(currentNum>0) {
+                    currentNum--;
+                    imageView.setImageBitmap(resources.get(currentNum));
+                }
+                else{
+                    if(photoNum>0) {
+                        imageView.setImageBitmap(resources.get(currentNum));
+                    }
+                    else finish();
+                }
+
             }
         });
         out.setOnClickListener(new View.OnClickListener() {

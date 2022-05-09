@@ -8,6 +8,8 @@ import android.view.*;
 import android.widget.*;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.File;
 import java.util.ArrayList;
 
 import albumFun.VideoLoader;
@@ -61,6 +63,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
             videoNum =videoLocation.size();
             System.out.println(videoNum);
             if (videoPreview.size()>0){
+                imageView.setImageBitmap(videoPreview.get(0));
                 playBtn.setVisibility(playBtn.VISIBLE);
                 nextBtn.setVisibility(nextBtn.VISIBLE);
                 lastBtn.setVisibility(nextBtn.VISIBLE);
@@ -128,6 +131,22 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
             mediaController = new MediaController(this);
             videoView.setMediaController(mediaController);
             videoView.requestFocus();
+        }
+        else if(id==R.id.delVideo){
+            new File(videoLocation.get(currentNum)).delete();
+            videoNum--;
+            videoLocation.remove(currentNum);
+            videoPreview.remove(currentNum);
+            if(currentNum>0) {
+                currentNum--;
+                imageView.setImageBitmap(videoPreview.get(currentNum));
+            }
+            else{
+                if(videoNum>0) {
+                    imageView.setImageBitmap(videoPreview.get(currentNum));
+                }
+                else finish();
+            }
         }
     }
 }
