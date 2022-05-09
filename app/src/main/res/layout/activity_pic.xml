@@ -15,7 +15,6 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:scaleType="centerCrop"
-            android:src="@mipmap/document"
             />
     </RelativeLayout>
     <RelativeLayout

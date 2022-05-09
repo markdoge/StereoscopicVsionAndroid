@@ -3,6 +3,7 @@
     xmlns:opencv="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/Total"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!--相机预览视图 -->
@@ -60,6 +61,23 @@
             android:background="@color/transparent"
             android:scaleType="centerCrop" />
     </RelativeLayout>
+
+
+        <ImageView
+            android:id="@+id/dynamicImage"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/pic"
+           />
+
+        <TextView
+            android:id="@+id/dynamicText"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:textColorHighlight="@color/black"
+            android:textColor="@color/Crimson"
+            />
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="80dp">
@@ -67,7 +85,7 @@
         <ImageView
             android:id="@+id/flash_button"
             android:layout_width="34dp"
-            android:layout_height="26dp"
+            android:layout_height="34dp"
             android:layout_centerVertical="true"
             android:scaleType="centerCrop"
             android:src="@mipmap/flash_close" />
@@ -81,13 +99,14 @@
             android:scaleType="centerCrop"
              />
     </RelativeLayout>
+
     <Chronometer
         android:id="@+id/timer"
-        android:textColor="#f00"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:format="%s"
         android:gravity="center"
+        android:textColor="#f00"
         android:textSize="40sp" />
 
     <ProgressBar
@@ -100,5 +119,12 @@
         android:max="100"
         android:visibility="gone"
         />
+
+    <ImageView
+        android:id="@+id/takephoto"
+        android:layout_width="match_parent"
+        android:layout_height="470dp"
+        android:layout_marginTop="70dp"
+        android:src="@mipmap/pic" />
 
 </RelativeLayout>

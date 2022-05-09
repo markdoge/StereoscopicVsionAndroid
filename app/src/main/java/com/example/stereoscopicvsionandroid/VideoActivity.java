@@ -98,6 +98,10 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
                 videoView.setVisibility(videoView.GONE);
                 videoView.clearFocus();
                 imageView.setVisibility(imageView.VISIBLE);
+                playBtn.setVisibility(playBtn.VISIBLE);
+                lastBtn.setVisibility(lastBtn.VISIBLE);
+                nextBtn.setVisibility(nextBtn.VISIBLE);
+                isPlaying=false;
             }
         }
         else if (id==R.id.lastVideo){
@@ -125,6 +129,9 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
         else if (id==R.id.playBtn){
             imageView.setVisibility(imageView.GONE);
             videoView.setVisibility(videoView.VISIBLE);
+            playBtn.setVisibility(playBtn.GONE);
+            lastBtn.setVisibility(lastBtn.GONE);
+            nextBtn.setVisibility(nextBtn.GONE);
             isPlaying=true;
             //播放视频
             videoView.setVideoPath(videoLocation.get(currentNum));

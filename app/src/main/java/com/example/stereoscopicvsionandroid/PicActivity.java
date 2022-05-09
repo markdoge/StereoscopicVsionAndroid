@@ -58,7 +58,6 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
         FData.setVisibility(FData.GONE);
         fText.setVisibility(fText.GONE);
         try {
-
             photoLoader=new PhotoLoader(Environment.getExternalStorageDirectory().getPath()+"/DCIM/stereo/picture");
             Log.d("TAG","path is "+Environment.getExternalStorageDirectory().getPath()+"/DCIM/stereo/picture");
             resources =photoLoader.getBitmap();
