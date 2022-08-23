@@ -34,4 +34,4 @@
 ---
 
 ### shareSDK
-
+使用了MobTech的[shareSDK](https://www.mob.com/mobService/sharesdk)
