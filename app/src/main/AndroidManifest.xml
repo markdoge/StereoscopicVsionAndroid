@@ -41,6 +41,12 @@
         <activity android:name=".VideoActivity"
             android:launchMode="singleTask"
             android:theme="@style/Theme.Design.Light.NoActionBar"/>
+        <activity android:name=".PrivacyPolicyActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Design.Light.NoActionBar"/>
+        <activity android:name=".TermsActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Design.Light.NoActionBar"/>
     </application>
 
 </manifest>

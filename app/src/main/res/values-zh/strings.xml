@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">3D视觉</string>
+    <string name="main1">button</string>
+    <string name="trans">sss</string>
+    <string name="action_settings">NULL</string>
+    <string name="opt_privacy">隐私政策</string>
+    <string name="opt_terms">用户协议</string>
+    <string name="privacy_exit">退出</string>
+    <string name="privacy_agree">同意</string>
+    <string name="users_note">用户须知</string>
+    <string name="privacy_tips_key1">《用户协议》</string>
+    <string name="privacy_tips_key2">《隐私政策》</string>
+    <string name="copyRight">markdoge\n\n</string>
+    <string name="privacy_tips">欢迎使用3D视觉！为了保护您的隐私和使用安全，请您务必仔细阅读我们的《用户协议》和《隐私政策》。在确认充分理解并同意后再开始使用此应用。感谢！</string>
+    <string name="privacy_context">如想正常使用本app,需要用户完成以下权限的授权:\n1.相机权限\n2.文件读写权限\n3.视频录制权限\n\n软件图标如下:</string>
+    <string name="privacy_context1">我们使用了第三方（上海游昆信息技术有限公司，以下称“MobTech”）MobTech ShareSDK服务为您提供社交分享、第三方登录社交分享、第三方登录功能。</string>
+    <string name="privacy_context2">为了顺利实现该功能，您需要授权MobTechSDK提供对应的服务;在您授权后，MobTech将收集您相关的个人信息。关于MobTech所收集的信息种类、用途、个人信息保护的规则及退出机制等</string>
+    <string name="privacy_context3">详见MobTech官网（www.mob.com）上的隐私政策 （www.mob.com/about/policy）条款。</string>
+</resources>

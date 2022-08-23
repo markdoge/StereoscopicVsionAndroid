@@ -7,6 +7,7 @@ import android.content.*;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Point;
@@ -17,14 +18,21 @@ import android.hardware.camera2.params.*;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.*;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.*;
 import android.view.animation.RotateAnimation;
-import android.view.animation.TranslateAnimation;
 import android.widget.*;
+
 import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -40,6 +48,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import privacyPolicyTool.*;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -47,9 +56,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextureView v1;
     private TextureView v2;
     private Handler handler;
-    private final int[] isSwithCam={1};
-    private final int[] isChange={1};
-    private boolean isFlash=false;
+    private final int[] isSwithCam = {1};
+    private final int[] isChange = {1};
+    private boolean isFlash = false;
     private RelativeLayout toolbar;
     private TestScroller text;
     private ImageView switchCam;
@@ -73,37 +82,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private RotateAnimation rotationAnimation;
     private ProgressDialog dialog;
     private Toast videoFinishToast;
-    private int mode=0;//0,1,2分别表示测距、立体、景深
+    private int mode = 0;//0,1,2分别表示测距、立体、景深
     private StereoBMUtil stereoBMUtil;
+
     static {
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_0, 270);
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_90, 180);
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_180, 90);
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_270, 0);
     }
+
     private ImageView imageView;
     private TextView textView;
+    private String SP_PRIVACY = "sp_privacy";
+    private String SP_VERSION_CODE = "sp_version_code";
+    private boolean isCheckPrivacy = false;
+    private long versionCode;
+    private long currentVersionCode;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d("TAG","Main activity");
+        Log.d("TAG", "Main activity");
         if (OpenCVLoader.initDebug()) {
             Log.d("TAG", "OpenCVLoader初始化成功");
-        }else{
+        } else {
             Log.d("TAG", "OpenCVLoader初始化失败");
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        check();
         if (hasPermission())
             requestP();
         init();
-        orientationEventListener=new OrientationEventListener(this,
+        orientationEventListener = new OrientationEventListener(this,
                 SensorManager.SENSOR_DELAY_NORMAL) {
             @Override
             public void onOrientationChanged(int orientation) {
-                if (((orientation>=0)&&(orientation<=30))||(orientation>=330)) {
+                if (((orientation >= 0) && (orientation <= 30)) || (orientation >= 330)) {
                     mMediaRecorder.setOrientationHint(0);
-                }
-                else {
+                } else {
                     mMediaRecorder.setOrientationHint(90);
                 }
             }
@@ -125,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return true;
         }
     }
+
     private void requestP() {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             requestPermissions(new String[]{android.Manifest.permission.CAMERA,
@@ -134,7 +152,113 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         }
     }
-    private TextureView.SurfaceTextureListener surfaceTextureListener =  new TextureView.SurfaceTextureListener() {
+
+    private void check() {
+
+        //先判断是否显示了隐私政策
+        currentVersionCode = AppUtil.getAppVersionCode(MainActivity.this);
+        versionCode = (long) SPUtil.get(MainActivity.this, SP_VERSION_CODE, 0L);
+        isCheckPrivacy = (boolean) SPUtil.get(MainActivity.this, SP_PRIVACY, false);
+
+        if (!isCheckPrivacy || versionCode != currentVersionCode) {
+            showPrivacy();
+        } else {
+        }
+    }
+
+    private void showPrivacy() {
+
+        final PrivacyDialog dialog = new PrivacyDialog(MainActivity.this);
+        TextView tv_privacy_tips = dialog.findViewById(R.id.tv_privacy_tips);
+        TextView btn_exit = dialog.findViewById(R.id.btn_exit);
+        TextView btn_enter = dialog.findViewById(R.id.btn_enter);
+        dialog.show();
+
+        String string = getResources().getString(R.string.privacy_tips);
+        String key1 = getResources().getString(R.string.privacy_tips_key1);
+        String key2 = getResources().getString(R.string.privacy_tips_key2);
+        int index1 = string.indexOf(key1);
+        int index2 = string.indexOf(key2);
+
+        //需要显示的字串
+        SpannableString spannedString = new SpannableString(string);
+        //设置点击字体颜色
+        ForegroundColorSpan colorSpan1 = new ForegroundColorSpan(getResources().getColor(R.color.colorBlue));
+        spannedString.setSpan(colorSpan1, index1, index1 + key1.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        ForegroundColorSpan colorSpan2 = new ForegroundColorSpan(getResources().getColor(R.color.colorBlue));
+        spannedString.setSpan(colorSpan2, index2, index2 + key2.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        //设置点击字体大小
+        AbsoluteSizeSpan sizeSpan1 = new AbsoluteSizeSpan(18, true);
+        spannedString.setSpan(sizeSpan1, index1, index1 + key1.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        AbsoluteSizeSpan sizeSpan2 = new AbsoluteSizeSpan(18, true);
+        spannedString.setSpan(sizeSpan2, index2, index2 + key2.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        //设置点击事件
+        ClickableSpan clickableSpan1 = new ClickableSpan() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, TermsActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                //点击事件去掉下划线
+                ds.setUnderlineText(false);
+            }
+        };
+        spannedString.setSpan(clickableSpan1, index1, index1 + key1.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+
+        ClickableSpan clickableSpan2 = new ClickableSpan() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, PrivacyPolicyActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                //点击事件去掉下划线
+                ds.setUnderlineText(false);
+            }
+        };
+        spannedString.setSpan(clickableSpan2, index2, index2 + key2.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+
+        //设置点击后的颜色为透明，否则会一直出现高亮
+        tv_privacy_tips.setHighlightColor(Color.TRANSPARENT);
+        //开始响应点击事件
+        tv_privacy_tips.setMovementMethod(LinkMovementMethod.getInstance());
+
+        tv_privacy_tips.setText(spannedString);
+
+        //设置弹框宽度占屏幕的80%
+        WindowManager m = getWindowManager();
+        Display defaultDisplay = m.getDefaultDisplay();
+        final WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+        params.width = (int) (defaultDisplay.getWidth() * 0.80);
+        dialog.getWindow().setAttributes(params);
+
+        btn_exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                SPUtil.put(MainActivity.this, SP_VERSION_CODE, currentVersionCode);
+                SPUtil.put(MainActivity.this, SP_PRIVACY, false);
+                finish();
+            }
+        });
+
+        btn_enter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                SPUtil.put(MainActivity.this, SP_VERSION_CODE, currentVersionCode);
+                SPUtil.put(MainActivity.this, SP_PRIVACY, true);
+            }
+        });
+
+    }
+
+    private TextureView.SurfaceTextureListener surfaceTextureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
             //必须是在此处开启摄像头，
@@ -144,46 +268,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
         }
+
         @Override
         public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
             return false;
         }
+
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {
         }
     };
+
     @SuppressLint("ClickableViewAccessibility")
     private void init() {
         getCamera = new GetCamera(MainActivity.this);
-        videoSize =getCamera.getVideoSize();
-        v1=findViewById(R.id.textureView0);
-        v2=findViewById(R.id.textureView1);
+        videoSize = getCamera.getVideoSize();
+        v1 = findViewById(R.id.textureView0);
+        v2 = findViewById(R.id.textureView1);
         v2.setSurfaceTextureListener(surfaceTextureListener);
         //setPreviewSize(point.x,point.y);
-        switchCam=findViewById(R.id.switchCam);//双摄像头配置
+        switchCam = findViewById(R.id.switchCam);//双摄像头配置
         switchCam.setBackgroundResource(R.mipmap.altercam);
         //控件绑定
-        toolbar=findViewById(R.id.toolBar);
+        toolbar = findViewById(R.id.toolBar);
         toolbar.setBackgroundResource(R.color.transparent);
-        text=findViewById(R.id.selecteText);
-        takePhoto=findViewById(R.id.takephoto);
+        text = findViewById(R.id.selecteText);
+        takePhoto = findViewById(R.id.takephoto);
         takePhoto.setVisibility(takePhoto.GONE);
-        document=findViewById(R.id.document);
+        document = findViewById(R.id.document);
         document.setVisibility(View.GONE);
-        btncam =findViewById(R.id.btncam);
+        btncam = findViewById(R.id.btncam);
         btncam.setVisibility(View.GONE);
-        flashButton=findViewById(R.id.flash_button);
-        timer=findViewById(R.id.timer);
+        flashButton = findViewById(R.id.flash_button);
+        timer = findViewById(R.id.timer);
         timer.setVisibility(timer.GONE);
-        rb3dProgressBar=findViewById(R.id.rb3dProgressBar);
+        rb3dProgressBar = findViewById(R.id.rb3dProgressBar);
         rb3dProgressBar.setVisibility(View.GONE);
-        dialog=new ProgressDialog(MainActivity.this);
+        dialog = new ProgressDialog(MainActivity.this);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);//条形进度条
         dialog.setCancelable(false);//能否在显示过程中关闭
-        videoFinishToast =Toast.makeText(MainActivity.this, "后置摄像头少于2个！", Toast.LENGTH_LONG);
+        videoFinishToast = Toast.makeText(MainActivity.this, "后置摄像头少于2个！", Toast.LENGTH_LONG);
         videoFinishToast.setGravity(Gravity.CENTER, 0, 1920);
-        imageView=findViewById(R.id.dynamicImage);
-        textView=findViewById(R.id.dynamicText);
+        imageView = findViewById(R.id.dynamicImage);
+        textView = findViewById(R.id.dynamicText);
         imageView.setVisibility(imageView.GONE);
         textView.setVisibility(textView.GONE);
         //控件样式
@@ -195,18 +322,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imageView.setOnClickListener(this);
         //监听器设置
         text.setOnTouchListener((v, event) -> {
-            if (text.getSelectedString().equals("立体模式")){
-                mode=1;
+            if (text.getSelectedString().equals("立体模式")) {
+                mode = 1;
                 takePhoto.setVisibility(takePhoto.GONE);
                 Mvideo();
             }
-            if (text.getSelectedString().equals("景深合成")){
-                mode=2;
+            if (text.getSelectedString().equals("景深合成")) {
+                mode = 2;
                 takePhoto.setVisibility(takePhoto.GONE);
                 Mcam();
             }
-            if (text.getSelectedString().equals("测距模式")){
-                mode=0;
+            if (text.getSelectedString().equals("测距模式")) {
+                mode = 0;
                 takePhoto.setVisibility(takePhoto.GONE);
                 imageView.setVisibility(imageView.GONE);
                 Mruler();
@@ -214,60 +341,62 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return false;
         });
 
-        v1.setOnTouchListener((v,event)->{
-            int eventType=event.getAction();
-            if (mode!=0)return false;
+        v1.setOnTouchListener((v, event) -> {
+            int eventType = event.getAction();
+            if (mode != 0) return false;
             double[] c = new double[0];
-            if(eventType==MotionEvent.ACTION_DOWN){
+            if (eventType == MotionEvent.ACTION_DOWN) {
                 //在这里调用深度图算法
-                  try {
-                      PhotoLoader photoloader=new PhotoLoader(Environment.getExternalStorageDirectory().getPath()+"/DCIM/stereo/picture");
-                      ArrayList<String> fileList=photoloader.getPicLocation();
-                      Bitmap leftBitmap = BitmapFactory.decodeStream(getAssets().open(fileList.get(0)));
-                      Bitmap rightBitmap = BitmapFactory.decodeStream(getAssets().open(fileList.get(1)));
-                      Bitmap result = stereoBMUtil.compute(leftBitmap, rightBitmap);
-                      float[] dst = new float[2];
-                      Matrix inverseMatrix = new Matrix();
-                      inverseMatrix.mapPoints(dst, new float[]{event.getX(), event.getY()});
-                      int dstX = (int) dst[0];
-                      int dstY = (int) dst[1];
-                      // 获取该点的三维坐标
-                      c = stereoBMUtil.getCoordinate(dstX, dstY);
-                      Log.i("v1 ACTION_DOWN","x:"+event.getX()+" y:"+event.getY());
+                try {
+                    PhotoLoader photoloader = new PhotoLoader(Environment.getExternalStorageDirectory().getPath() + "/DCIM/stereo/picture");
+                    ArrayList<String> fileList = photoloader.getPicLocation();
+                    Bitmap leftBitmap = BitmapFactory.decodeStream(getAssets().open(fileList.get(0)));
+                    Bitmap rightBitmap = BitmapFactory.decodeStream(getAssets().open(fileList.get(1)));
+                    Bitmap result = stereoBMUtil.compute(leftBitmap, rightBitmap);
+                    float[] dst = new float[2];
+                    Matrix inverseMatrix = new Matrix();
+                    inverseMatrix.mapPoints(dst, new float[]{event.getX(), event.getY()});
+                    int dstX = (int) dst[0];
+                    int dstY = (int) dst[1];
+                    // 获取该点的三维坐标
+                    c = stereoBMUtil.getCoordinate(dstX, dstY);
+                    Log.i("v1 ACTION_DOWN", "x:" + event.getX() + " y:" + event.getY());
 
-                  } catch (IOException e) {
-                      e.printStackTrace();
-                  }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)textView.getLayoutParams();
-            params.setMargins((int)event.getX(), (int)event.getY(), 0, 0);// 通过自定义坐标来放置你的控件
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) textView.getLayoutParams();
+            params.setMargins((int) event.getX(), (int) event.getY(), 0, 0);// 通过自定义坐标来放置你的控件
             textView.setLayoutParams(params);
-            RelativeLayout.LayoutParams params1 = (RelativeLayout.LayoutParams)textView.getLayoutParams();
-            params1.setMargins((int)event.getX(), (int)event.getY()-30, 0, 0);// 通过自定义坐标来放置你的控件
+            RelativeLayout.LayoutParams params1 = (RelativeLayout.LayoutParams) textView.getLayoutParams();
+            params1.setMargins((int) event.getX(), (int) event.getY() - 30, 0, 0);// 通过自定义坐标来放置你的控件
             imageView.setLayoutParams(params1);
-            textView.setText(c[2]+"cm");
+            textView.setText(c[2] + "cm");
             imageView.setVisibility(imageView.VISIBLE);
             textView.setVisibility(textView.VISIBLE);
             return false;
 
         });
-        v2.setOnTouchListener((v,event)->{
-            int eventType=event.getAction();
-            if (mode!=0)return false;
-            if(eventType==MotionEvent.ACTION_DOWN){
+        v2.setOnTouchListener((v, event) -> {
+            int eventType = event.getAction();
+            if (mode != 0) return false;
+            if (eventType == MotionEvent.ACTION_DOWN) {
                 //在这里调用深度图算法
-                Log.i("v2 ACTION_DOWN","x:"+event.getX()+" y:"+event.getY());
+                Log.i("v2 ACTION_DOWN", "x:" + event.getX() + " y:" + event.getY());
             }
             return false;
         });
     }
-    private void Mruler(){
+
+    private void Mruler() {
         btncam.setVisibility(btncam.GONE);
         document.setVisibility(document.GONE);
         toolbar.setBackgroundResource(R.color.transparent);
         document.setBackgroundResource(R.color.transparent);
     }
-    private void Mvideo(){
+
+    private void Mvideo() {
         imageView.setVisibility(imageView.GONE);
         textView.setVisibility(textView.GONE);
         btncam.setVisibility(btncam.VISIBLE);
@@ -276,16 +405,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btncam.setBackgroundResource(R.mipmap.init2);
         document.setBackgroundResource(R.mipmap.document);
         btncam.setOnClickListener(view -> {
-            if (text.getSelectedString().equals("立体模式")){
-                if (isChange[0] ==1){
-                    Log.d("TAG","开始录像");
+            if (text.getSelectedString().equals("立体模式")) {
+                if (isChange[0] == 1) {
+                    Log.d("TAG", "开始录像");
                     startRecordingVideo();
                     alterCam();
-                }
-                else{
+                } else {
                     stopRecorder();
                     btncam.setBackgroundResource(R.mipmap.init2);
-                    Log.d("TAG","停止录像");
+                    Log.d("TAG", "停止录像");
                     timer.setVisibility(timer.GONE);
                     alterCam();
                     //结束录像并保存
@@ -293,12 +421,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+
     private void startRecordingVideo() {
-        Log.d("TAG","video");
+        Log.d("TAG", "video");
         btncam.setBackgroundResource(R.mipmap.shoot);
-        isChange[0] =0;
-        for (int i = 0; i< videoSize.length; i++){
-            Log.d("TAG","size number:"+ i +" size is "+ videoSize[i]);
+        isChange[0] = 0;
+        for (int i = 0; i < videoSize.length; i++) {
+            Log.d("TAG", "size number:" + i + " size is " + videoSize[i]);
         }
         configSession();
         mMediaRecorder.start();
@@ -306,6 +435,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         timer.setBase(SystemClock.elapsedRealtime());//计时器清零
         timer.start();
     }
+
     private void stopRecorder() {
         if (mMediaRecorder != null) {
             mMediaRecorder.stop();
@@ -313,13 +443,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //停止计时
             timer.stop();
             timer.setBase(SystemClock.elapsedRealtime());//计时器清零
-            new RB3DAsyncTask(rb3dProgressBar,dialog,videoFinishToast).execute(fileName,fileName);
-            isChange[0]=1;
+            new RB3DAsyncTask(rb3dProgressBar, dialog, videoFinishToast).execute(fileName, fileName);
+            isChange[0] = 1;
 
         }
         broadcast();
         startPreview();
     }
+
     private void startPreview() {
         stopPreview();
         SurfaceTexture mSurfaceTexture = v1.getSurfaceTexture();
@@ -354,6 +485,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
     }
+
     // 广播通知相册更新
     public void broadcast() {
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/stereo";
@@ -362,8 +494,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intent.setData(uri);
         Log.d("TAG", "broadcast: success");
     }
+
     @SuppressLint("ClickableViewAccessibility")
-    private void Mcam(){
+    private void Mcam() {
         imageView.setVisibility(imageView.GONE);
         textView.setVisibility(textView.GONE);
         btncam.setVisibility(btncam.VISIBLE);
@@ -372,22 +505,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btncam.setBackgroundResource(R.mipmap.init3);
         document.setBackgroundResource(R.mipmap.document);
         btncam.setOnTouchListener((v, event) -> {
-            if (text.getSelectedString().equals("景深合成")&&event.getAction()==MotionEvent.ACTION_DOWN){
+            if (text.getSelectedString().equals("景深合成") && event.getAction() == MotionEvent.ACTION_DOWN) {
                 takePhoto.setVisibility(takePhoto.VISIBLE);
                 try {
                     Thread.sleep(300);
-                }
-                catch (Exception e){
-                    Log.d("TAG","take photo:"+e);
+                } catch (Exception e) {
+                    Log.d("TAG", "take photo:" + e);
                 }
             }
-            if (text.getSelectedString().equals("景深合成")&&event.getAction()==MotionEvent.ACTION_UP){
+            if (text.getSelectedString().equals("景深合成") && event.getAction() == MotionEvent.ACTION_UP) {
                 takePhoto.setVisibility(takePhoto.GONE);
             }
             return false;
         });
     }
-    private void openCamera(){
+
+    private void openCamera() {
         HandlerThread thread = new HandlerThread("DualCeamera");
         thread.start();
         handler = new Handler(thread.getLooper());
@@ -398,20 +531,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 //否则去请求相机权限
                 ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.CAMERA},1000);
+                        new String[]{Manifest.permission.CAMERA}, 1000);
                 return;
             }
-            Log.d("TAG","try to open camera");
-            manager.openCamera(getCamera.getLogicCameraId(),AsyncTask.SERIAL_EXECUTOR, cameraOpenCallBack);
+            Log.d("TAG", "try to open camera");
+            manager.openCamera(getCamera.getLogicCameraId(), AsyncTask.SERIAL_EXECUTOR, cameraOpenCallBack);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
     }
+
     private CameraDevice.StateCallback cameraOpenCallBack = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(CameraDevice cameraDevice) {
             Log.d("TAG", "相机已经打开");
-            mCameraDevice=cameraDevice;
+            mCameraDevice = cameraDevice;
             //当逻辑摄像头开启后， 配置物理摄像头的参数
             config(cameraDevice);
         }
@@ -420,6 +554,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onDisconnected(@NonNull CameraDevice cameraDevice) {
             Log.d("TAG", "相机连接断开");
         }
+
         @Override
         public void onError(@NonNull CameraDevice cameraDevice, int i) {
             Log.d("TAG", "相机打开失败");
@@ -463,6 +598,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onConfigureFailed(@NonNull CameraCaptureSession session) {
         }
     };
+
     private Size getMatchingSize() {
         Size selectSize = null;
         try {
@@ -507,10 +643,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d("TAG", "getMatchingSize: 选择的分辨率高度=" + selectSize.getHeight());
         return selectSize;
     }
+
     private void configMediaRecorder() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
         Date date = new Date(System.currentTimeMillis());
-        File saveLocation = new File(Environment.getExternalStorageDirectory(),"/DCIM/stereo");
+        File saveLocation = new File(Environment.getExternalStorageDirectory(), "/DCIM/stereo");
         saveLocation.mkdirs();
         //需要先创建目录，否则会无法保存到对应目录
         File file = new File(Environment.getExternalStorageDirectory() +
@@ -518,7 +655,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (file.exists()) {
             file.delete();
         }
-        fileName=file.getAbsolutePath();
+        fileName = file.getAbsolutePath();
         if (mMediaRecorder == null) {
             mMediaRecorder = new MediaRecorder();
         }
@@ -537,14 +674,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        Surface surface = new Surface(v1.getSurfaceTexture());
 //        mMediaRecorder.setPreviewDisplay(surface);
 
-        Log.d("TAG","Stage 1");
+        Log.d("TAG", "Stage 1");
         try {
             mMediaRecorder.prepare();
-            Log.d("TAG","prepare 1 success");
+            Log.d("TAG", "prepare 1 success");
         } catch (IOException e) {
-            Log.d("TAG","prepare 1 fail");
+            Log.d("TAG", "prepare 1 fail");
         }
     }
+
     private void configSession() {
         int rotation = MainActivity.this.getWindowManager().getDefaultDisplay().getRotation();
         mPreViewBuidler.set(CaptureRequest.JPEG_ORIENTATION, INVERSE_ORIENTATIONS.get(rotation));
@@ -560,7 +698,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         configMediaRecorder();
         Size cameraSize = getMatchingSize();
         SurfaceTexture surfaceTexture;
-        if (isSwithCam[0]==1)
+        if (isSwithCam[0] == 1)
             surfaceTexture = v2.getSurfaceTexture();
         else
             surfaceTexture = v1.getSurfaceTexture();
@@ -581,10 +719,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
     }
-    public void config(CameraDevice cameraDevice){
-        String cameraID[]=getCamera.getCameraID();
+
+    public void config(CameraDevice cameraDevice) {
+        String cameraID[] = getCamera.getCameraID();
         Log.d("TAG", cameraID.toString());
-        if (cameraID.length<2){
+        if (cameraID.length < 2) {
             try {
                 Size cameraSize = getMatchingSize();
                 mPreViewBuidler = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
@@ -606,17 +745,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 mCameraCaptureSession = cameraCaptureSession;
                                 try {
                                     mPreViewBuidler.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-                                    mCameraCaptureSession.setRepeatingRequest(mPreViewBuidler.build(),null,handler);
+                                    mCameraCaptureSession.setRepeatingRequest(mPreViewBuidler.build(), null, handler);
                                 } catch (CameraAccessException e) {
                                     e.printStackTrace();
-                                    Log.d("linc","set preview builder failed."+e.getMessage());
+                                    Log.d("linc", "set preview builder failed." + e.getMessage());
                                 }
                             }
 
                             @Override
                             public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
                             }
-                        },handler);
+                        }, handler);
 
             } catch (CameraAccessException e) {
                 e.printStackTrace();
@@ -654,12 +793,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
                             try {
-                                mCameraCaptureSession=cameraCaptureSession;
+                                mCameraCaptureSession = cameraCaptureSession;
                                 cameraCaptureSession.setRepeatingRequest(mPreViewBuidler.build(), null, handler);
                             } catch (CameraAccessException e) {
                                 e.printStackTrace();
                             }
                         }
+
                         @Override
                         public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
 
@@ -671,49 +811,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
     }
-    private void alterCam(){
-        Log.d("TAG","alterCam!");
-        if (isSwithCam[0]==1){
+
+    private void alterCam() {
+        Log.d("TAG", "alterCam!");
+        if (isSwithCam[0] == 1) {
             v1.setVisibility(View.GONE);
             v2.setVisibility(View.VISIBLE);
-            isSwithCam[0]=0;
-        }else {
+            isSwithCam[0] = 0;
+        } else {
             v1.setVisibility(View.VISIBLE);
             v2.setVisibility(View.GONE);
-            isSwithCam[0]=1;
+            isSwithCam[0] = 1;
         }
     }
+
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id==R.id.switchCam){
+        if (id == R.id.switchCam) {
             alterCam();
-        }
-        else if (id==R.id.document){
-            if (text.getSelectedString().equals("景深合成")){
-                Intent intent=new Intent(MainActivity.this, PicActivity.class);
+        } else if (id == R.id.document) {
+            if (text.getSelectedString().equals("景深合成")) {
+                Intent intent = new Intent(MainActivity.this, PicActivity.class);
                 startActivity(intent);
             }
-            if (text.getSelectedString().equals("立体模式")){
-                Intent intent=new Intent(MainActivity.this,VideoActivity.class);
+            if (text.getSelectedString().equals("立体模式")) {
+                Intent intent = new Intent(MainActivity.this, VideoActivity.class);
                 startActivity(intent);
             }
-        }
-        else if (id==R.id.flash_button){
+        } else if (id == R.id.flash_button) {
             switchFlash();
-        }
-        else if (id==R.id.dynamicImage){
+        } else if (id == R.id.dynamicImage) {
             imageView.setVisibility(imageView.GONE);
             textView.setVisibility(textView.GONE);
         }
     }
 
 
-
-    private void switchFlash(){
+    private void switchFlash() {
         isFlash = !isFlash;
         flashButton.setImageResource(isFlash ? R.mipmap.flash_open : R.mipmap.flash_close);
     }
+
     private void updatePreview() {
         if (null == mCameraDevice) {
             return;
@@ -727,6 +866,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
     }
+
     private void stopPreview() {
         //关闭预览就是关闭捕获会话
         if (mCameraCaptureSession != null) {
