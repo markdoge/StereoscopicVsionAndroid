@@ -18,6 +18,7 @@ import albumFun.VideoLoader;
 public class VideoActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageButton outVideo;
     private ImageButton del;
+    private ImageButton share;
     private ImageButton playBtn;
     private ImageButton lastBtn;
     private ImageButton nextBtn;
@@ -39,8 +40,10 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
     private void init(){
         outVideo=findViewById(R.id.outVideo);
         del=findViewById(R.id.delVideo);
+        share=findViewById(R.id.shareVideo);
         outVideo.setBackgroundResource(R.mipmap.ext);
         del.setBackgroundResource(R.mipmap.del);
+        share.setBackgroundResource(R.mipmap.share_btn);
         playBtn=findViewById(R.id.playBtn);
         lastBtn=findViewById(R.id.lastVideo);
         lastBtn.setVisibility(lastBtn.GONE);

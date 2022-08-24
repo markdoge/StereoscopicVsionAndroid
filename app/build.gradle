@@ -1,7 +1,28 @@
 plugins {
     id 'com.android.application'
 }
-
+apply plugin: 'com.mob.sdk'
+MobSDK {
+    appKey "368730cad7ddd"
+    appSecret "fb964761cc01d32ecf66784ddc88c044"
+    ShareSDK {
+        loopShare true
+        devInfo {
+            Wechat {
+                appId "wx4868b35061f87885"
+                appSecret "64020361b8ec4c99936c0e3999a9f249"
+                userName "gh_afb25ac019c9"
+                path "pages/index/index.html?id=1"
+                withShareTicket true
+                miniprogramType 2
+            }
+            WechatMoments {
+                appId "wx4868b35061f87885"
+                appSecret "64020361b8ec4c99936c0e3999a9f249"
+            }
+        }
+    }
+}
 android {
     packagingOptions {
 
@@ -29,7 +50,10 @@ android {
             abiFilters "armeabi", "armeabi-v7a","arm64-v8a"
         }
     }
-
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
     buildTypes {
         release {
             minifyEnabled false

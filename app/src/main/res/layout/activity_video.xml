@@ -3,36 +3,98 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
     <ImageView
+        android:id="@+id/videoPreview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/videoPreview"/>
+        android:layout_height="match_parent" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center">
-    <VideoView
-        android:id="@+id/videoView"
-        android:layout_width="match_parent"
-        android:layout_centerInParent="true"
-        android:layout_height="match_parent" />
+
+        <VideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true" />
     </RelativeLayout>
+
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
+        android:background="@color/blackTrans"
+        android:layout_gravity="bottom"
         android:gravity="center_vertical">
-        <ImageButton
-            android:id="@+id/outVideo"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:scaleType="centerCrop" />
-        <ImageButton
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:id="@+id/delVideo"
+            android:layout_marginLeft="40dp"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/outVideo"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/funExit"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:textSize="8dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/shareVideo"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/funShare"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="8dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:scaleType="centerCrop"/>
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/delVideo"
+                android:layout_width="30dp"
+                android:layout_marginRight="40dp"
+                android:layout_height="30dp"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/funDel"
+                android:gravity="center"
+                android:layout_marginRight="40dp"
+                android:textColor="@color/white"
+                android:textSize="8dp" />
+        </LinearLayout>
     </RelativeLayout>
 
     <RelativeLayout
@@ -47,6 +109,7 @@
             android:layout_centerVertical="true"
             android:background="@color/transparent"
             android:src="@mipmap/left" />
+
         <ImageButton
             android:id="@+id/nextVideo"
             android:layout_width="50dp"
@@ -61,8 +124,8 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_centerInParent="true"
-            android:src="@mipmap/init4"
             android:background="@color/transparent"
-            android:scaleType="centerCrop"/>
-    </RelativeLayout >
+            android:scaleType="centerCrop"
+            android:src="@mipmap/init4" />
+    </RelativeLayout>
 </FrameLayout>

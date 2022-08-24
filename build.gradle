@@ -8,7 +8,7 @@ buildscript {
     }
     dependencies {
         classpath "com.android.tools.build:gradle:4.2.1"
-        classpath "com.mob.sdk:MobSDK:+"
+        classpath "com.mob.sdk:MobSDK:2018.0319.1724"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -30,47 +30,4 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-}
-
-apply plugin: 'com.mob.sdk'
-
-MobSDK {
-    appKey "368730cad7ddd"
-    appSecret "替换为mob官方申请的appkey对应的appSecret"
-    ShareSDK {
-        loopShare true
-        devInfo {
-            SinaWeibo {
-                appKey "568898243"
-                appSecret "38a4f8204cc784f81f9f0daaf31e02e3"
-                callbackUri "http://www.sharesdk.cn"
-            }
-            Wechat {
-                appId "wx4868b35061f87885"
-                appSecret "64020361b8ec4c99936c0e3999a9f249"
-                userName "gh_afb25ac019c9"
-                path "pages/index/index.html?id=1"
-                withShareTicket true
-                miniprogramType 2
-            }
-            Douyin {
-                appKey "aw9ivykfjvi4hpwo"
-                appSecret "42b4caa6bda60bd49f05f06d0a4956e1"
-            }
-            Littleredbook {}
-            Kuaishou {
-                clientID "ks697776468193437829"
-                callbackURL "1dYU_9dTnMFKcm-BFARJkw"
-                enable true
-            }
-            WechatMoments {
-                appId "wx4868b35061f87885"
-                appSecret "64020361b8ec4c99936c0e3999a9f249"
-            }
-            WechatFavorite {
-                appId "wx4868b35061f87885"
-                appSecret "64020361b8ec4c99936c0e3999a9f249"
-            }
-        }
-    }
 }

@@ -10,7 +10,7 @@ import java.util.Locale;
 
 public class AppUtil {
 
-    private final static String TAG = AppUtil.class.getSimpleName();
+    private final static String TAG = "TAG";
 
     /**
      * 获取当前app version code
@@ -27,7 +27,7 @@ public class AppUtil {
                 appVersionCode = packageInfo.versionCode;
             }
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "[getAppVersionCode]-error：" + e.getMessage());
+            Log.d(TAG, "[getAppVersionCode]-error：" + e.getMessage());
         }
         return appVersionCode;
     }
@@ -43,7 +43,7 @@ public class AppUtil {
                     .getPackageInfo(context.getPackageName(), 0);
             appVersionName = packageInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "[getAppVersionName]-error：" + e.getMessage());
+            Log.d(TAG, "[getAppVersionName]-error：" + e.getMessage());
         }
         return appVersionName;
     }

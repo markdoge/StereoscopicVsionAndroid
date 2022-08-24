@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-
 import privacyPolicyTool.AppUtil;
 
 public class PrivacyPolicyActivity extends Activity implements View.OnClickListener {
@@ -29,6 +28,8 @@ public class PrivacyPolicyActivity extends Activity implements View.OnClickListe
     private void initView() {
         imageView_my = findViewById(R.id.myico);
         imageView = findViewById(R.id.mobtechico);
+        imageView_my.setOnClickListener(this);
+        imageView.setOnClickListener(this);
         String language = AppUtil.getLanguage(PrivacyPolicyActivity.this);
         Log.i(TAG, "当前语言：" + language);
     }
@@ -44,12 +45,12 @@ public class PrivacyPolicyActivity extends Activity implements View.OnClickListe
     public void onClick(View view) {
         int id = view.getId();
         if(id==imageView.getId()){
-            Uri uri = Uri.parse("https://github.com/markdoge/StereoscopicVsionAndroid.git");
+            Uri uri = Uri.parse("https://www.mob.com/");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         }
         if (id==imageView_my.getId()){
-            Uri uri = Uri.parse("www.mob.com/about/policy");
+            Uri uri = Uri.parse("https://github.com/markdoge/StereoscopicVsionAndroid.git");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         }

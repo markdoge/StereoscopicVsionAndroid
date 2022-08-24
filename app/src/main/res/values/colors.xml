@@ -16,4 +16,7 @@
     <color name="colorWhite">#FFFFFFFF</color>
     <color name="colorBlue">#6495ED</color>
     <color name="Salmon">#FA8072</color>
+    <color name="whiteTrans">#80FFFFFF</color>
+    <color name="blackTrans">#AA000000</color>
+    <color name="blueTrans">#996495ED</color>
 </resources>
