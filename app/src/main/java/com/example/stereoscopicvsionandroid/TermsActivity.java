@@ -1,19 +1,25 @@
 package com.example.stereoscopicvsionandroid;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import privacyPolicyTool.*;
+import photoFun.BitmapSaver;
 
 
 public class TermsActivity extends Activity implements View.OnClickListener {
 
     private static final String TAG = "TAG";
-    private Button btn;
+    private ImageButton saveLenFormatPic;
+    private Boolean isClick=false;
     private final String LANGUAGE_CN = "zh-CN";
+    private BitmapSaver save = new BitmapSaver(TAG);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +30,8 @@ public class TermsActivity extends Activity implements View.OnClickListener {
     }
 
     private void initView() {
-
-        btn = findViewById(R.id.lenFormat);
-        btn.setOnClickListener(this);
+        saveLenFormatPic = findViewById(R.id.lenstadmap);
+        saveLenFormatPic.setOnClickListener(this);
         String language = AppUtil.getLanguage(TermsActivity.this);
     }
 
@@ -39,9 +44,12 @@ public class TermsActivity extends Activity implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         int id = view.getId();
-        if (id == btn.getId()){
-            Intent intent = new Intent(TermsActivity.this, MainActivity.class);
-            startActivity(intent);
+        if(id==saveLenFormatPic.getId()){
+            //save photo here
+            Log.d("TAG","user click the stdpic");
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.mipmap.stdmap);
+            save.saveLensFormatPic(TermsActivity.this,bitmap);
         }
     }
+
 }

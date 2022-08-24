@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d("TAG", "Main activity");
         if (OpenCVLoader.initDebug()) {
             Log.d("TAG", "OpenCVLoader初始化成功");
         } else {
@@ -110,9 +109,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        check();
         if (hasPermission())
             requestP();
+        check();
         init();
         orientationEventListener = new OrientationEventListener(this,
                 SensorManager.SENSOR_DELAY_NORMAL) {
@@ -125,10 +124,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         };
-    }
-
-    public TextureView getV1() {
-        return v1;
     }
 
     private boolean hasPermission() {
@@ -250,6 +245,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_enter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LensFormatActivity.class);
+                startActivity(intent);
                 dialog.dismiss();
                 SPUtil.put(MainActivity.this, SP_VERSION_CODE, currentVersionCode);
                 SPUtil.put(MainActivity.this, SP_PRIVACY, true);
@@ -846,7 +843,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             textView.setVisibility(textView.GONE);
         }
     }
-
 
     private void switchFlash() {
         isFlash = !isFlash;

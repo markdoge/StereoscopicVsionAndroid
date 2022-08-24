@@ -14,7 +14,7 @@
     <string name="privacy_tips_key1">Terms of Use</string>
     <string name="privacy_tips_key2">Privacy Policy</string>
     <string name="copyRight">CopyRight@markdoge\n\n</string>
-    <string name="privacy_tips">Welcome to 3DVision! In order to protect your privacy and use security, please read our Terms of Use and Privacy Policy carefully. Do not use this app until you have confirmed your full understanding and agreement. Thank you!</string>
+    <string name="privacy_tips">Welcome to 3DVision! In order to protect your privacy and use security, please read our Terms of Use and Privacy Policy carefully. Fomat your cam before use this app until you have confirmed your full understanding and agreement. Thank you!</string>
     <string name="privacy_context">If you want to use this app,please confirm the following roots:\n1.camera root\n2.file read and white root\n3.media record root\n\nthe icon:</string>
     <string name="privacy_context1">We use the mobtech sharesdk service of the third party \n(Shanghai Youkun Information Technology Co.Ltd. hereinafter referred to as "mobtech")\nto provide you with social sharing, third-party login social sharing and third-party login functions.</string>
     <string name="privacy_context2">To successfully implement this function, you need to authorize mobtechsdk to provide corresponding services; After your authorization, mobtech will collect your relevant personal information. The types and uses of information collected by mobtech, the rules for personal information protection and the withdrawal mechanism, etc</string>
@@ -23,5 +23,6 @@
     <string name="user2">Welcome to use 3D vision. This software requires users to correct the lens before use to achieve the desired effect of the software. The following is the lens correction picture. Please download the pictures and print them on A4 paper, and shoot them with two rear lenses.\n\n</string>
     <string name="user3">click the photo to save it to your phone</string>
     <string name="user4">go to lens format</string>
+    <string name="packgeName">com.example.stereoscopicvsionandroid</string>
 
 </resources>

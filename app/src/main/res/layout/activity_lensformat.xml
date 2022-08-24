@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:opencv="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/Total"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!--相机预览视图 -->
+    <TextureView
+        android:id="@+id/textureView_zero"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextureView
+        android:id="@+id/textureView_one"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <RelativeLayout
+        android:id="@+id/barTool"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/grayTrans"
+        android:padding="15dp"
+        android:visibility="visible">
+        <ImageButton
+            android:id="@+id/camBtn"
+            android:layout_width="69dp"
+            android:layout_height="69dp"
+            android:layout_centerInParent="true"
+            android:background="@color/transparent"
+            android:scaleType="centerCrop" />
+    </RelativeLayout>
+</RelativeLayout>
