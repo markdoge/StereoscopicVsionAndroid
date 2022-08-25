@@ -3,7 +3,9 @@ buildscript {
     repositories {
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/'}
         maven { url "https://mvn.mob.com/android"}
-        google()
+        maven { url 'https://maven.aliyun.com/repository/google/'}
+        maven { url 'https://maven.aliyun.com/repository/jcenter/'}
+        mavenLocal()
         mavenCentral()
     }
     dependencies {
@@ -18,7 +20,9 @@ buildscript {
 allprojects {
     repositories {
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-        google()
+        maven { url 'https://maven.aliyun.com/repository/google/'}
+        maven { url 'https://maven.aliyun.com/repository/jcenter/'}
+        mavenLocal()
         mavenCentral()
     }
     gradle.projectsEvaluated {
