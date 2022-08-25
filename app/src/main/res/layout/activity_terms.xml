@@ -32,18 +32,7 @@
             android:layout_height="wrap_content"
             android:textSize="10dp"
             android:text="@string/user3"
-            android:textColor="@color/blackTrans"
-            android:layout_gravity="right"/>
-        <Button
-            android:id="@+id/lenFormat"
-            android:layout_width="100dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:text="@string/user4"
-            android:textColor="@color/whiteTrans"
-            android:background="@drawable/btn_xxx"
-            android:shadowColor="@color/grayTrans"/>
-
+            android:textColor="@color/blackTrans"/>
 
 
 

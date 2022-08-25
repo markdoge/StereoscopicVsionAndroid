@@ -5,13 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.*;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.ImageFormat;
-import android.graphics.Matrix;
-import android.graphics.Point;
-import android.graphics.SurfaceTexture;
+import android.graphics.*;
 import android.hardware.SensorManager;
 import android.hardware.camera2.*;
 import android.hardware.camera2.params.*;
@@ -22,9 +16,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.ClickableSpan;
-import android.text.style.ForegroundColorSpan;
+import android.text.style.*;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Size;
@@ -149,7 +141,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void check() {
-
         //先判断是否显示了隐私政策
         currentVersionCode = AppUtil.getAppVersionCode(MainActivity.this);
         versionCode = (long) SPUtil.get(MainActivity.this, SP_VERSION_CODE, 0L);
