@@ -21,8 +21,8 @@
     <string name="privacy_context3">See the privacy policy (www.mob.com/about/policy) or details.</string>
     <string name="user1">Terms of Use</string>
     <string name="user2">Welcome to use 3D vision. This software requires users to correct the lens before use to achieve the desired effect of the software. The following is the lens correction picture. Please download the pictures and print them on A4 paper, and shoot them with two rear lenses.\n\n</string>
-    <string name="user3">click the photo to save it to your phone</string>
-    <string name="user4">go to lens format</string>
+    <string name="user3">click the photo to save it to your phone\n\n</string>
+    <string name="user4">or use this picture to format your camera</string>
     <string name="packgeName">com.example.stereoscopicvsionandroid</string>
 
 </resources>

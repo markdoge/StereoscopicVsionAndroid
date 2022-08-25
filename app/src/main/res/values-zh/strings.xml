@@ -22,7 +22,7 @@
     <string name="privacy_context3">详见MobTech官网（www.mob.com）上的隐私政策 （www.mob.com/about/policy）条款。</string>
     <string name="user1">用户协议</string>
     <string name="user2">欢迎你使用3D视觉，本软件需要用户在使用前进行镜头矫正以达到软件应有的效果，如下是镜头矫正图片。请下载图片用A4纸打印，分别用后置的两颗镜头拍摄。\n\n</string>
-    <string name="user3">点击图片将图片保存到手机</string>
-    <string name="user4">进入镜头矫正</string>
+    <string name="user3">点击图片将图片保存到手机\n\n</string>
+    <string name="user4">或者使用这张图片来矫正你的镜头</string>
     <string name="packgeName">com.example.stereoscopicvsionandroid</string>
 </resources>

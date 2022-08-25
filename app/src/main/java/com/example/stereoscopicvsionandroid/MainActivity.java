@@ -33,6 +33,7 @@ import org.opencv.android.OpenCVLoader;
 
 import OpenCVFun.RB3DAsyncTask;
 import albumFun.PhotoLoader;
+import albumFun.VideoLoader;
 import photoFun.*;
 
 import java.io.File;
@@ -76,6 +77,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Toast videoFinishToast;
     private int mode = 0;//0,1,2分别表示测距、立体、景深
     private StereoBMUtil stereoBMUtil;
+    private BitmapSaver bitmapSaver;
+    private Bitmap pic1;
+    private Bitmap pic2;
+    private VideoLoader videoLoader;
+    private ArrayList<Bitmap> videoPreview;
+    private ArrayList<String> videoLocation;
+    private LinearLayout sencor_bar;
 
     static {
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_0, 270);
@@ -246,6 +254,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() { // 5秒后执行该方法
+            // handler自带方法实现定时器
+            try {
+                sencor_bar.setVisibility(sencor_bar.INVISIBLE); // 隐藏
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
     private TextureView.SurfaceTextureListener surfaceTextureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
@@ -270,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @SuppressLint("ClickableViewAccessibility")
     private void init() {
         getCamera = new GetCamera(MainActivity.this);
+        sencor_bar = findViewById(R.id.censor_bar);
         videoSize = getCamera.getVideoSize();
         v1 = findViewById(R.id.textureView0);
         v2 = findViewById(R.id.textureView1);
@@ -336,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (eventType == MotionEvent.ACTION_DOWN) {
                 //在这里调用深度图算法
                 try {
-                    PhotoLoader photoloader = new PhotoLoader(Environment.getExternalStorageDirectory().getPath() + "/DCIM/stereo/picture");
+                    PhotoLoader photoloader = new PhotoLoader(Environment.getExternalStorageDirectory().getPath() + "/DCIM/stereo");
                     ArrayList<String> fileList = photoloader.getPicLocation();
                     Bitmap leftBitmap = BitmapFactory.decodeStream(getAssets().open(fileList.get(0)));
                     Bitmap rightBitmap = BitmapFactory.decodeStream(getAssets().open(fileList.get(1)));
@@ -348,19 +368,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     int dstY = (int) dst[1];
                     // 获取该点的三维坐标
                     c = stereoBMUtil.getCoordinate(dstX, dstY);
-                    Log.i("v1 ACTION_DOWN", "x:" + event.getX() + " y:" + event.getY());
+                    Log.d("MainActive", "x:" + event.getX() + " y:" + event.getY());
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) textView.getLayoutParams();
-            params.setMargins((int) event.getX(), (int) event.getY(), 0, 0);// 通过自定义坐标来放置你的控件
-            textView.setLayoutParams(params);
-            RelativeLayout.LayoutParams params1 = (RelativeLayout.LayoutParams) textView.getLayoutParams();
-            params1.setMargins((int) event.getX(), (int) event.getY() - 30, 0, 0);// 通过自定义坐标来放置你的控件
-            imageView.setLayoutParams(params1);
-            textView.setText(c[2] + "cm");
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) sencor_bar.getLayoutParams();
+            params.setMargins((int) event.getX() - 90, (int) event.getY() - 90, 0, 0);// 通过自定义坐标来放置你的控件
+            sencor_bar.setLayoutParams(params);
+            sencor_bar.setVisibility(sencor_bar.VISIBLE);
+            try {
+                textView.setText(c[2] + "cm");
+            } catch (Exception e) {
+                textView.setText("NAN");
+                Log.d("MainActive", "error:" + e.toString());
+
+            }
+            handler.postDelayed(runnable, 2200);
             imageView.setVisibility(imageView.VISIBLE);
             textView.setVisibility(textView.VISIBLE);
             return false;
@@ -371,10 +396,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (mode != 0) return false;
             if (eventType == MotionEvent.ACTION_DOWN) {
                 //在这里调用深度图算法
-                Log.i("v2 ACTION_DOWN", "x:" + event.getX() + " y:" + event.getY());
+                Log.d("MainActive", "x2:" + event.getX() + " y:" + event.getY());
             }
             return false;
         });
+        bitmapSaver = new BitmapSaver("MainActive");
     }
 
     private void Mruler() {
@@ -392,6 +418,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         toolbar.setBackgroundResource(R.color.black);
         btncam.setBackgroundResource(R.mipmap.init2);
         document.setBackgroundResource(R.mipmap.document);
+        /*try {
+            videoLoader=new VideoLoader(Environment.getExternalStorageDirectory().getPath()+"/DCIM/stereo");
+            videoPreview= videoLoader.getVideoPreview();
+            videoLocation=videoLoader.getVideoLocation();
+            int videoNum =videoLocation.size();
+            System.out.println(videoNum);
+            if (videoPreview.size()>0){
+                document.setImageBitmap(videoPreview.get(0));
+            }
+        }catch (Exception e){
+            Log.d("MainActivity",e.toString());
+        }*/
         btncam.setOnClickListener(view -> {
             if (text.getSelectedString().equals("立体模式")) {
                 if (isChange[0] == 1) {
@@ -476,7 +514,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // 广播通知相册更新
     public void broadcast() {
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/stereo";
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/stereo/video";
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         Uri uri = Uri.fromFile(new File(path));
         intent.setData(uri);
@@ -494,15 +532,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         document.setBackgroundResource(R.mipmap.document);
         btncam.setOnTouchListener((v, event) -> {
             if (text.getSelectedString().equals("景深合成") && event.getAction() == MotionEvent.ACTION_DOWN) {
-                takePhoto.setVisibility(takePhoto.VISIBLE);
-                try {
-                    Thread.sleep(300);
-                } catch (Exception e) {
-                    Log.d("TAG", "take photo:" + e);
-                }
+                btncam.setBackgroundResource(R.color.transparent);
+                Log.d("MainActive", "take photo");
+                pic1 = v2.getBitmap();
+                bitmapSaver.saveLensFormatPic(MainActivity.this, pic1, "Left2.png", "stereo/pic");
+                alterCam();
+                pic2 = v1.getBitmap();
+                bitmapSaver.saveLensFormatPic(MainActivity.this, pic2, "Left1.png", "stereo/pic");
+
             }
             if (text.getSelectedString().equals("景深合成") && event.getAction() == MotionEvent.ACTION_UP) {
-                takePhoto.setVisibility(takePhoto.GONE);
+                Log.d("MainActive", "Finger up");
+                btncam.setBackgroundResource(R.mipmap.init3);
             }
             return false;
         });
@@ -801,7 +842,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void alterCam() {
-        Log.d("TAG", "alterCam!");
+        Log.d("MainActive", "alterCam!");
         if (isSwithCam[0] == 1) {
             v1.setVisibility(View.GONE);
             v2.setVisibility(View.VISIBLE);

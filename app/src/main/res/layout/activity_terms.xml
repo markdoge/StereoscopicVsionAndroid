@@ -33,6 +33,24 @@
             android:textSize="10dp"
             android:text="@string/user3"
             android:textColor="@color/blackTrans"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:textColor="@color/grayTrans"/>
+        <ImageButton
+            android:id="@+id/formatpic2"
+            android:layout_width="124dp"
+            android:layout_height="175.4dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/acircles_pattern"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10dp"
+            android:text="@string/user3"
+            android:textColor="@color/blackTrans"/>
 
 
 

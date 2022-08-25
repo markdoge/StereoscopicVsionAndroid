@@ -22,8 +22,9 @@
             android:id="@+id/myico"
             android:layout_gravity="center"/>
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="right"
             android:text="@string/copyRight"
             android:textSize="10dp"
             android:layout_marginRight="10dp"/>

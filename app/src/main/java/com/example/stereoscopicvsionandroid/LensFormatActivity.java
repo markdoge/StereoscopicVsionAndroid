@@ -129,7 +129,6 @@ public class LensFormatActivity extends AppCompatActivity implements View.OnClic
                         new String[]{Manifest.permission.CAMERA}, 1000);
                 return;
             }
-            Log.d("TAG", "try to open camera");
             manager.openCamera(getCamera.getLogicCameraId(), AsyncTask.SERIAL_EXECUTOR, cameraOpenCallBack);
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -139,7 +138,6 @@ public class LensFormatActivity extends AppCompatActivity implements View.OnClic
     private CameraDevice.StateCallback cameraOpenCallBack = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(CameraDevice cameraDevice) {
-            Log.d("TAG", "相机已经打开");
             mCameraDevice = cameraDevice;
             //当逻辑摄像头开启后， 配置物理摄像头的参数
             config(cameraDevice);
@@ -174,7 +172,7 @@ public class LensFormatActivity extends AppCompatActivity implements View.OnClic
              * 你要是不放心那就增加循环,肯定会找到一个分辨率,不会出现此方法返回一个null的Size的情况
              * ,但是循环越大后获取的分辨率就越不匹配
              */
-            for (int j = 1; j < 41; j++) {
+            for (int j = 1; j < 21; j++) {
                 for (int i = 0; i < sizes.length; i++) { //遍历所有Size
                     Size itemSize = sizes[i];
                     //判断当前Size高度小于屏幕宽度+j*5  &&  判断当前Size高度大于屏幕宽度-j*5  &&  判断当前Size宽度小于当前屏幕高度

@@ -63,21 +63,28 @@
     </RelativeLayout>
 
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:id="@+id/censor_bar"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
         <ImageView
             android:id="@+id/dynamicImage"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/pic"
-           />
+            android:layout_gravity="center"
+            android:src="@drawable/censor"
+            />
 
         <TextView
             android:id="@+id/dynamicText"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:textColorHighlight="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:textColor="@color/Crimson"
             />
+    </LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="80dp">

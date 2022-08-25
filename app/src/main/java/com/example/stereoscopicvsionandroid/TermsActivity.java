@@ -17,8 +17,8 @@ public class TermsActivity extends Activity implements View.OnClickListener {
 
     private static final String TAG = "TAG";
     private ImageButton saveLenFormatPic;
+    private ImageButton saveLenFormatPic2;
     private Boolean isClick=false;
-    private final String LANGUAGE_CN = "zh-CN";
     private BitmapSaver save = new BitmapSaver(TAG);
 
     @Override
@@ -31,6 +31,8 @@ public class TermsActivity extends Activity implements View.OnClickListener {
     private void initView() {
         saveLenFormatPic = findViewById(R.id.lenstadmap);
         saveLenFormatPic.setOnClickListener(this);
+        saveLenFormatPic2 = findViewById(R.id.formatpic2);
+        saveLenFormatPic2.setOnClickListener(this);
         String language = AppUtil.getLanguage(TermsActivity.this);
     }
 
@@ -45,8 +47,12 @@ public class TermsActivity extends Activity implements View.OnClickListener {
         int id = view.getId();
         if(id==saveLenFormatPic.getId()){
             //save photo here
-            Log.d("TAG","user click the stdpic");
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.mipmap.stdmap);
+            save.saveLensFormatPic(TermsActivity.this,bitmap);
+        }
+        if(id==saveLenFormatPic2.getId()){
+            //save photo here
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.acircles_pattern);
             save.saveLensFormatPic(TermsActivity.this,bitmap);
         }
     }
