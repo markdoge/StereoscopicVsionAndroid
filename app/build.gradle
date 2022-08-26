@@ -23,7 +23,12 @@ MobSDK {
         }
     }
 }
+
 android {
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
     packagingOptions {
 
         pickFirst'META-INF/native-image/android-x86_64/jnijavacpp/jni-config.json'
@@ -50,10 +55,7 @@ android {
             abiFilters "armeabi", "armeabi-v7a","arm64-v8a"
         }
     }
-    lintOptions {
-        checkReleaseBuilds false
-        abortOnError false
-    }
+
     buildTypes {
         release {
             minifyEnabled false
