@@ -1,3 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">说藏话了</string>
+    <string name="privacy_tips_key2">科锐5</string>
+    <string name="privacy_tips_key1">芝士海豹</string>
 </resources>

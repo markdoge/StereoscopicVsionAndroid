@@ -17,6 +17,8 @@
         <entry key="..\:/StereoscopicVsionAndroid/app/src/main/res/drawable-v24/btn_xxx.xml" value="0.1235" />
         <entry key="..\:/StereoscopicVsionAndroid/app/src/main/res/drawable-v24/dialog_privacy_bg.xml" value="0.1235" />
         <entry key="..\:/StereoscopicVsionAndroid/app/src/main/res/drawable-v24/ic_launcher_background.xml" value="0.1235" />
+        <entry key="..\:/StereoscopicVsionAndroid/app/src/main/res/layout/activity_camera_calibration.xml" value="0.1125" />
+        <entry key="..\:/StereoscopicVsionAndroid/app/src/main/res/layout/activity_camera_calibration_.xml" value="0.25364583333333335" />
         <entry key="..\:/StereoscopicVsionAndroid/app/src/main/res/layout/activity_lensformat.xml" value="0.1125" />
         <entry key="..\:/StereoscopicVsionAndroid/app/src/main/res/layout/activity_main.xml" value="0.12335359675785208" />
         <entry key="..\:/StereoscopicVsionAndroid/app/src/main/res/layout/activity_pic.xml" value="0.1" />
@@ -26,6 +28,8 @@
         <entry key="..\:/StereoscopicVsionAndroid/app/src/main/res/layout/activity_video.xml" value="0.16" />
         <entry key="..\:/StereoscopicVsionAndroid/app/src/main/res/layout/dialog_privacy.xml" value="0.25364583333333335" />
         <entry key="..\:/StereoscopicVsionAndroid/app/src/main/res/layout/image_manipulations_surface_view.xml" value="0.1125" />
+        <entry key="..\:/StereoscopicVsionAndroid/app/src/main/res/menu/calibration.xml" value="0.1" />
+        <entry key="..\:/StereoscopicVsionAndroid/app/src/main/res/menu/menu_main.xml" value="0.2" />
       </map>
     </option>
   </component>

@@ -27,4 +27,11 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
+    <style name="AppActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/grayTrans</item>
+        <item name="colorPrimaryDark">@color/blackTrans</item>
+        <item name="colorAccent">@color/whiteTrans</item>
+        <item name="windowActionBar">true</item>
+        <item name="android:windowNoTitle">false</item>
+    </style>
 </resources>

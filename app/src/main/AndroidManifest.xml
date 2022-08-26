@@ -49,6 +49,12 @@
             android:theme="@style/Theme.Design.Light.NoActionBar"/>
         <activity android:name=".LensFormatActivity"
             android:theme="@style/Theme.Design.Light.NoActionBar"/>
+
+        <activity android:name=".CameraCalibrationActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
     </application>
 
 </manifest>

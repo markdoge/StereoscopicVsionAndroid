@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_enter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, LensFormatActivity.class);
+                Intent intent = new Intent(MainActivity.this, CameraCalibrationActivity.class);
                 startActivity(intent);
                 dialog.dismiss();
                 SPUtil.put(MainActivity.this, SP_VERSION_CODE, currentVersionCode);
