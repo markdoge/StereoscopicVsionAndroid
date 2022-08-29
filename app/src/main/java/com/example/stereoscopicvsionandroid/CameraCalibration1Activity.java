@@ -1,25 +1,4 @@
-// This sample is based on "Camera calibration With OpenCV" tutorial:
-// https://docs.opencv.org/3.4/d4/d94/tutorial_camera_calibration.html
-//
-// It uses standard OpenCV asymmetric circles grid pattern 11x4:
-// https://github.com/opencv/opencv/blob/3.4/doc/acircles_pattern.png
-// The results are the camera matrix and 5 distortion coefficients.
-//
-// Tap on highlighted pattern to capture pattern corners for calibration.
-// Move pattern along the whole screen and capture data.
-//
-// When you've captured necessary amount of pattern corners (usually ~20 are enough),
-// press "Calibrate" button for performing camera calibration.
-
 package com.example.stereoscopicvsionandroid;
-
-import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
-import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
-import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Mat;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -36,9 +15,16 @@ import android.view.View.OnTouchListener;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import albumFun.JsonBuilder;
 
-public class CameraCalibrationActivity extends AppCompatActivity implements CvCameraViewListener2, OnTouchListener {
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
+import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Mat;
+
+public class CameraCalibration1Activity extends AppCompatActivity implements CvCameraViewListener2, OnTouchListener {
     private static final String TAG = "calibration";
 
     private CameraBridgeViewBase mOpenCvCameraView;
@@ -55,7 +41,7 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
                 case LoaderCallbackInterface.SUCCESS: {
                     Log.d(TAG, "OpenCV loaded successfully");
                     mOpenCvCameraView.enableView();
-                    mOpenCvCameraView.setOnTouchListener(CameraCalibrationActivity.this);
+                    mOpenCvCameraView.setOnTouchListener(CameraCalibration1Activity.this);
                 }
                 break;
                 default: {
@@ -66,7 +52,7 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
         }
     };
 
-    public CameraCalibrationActivity() {
+    public CameraCalibration1Activity() {
         Log.d(TAG, "Instantiated new " + this.getClass());
     }
 
@@ -76,10 +62,13 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_calibration);
         init();
+        setTitle(R.string.calibrate_title2);
     }
 
     private void init() {
+        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         try {
+
             mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_calibration_java_surface_view);
         } catch (Exception e) {
             Log.d("TAG", "findViewById Exception: " + e.toString());
@@ -91,7 +80,6 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
             Log.d("TAG", "setVisibility Exception: " + e.toString());
         }
         mOpenCvCameraView.setCvCameraViewListener(this);
-        setTitle(R.string.calibrate_title1);
     }
 
     @Override
@@ -123,7 +111,7 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         Log.d(TAG, "menu success");
-        getMenuInflater().inflate(R.menu.calibration, menu);
+        getMenuInflater().inflate(R.menu.calibration1, menu);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -143,7 +131,7 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
         switch (item.getItemId()) {
             case R.id.done:
                 onResume();
-                Intent intent = new Intent(CameraCalibrationActivity.this, CameraCalibration1Activity.class);
+                Intent intent = new Intent(CameraCalibration1Activity.this, MainActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.calibration:
@@ -174,7 +162,7 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
 
                     @Override
                     protected void onPreExecute() {
-                        calibrationProgress = new ProgressDialog(CameraCalibrationActivity.this);
+                        calibrationProgress = new ProgressDialog(CameraCalibration1Activity.this);
                         calibrationProgress.setTitle(res.getString(R.string.calibrating));
                         calibrationProgress.setMessage(res.getString(R.string.please_wait));
                         calibrationProgress.setCancelable(false);
@@ -196,14 +184,10 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
                         String resultMessage = (mCalibrator.isCalibrated()) ?
                                 res.getString(R.string.calibration_successful) + " " + mCalibrator.getAvgReprojectionError() :
                                 res.getString(R.string.calibration_unsuccessful);
-                        (Toast.makeText(CameraCalibrationActivity.this, resultMessage, Toast.LENGTH_SHORT)).show();
-                        Log.d("TAG",resultMessage);
+                        (Toast.makeText(CameraCalibration1Activity.this, resultMessage, Toast.LENGTH_SHORT)).show();
 
                         if (mCalibrator.isCalibrated()) {
-                            CalibrationResult.save(CameraCalibrationActivity.this,
-                                    mCalibrator.getCameraMatrix(), mCalibrator.getDistortionCoefficients());
-                            Log.d("TAG","after save");
-                            CalibrationResult.tryLoad(CameraCalibrationActivity.this,
+                            CalibrationResult.save(CameraCalibration1Activity.this,
                                     mCalibrator.getCameraMatrix(), mCalibrator.getDistortionCoefficients());
                         }
                     }

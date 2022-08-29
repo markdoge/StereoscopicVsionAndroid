@@ -36,5 +36,7 @@
     <string name="please_wait">Please, wait</string>
     <string name="original">Original</string>
     <string name="undistorted">Undistorted</string>
-
+    <string name="calibrate_title1">Calibrate camera one</string>
+    <string name="calibrate_title2">Calibrate camera two</string>
+    <string name="calibrate_ext">back</string>
 </resources>

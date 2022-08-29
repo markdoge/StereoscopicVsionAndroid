@@ -23,7 +23,7 @@
                         android:title="@string/comparison" />
                     <item
                         android:id="@+id/done"
-                        android:title="@string/calibrate_title2"/>
+                        android:title="返回"/>
                 </group>
             </menu>
         </item>

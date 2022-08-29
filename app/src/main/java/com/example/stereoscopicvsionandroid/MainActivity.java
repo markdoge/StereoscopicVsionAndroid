@@ -32,6 +32,7 @@ import androidx.core.app.ActivityCompat;
 import org.opencv.android.OpenCVLoader;
 
 import OpenCVFun.RB3DAsyncTask;
+import albumFun.JsonBuilder;
 import albumFun.PhotoLoader;
 import albumFun.VideoLoader;
 import photoFun.*;
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<Bitmap> videoPreview;
     private ArrayList<String> videoLocation;
     private LinearLayout sencor_bar;
+    private JsonBuilder jsonBuilder =new JsonBuilder();
 
     static {
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_0, 270);
@@ -103,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         if (OpenCVLoader.initDebug()) {
-            Log.d("TAG", "OpenCVLoader初始化成功");
         } else {
             Log.d("TAG", "OpenCVLoader初始化失败");
         }
@@ -150,6 +151,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void check() {
         //先判断是否显示了隐私政策
+        Log.d("json","config:"+jsonBuilder.readJsonFile("config.json"));
+        Log.d("json","config:"+jsonBuilder.readJsonFile("config1.json"));
+        Log.d("json","config:"+jsonBuilder.readJsonFile("config2.json"));
         currentVersionCode = AppUtil.getAppVersionCode(MainActivity.this);
         versionCode = (long) SPUtil.get(MainActivity.this, SP_VERSION_CODE, 0L);
         isCheckPrivacy = (boolean) SPUtil.get(MainActivity.this, SP_PRIVACY, false);
@@ -157,6 +161,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!isCheckPrivacy || versionCode != currentVersionCode) {
             showPrivacy();
         } else {
+            if (jsonBuilder.readJsonFile("config1.json")==null||jsonBuilder.readJsonFile("config2.json")==null){
+                Intent intent = new Intent(MainActivity.this,CameraCalibrationActivity.class);
+                startActivity(intent);
+            }
         }
     }
 
@@ -368,7 +376,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     int dstY = (int) dst[1];
                     // 获取该点的三维坐标
                     c = stereoBMUtil.getCoordinate(dstX, dstY);
-                    Log.d("MainActive", "x:" + event.getX() + " y:" + event.getY());
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -396,7 +403,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (mode != 0) return false;
             if (eventType == MotionEvent.ACTION_DOWN) {
                 //在这里调用深度图算法
-                Log.d("MainActive", "x2:" + event.getX() + " y:" + event.getY());
             }
             return false;
         });
@@ -433,13 +439,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btncam.setOnClickListener(view -> {
             if (text.getSelectedString().equals("立体模式")) {
                 if (isChange[0] == 1) {
-                    Log.d("TAG", "开始录像");
                     startRecordingVideo();
                     alterCam();
                 } else {
                     stopRecorder();
                     btncam.setBackgroundResource(R.mipmap.init2);
-                    Log.d("TAG", "停止录像");
                     timer.setVisibility(timer.GONE);
                     alterCam();
                     //结束录像并保存
@@ -449,7 +453,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void startRecordingVideo() {
-        Log.d("TAG", "video");
         btncam.setBackgroundResource(R.mipmap.shoot);
         isChange[0] = 0;
         for (int i = 0; i < videoSize.length; i++) {
@@ -518,7 +521,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         Uri uri = Uri.fromFile(new File(path));
         intent.setData(uri);
-        Log.d("TAG", "broadcast: success");
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -533,7 +535,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btncam.setOnTouchListener((v, event) -> {
             if (text.getSelectedString().equals("景深合成") && event.getAction() == MotionEvent.ACTION_DOWN) {
                 btncam.setBackgroundResource(R.color.transparent);
-                Log.d("MainActive", "take photo");
                 pic1 = v2.getBitmap();
                 bitmapSaver.saveLensFormatPic(MainActivity.this, pic1, "Left2.png", "stereo/pic");
                 alterCam();
@@ -542,7 +543,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
             if (text.getSelectedString().equals("景深合成") && event.getAction() == MotionEvent.ACTION_UP) {
-                Log.d("MainActive", "Finger up");
                 btncam.setBackgroundResource(R.mipmap.init3);
             }
             return false;
@@ -563,7 +563,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         new String[]{Manifest.permission.CAMERA}, 1000);
                 return;
             }
-            Log.d("TAG", "try to open camera");
             manager.openCamera(getCamera.getLogicCameraId(), AsyncTask.SERIAL_EXECUTOR, cameraOpenCallBack);
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -573,7 +572,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private CameraDevice.StateCallback cameraOpenCallBack = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(CameraDevice cameraDevice) {
-            Log.d("TAG", "相机已经打开");
             mCameraDevice = cameraDevice;
             //当逻辑摄像头开启后， 配置物理摄像头的参数
             config(cameraDevice);
@@ -581,7 +579,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void onDisconnected(@NonNull CameraDevice cameraDevice) {
-            Log.d("TAG", "相机连接断开");
         }
 
         @Override
@@ -668,8 +665,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
-        Log.d("TAG", "getMatchingSize: 选择的分辨率宽度=" + selectSize.getWidth());
-        Log.d("TAG", "getMatchingSize: 选择的分辨率高度=" + selectSize.getHeight());
         return selectSize;
     }
 
@@ -703,10 +698,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        Surface surface = new Surface(v1.getSurfaceTexture());
 //        mMediaRecorder.setPreviewDisplay(surface);
 
-        Log.d("TAG", "Stage 1");
         try {
             mMediaRecorder.prepare();
-            Log.d("TAG", "prepare 1 success");
         } catch (IOException e) {
             Log.d("TAG", "prepare 1 fail");
         }
@@ -751,7 +744,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void config(CameraDevice cameraDevice) {
         String cameraID[] = getCamera.getCameraID();
-        Log.d("TAG", cameraID.toString());
         if (cameraID.length < 2) {
             try {
                 Size cameraSize = getMatchingSize();

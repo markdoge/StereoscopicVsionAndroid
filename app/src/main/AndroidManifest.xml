@@ -54,6 +54,11 @@
             android:screenOrientation="landscape"
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/app_name"
+            android:theme="@style/MyMenu"/>
+        <activity android:name=".CameraCalibration1Activity"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/app_name"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
     </application>
 

@@ -7,23 +7,27 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-public abstract class CalibrationResult {
-    private static final String TAG = "OCV::CalibrationResult";
+import albumFun.JsonBuilder;
 
+public abstract class CalibrationResult {
+    private static final String TAG = "TAG";
     private static final int CAMERA_MATRIX_ROWS = 3;
     private static final int CAMERA_MATRIX_COLS = 3;
     private static final int DISTORTION_COEFFICIENTS_SIZE = 5;
+    private static boolean counter = false;
+    private static String name1="calibrate1.json";
+    private static String name2="calibrate2.json";
 
     public static void save(Activity activity, Mat cameraMatrix, Mat distortionCoefficients) {
         SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-
+        JsonBuilder jsonBuilder = new JsonBuilder();
         double[] cameraMatrixArray = new double[CAMERA_MATRIX_ROWS * CAMERA_MATRIX_COLS];
-        cameraMatrix.get(0,  0, cameraMatrixArray);
+        cameraMatrix.get(0, 0, cameraMatrixArray);
         for (int i = 0; i < CAMERA_MATRIX_ROWS; i++) {
             for (int j = 0; j < CAMERA_MATRIX_COLS; j++) {
                 int id = i * CAMERA_MATRIX_ROWS + j;
-                editor.putFloat(Integer.toString(id), (float)cameraMatrixArray[id]);
+                editor.putFloat(Integer.toString(id), (float) cameraMatrixArray[id]);
             }
         }
 
@@ -31,21 +35,30 @@ public abstract class CalibrationResult {
         distortionCoefficients.get(0, 0, distortionCoefficientsArray);
         int shift = CAMERA_MATRIX_ROWS * CAMERA_MATRIX_COLS;
         for (int i = shift; i < DISTORTION_COEFFICIENTS_SIZE + shift; i++) {
-            editor.putFloat(Integer.toString(i), (float)distortionCoefficientsArray[i-shift]);
+            editor.putFloat(Integer.toString(i), (float) distortionCoefficientsArray[i - shift]);
         }
-
+        if (counter==false){
+            Log.d("json", String.valueOf(counter));
+            jsonBuilder.saveName(name1);
+            jsonBuilder.saveToLocal(cameraMatrixArray, distortionCoefficientsArray, "cameraMatrix",
+                    "distortionCoefficients");}
+        if (counter==true){
+            Log.d("json", String.valueOf(counter));
+            jsonBuilder.saveName(name2);
+            jsonBuilder.saveToLocal(cameraMatrixArray, distortionCoefficientsArray, "cameraMatrix",
+                    "distortionCoefficients");}
+        counter=!counter;
         editor.apply();
-        Log.i(TAG, "Saved camera matrix: " + cameraMatrix.dump());
-        Log.i(TAG, "Saved distortion coefficients: " + distortionCoefficients.dump());
+        editor.commit();
     }
 
     public static boolean tryLoad(Activity activity, Mat cameraMatrix, Mat distortionCoefficients) {
         SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
         if (sharedPref.getFloat("0", -1) == -1) {
-            Log.i(TAG, "No previous calibration results found");
+            Log.d(TAG, "No previous calibration results found");
             return false;
         }
-
+        Log.d("TAG", "load calibration result successful");
         double[] cameraMatrixArray = new double[CAMERA_MATRIX_ROWS * CAMERA_MATRIX_COLS];
         for (int i = 0; i < CAMERA_MATRIX_ROWS; i++) {
             for (int j = 0; j < CAMERA_MATRIX_COLS; j++) {
@@ -54,7 +67,6 @@ public abstract class CalibrationResult {
             }
         }
         cameraMatrix.put(0, 0, cameraMatrixArray);
-        Log.i(TAG, "Loaded camera matrix: " + cameraMatrix.dump());
 
         double[] distortionCoefficientsArray = new double[DISTORTION_COEFFICIENTS_SIZE];
         int shift = CAMERA_MATRIX_ROWS * CAMERA_MATRIX_COLS;
@@ -62,7 +74,6 @@ public abstract class CalibrationResult {
             distortionCoefficientsArray[i - shift] = sharedPref.getFloat(Integer.toString(i), -1);
         }
         distortionCoefficients.put(0, 0, distortionCoefficientsArray);
-        Log.i(TAG, "Loaded distortion coefficients: " + distortionCoefficients.dump());
 
         return true;
     }
