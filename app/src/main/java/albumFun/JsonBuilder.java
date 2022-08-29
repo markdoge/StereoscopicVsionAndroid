@@ -19,24 +19,21 @@ public class JsonBuilder {
         //文件夹路径
         File file;
         File dir = new File(pathName);
+        dir.mkdirs();
+
+        JSONObject jsonObject = jsonObj;
+        String json = jsonObject.toString();
+
+        file = new File(dir, fileName);
         try {
+            OutputStream out = new FileOutputStream(file,true);
             //文件夹不存在和传入的value值为1时，才允许进入创建
-            if (!dir.exists()) {
+            if (dir.exists()) {
                 //创建文件夹
-                dir.mkdirs();
-
-                JSONObject jsonObject = jsonObj;
-                String json = jsonObject.toString();
-
-                file = new File(dir, fileName);
-                OutputStream out = new FileOutputStream(file);
                 out.write(json.getBytes());
                 out.close();
                 Log.d("TAG", "保存Config成功 path:" + file.getPath());
-            } else {
-                Log.d("TAG", "Config已经存在 path:" + dir + "/" + fileName);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             Log.i("TAG", "Config保存失败");
