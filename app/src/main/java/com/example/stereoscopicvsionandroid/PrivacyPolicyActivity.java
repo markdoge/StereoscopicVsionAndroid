@@ -31,7 +31,7 @@ public class PrivacyPolicyActivity extends Activity implements View.OnClickListe
         imageView_my.setOnClickListener(this);
         imageView.setOnClickListener(this);
         String language = AppUtil.getLanguage(PrivacyPolicyActivity.this);
-        Log.i(TAG, "当前语言：" + language);
+        Log.d(TAG, "当前语言：" + language);
     }
 
     @Override

@@ -9,8 +9,10 @@ import android.util.Log;
 import android.util.Size;
 import android.view.Display;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.example.stereoscopicvsionandroid.MainActivity;
+import com.example.stereoscopicvsionandroid.R;
 
 import org.opencv.core.Point;
 
@@ -39,14 +41,11 @@ public class GetCamera {
                 try{
                     CameraCharacteristics cameraCharacteristics = manager.getCameraCharacteristics(id);
                     physicalCameraIds = cameraCharacteristics.getPhysicalCameraIds();
-                    Log.d("TAG","逻辑ID：" + id + " 下的物理ID: "
-                            + Arrays.toString(physicalCameraIds.toArray()));
                     if (physicalCameraIds.size() >= 2){
                         setCamera();
                         logicCameraId=id;
                     }
                     else{
-                        Log.d("TAG","物理摄像头少于2个！");
                         logicCameraIds.add(id);
                         if(logicCameraId==null){
                             logicCameraId=logicCameraIds.get(0);

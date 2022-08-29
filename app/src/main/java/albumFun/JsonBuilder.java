@@ -10,9 +10,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.json.*;
-
+//读取格式为.readJsonFile("calibrate1.json"));和.readJsonFile("calibrate2.json"));
 public class JsonBuilder {
-    private static String pathName = Environment.getExternalStorageDirectory() + "/jsonConfig/calibrate";
+    private static String pathName = Environment.getExternalStorageDirectory() + "/jsonConfig/";
     private static String fileName = "config.json";
 
     public void saveToLocal(JSONObject jsonObj) {
@@ -27,7 +27,6 @@ public class JsonBuilder {
         file = new File(dir, fileName);
         try {
             OutputStream out = new FileOutputStream(file,true);
-            //文件夹不存在和传入的value值为1时，才允许进入创建
             if (dir.exists()) {
                 //创建文件夹
                 out.write(json.getBytes());
@@ -50,7 +49,7 @@ public class JsonBuilder {
         JSONArray jsonArray1 = new JSONArray();
         JSONArray jsonArray2 = new JSONArray();
         try {
-            if (!dir.exists()) {
+            if (dir.exists()) {
                 //创建文件夹
                 dir.mkdirs();
                 for (int i = 0; i < array1.length; i++) {  //依次将数组元素添加进JSONArray对象中
@@ -75,12 +74,10 @@ public class JsonBuilder {
                 String json = jsonObject.toString();
 
                 file = new File(dir, fileName);
-                OutputStream out = new FileOutputStream(file,true);
+                OutputStream out = new FileOutputStream(file,false);
                 out.write(json.getBytes());
                 out.close();
                 Log.d("json", "保存Config成功 path:" + file.getPath());
-            } else {
-                Log.d("json", "Config已经存在 path:" + dir + "/" + fileName);
             }
 
         } catch (Exception e) {
@@ -92,7 +89,13 @@ public class JsonBuilder {
     public String readJsonFile(String fileName) {
         StringBuilder sb = new StringBuilder();
         String filePath = pathName + fileName;
-        Log.d("json", "read path: "+filePath);
+        try {
+            File file = new File(filePath);
+            Log.d("json", String.valueOf(file.exists()));
+        }
+        catch (Exception e){
+            Log.d("json",e.toString());
+        }
         try {
             File file = new File(filePath);
             InputStream in = new FileInputStream(file);
@@ -102,7 +105,7 @@ public class JsonBuilder {
             }
             in.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d("json",e.toString());
         }
         return sb.toString();
     }

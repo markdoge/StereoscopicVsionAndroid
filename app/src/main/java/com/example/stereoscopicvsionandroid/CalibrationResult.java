@@ -38,12 +38,10 @@ public abstract class CalibrationResult {
             editor.putFloat(Integer.toString(i), (float) distortionCoefficientsArray[i - shift]);
         }
         if (counter==false){
-            Log.d("json", String.valueOf(counter));
             jsonBuilder.saveName(name1);
             jsonBuilder.saveToLocal(cameraMatrixArray, distortionCoefficientsArray, "cameraMatrix",
                     "distortionCoefficients");}
         if (counter==true){
-            Log.d("json", String.valueOf(counter));
             jsonBuilder.saveName(name2);
             jsonBuilder.saveToLocal(cameraMatrixArray, distortionCoefficientsArray, "cameraMatrix",
                     "distortionCoefficients");}
@@ -55,10 +53,8 @@ public abstract class CalibrationResult {
     public static boolean tryLoad(Activity activity, Mat cameraMatrix, Mat distortionCoefficients) {
         SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
         if (sharedPref.getFloat("0", -1) == -1) {
-            Log.d(TAG, "No previous calibration results found");
             return false;
         }
-        Log.d("TAG", "load calibration result successful");
         double[] cameraMatrixArray = new double[CAMERA_MATRIX_ROWS * CAMERA_MATRIX_COLS];
         for (int i = 0; i < CAMERA_MATRIX_ROWS; i++) {
             for (int j = 0; j < CAMERA_MATRIX_COLS; j++) {

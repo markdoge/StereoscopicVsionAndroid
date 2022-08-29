@@ -151,9 +151,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void check() {
         //先判断是否显示了隐私政策
-        Log.d("json","config:"+jsonBuilder.readJsonFile("config.json"));
-        Log.d("json","config:"+jsonBuilder.readJsonFile("config1.json"));
-        Log.d("json","config:"+jsonBuilder.readJsonFile("config2.json"));
         currentVersionCode = AppUtil.getAppVersionCode(MainActivity.this);
         versionCode = (long) SPUtil.get(MainActivity.this, SP_VERSION_CODE, 0L);
         isCheckPrivacy = (boolean) SPUtil.get(MainActivity.this, SP_PRIVACY, false);
@@ -161,7 +158,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!isCheckPrivacy || versionCode != currentVersionCode) {
             showPrivacy();
         } else {
-            if (jsonBuilder.readJsonFile("config1.json")==null||jsonBuilder.readJsonFile("config2.json")==null){
+            if (jsonBuilder.readJsonFile("calibrate1.json")==""||
+                    jsonBuilder.readJsonFile("calibrate2.json")==""){
                 Intent intent = new Intent(MainActivity.this,CameraCalibrationActivity.class);
                 startActivity(intent);
             }
