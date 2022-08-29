@@ -40,4 +40,12 @@
     <string name="calibrate_title1">矫正摄像头1</string>
     <string name="calibrate_title2">矫正摄像头2</string>
     <string name="calibrate_ext">返回</string>
+    <string name="user_check">我已了解</string>
+    <string name="user_commit">同意</string>
+    <string name="user5">如何矫正摄像头</string>
+    <string name="user6">将点照片保留在屏幕上，当点照片中出现彩色线条时，轻触屏幕。然后移动手机以更改点照片，如下图中的绿框所示。</string>
+    <string name="user7">点击至少20次，然后点击校准按钮。计算后，您可以在列表中看到更多操作</string>
+    <string name="user_alert">请选择我已了解</string>
+    <string name="main_alter">请同意《隐私政策》与《用户协议》</string>
+    <string name="calibrate1">capture:  </string>
 </resources>

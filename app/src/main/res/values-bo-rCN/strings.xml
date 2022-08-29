@@ -40,4 +40,12 @@
     <string name="calibrate_title1">NAN</string>
     <string name="calibrate_title2">nan</string>
     <string name="calibrate_ext">nan</string>
+    <string name="user_check">nan</string>
+    <string name="user_commit">nan</string>
+    <string name="user5">nan</string>
+    <string name="user6">nan</string>
+    <string name="user7">nan</string>
+    <string name="user_alert">nan</string>
+    <string name="main_alter">nan</string>
+    <string name="calibrate1">nan</string>
 </resources>

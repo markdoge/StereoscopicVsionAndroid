@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<Bitmap> videoPreview;
     private ArrayList<String> videoLocation;
     private LinearLayout sencor_bar;
-    private JsonBuilder jsonBuilder =new JsonBuilder();
+    private JsonBuilder jsonBuilder = new JsonBuilder();
 
     static {
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_0, 270);
@@ -158,9 +158,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!isCheckPrivacy || versionCode != currentVersionCode) {
             showPrivacy();
         } else {
-            if (jsonBuilder.readJsonFile("calibrate1.json")==""||
-                    jsonBuilder.readJsonFile("calibrate2.json")==""){
-                Intent intent = new Intent(MainActivity.this,CameraCalibrationActivity.class);
+            if (jsonBuilder.readJsonFile("calibrate1.json") == "" ||
+                    jsonBuilder.readJsonFile("calibrate2.json") == "") {
+                Intent intent = new Intent(MainActivity.this, CameraCalibrationActivity.class);
                 startActivity(intent);
             }
         }
@@ -250,11 +250,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_enter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CameraCalibrationActivity.class);
-                startActivity(intent);
-                dialog.dismiss();
-                SPUtil.put(MainActivity.this, SP_VERSION_CODE, currentVersionCode);
-                SPUtil.put(MainActivity.this, SP_PRIVACY, true);
+                CheckCommit checkCommit = new CheckCommit();
+                if (checkCommit.isPrivacyPolitics() && checkCommit.isUserTerm()) {
+                    Intent intent = new Intent(MainActivity.this, CameraCalibrationActivity.class);
+                    startActivity(intent);
+                    dialog.dismiss();
+                    SPUtil.put(MainActivity.this, SP_VERSION_CODE, currentVersionCode);
+                    SPUtil.put(MainActivity.this, SP_PRIVACY, true);
+                }
+                else {
+                    Toast.makeText(MainActivity.this,R.string.main_alter,Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

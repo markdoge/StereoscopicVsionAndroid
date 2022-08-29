@@ -1,16 +1,3 @@
-// This sample is based on "Camera calibration With OpenCV" tutorial:
-// https://docs.opencv.org/3.4/d4/d94/tutorial_camera_calibration.html
-//
-// It uses standard OpenCV asymmetric circles grid pattern 11x4:
-// https://github.com/opencv/opencv/blob/3.4/doc/acircles_pattern.png
-// The results are the camera matrix and 5 distortion coefficients.
-//
-// Tap on highlighted pattern to capture pattern corners for calibration.
-// Move pattern along the whole screen and capture data.
-//
-// When you've captured necessary amount of pattern corners (usually ~20 are enough),
-// press "Calibrate" button for performing camera calibration.
-
 package com.example.stereoscopicvsionandroid;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -218,7 +205,7 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
         if (mWidth != width || mHeight != height) {
             mWidth = width;
             mHeight = height;
-            mCalibrator = new CameraCalibrator(mWidth, mHeight);
+            mCalibrator = new CameraCalibrator(mWidth, mHeight,this.getString(R.string.calibrate1));
             if (CalibrationResult.tryLoad(this, mCalibrator.getCameraMatrix(), mCalibrator.getDistortionCoefficients())) {
                 mCalibrator.setCalibrated();
             }

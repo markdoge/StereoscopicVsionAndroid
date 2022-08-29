@@ -10,7 +10,8 @@
     <color name="gray">#FFB0C4DE</color>
     <color name="grayTrans">#AAB0C4DE</color>
     <color name="transparent">#00ffffff</color>
-    <color name="Crimson">#FADC143C</color>
+    <color name="Crimson">#FFDC143C</color>
+    <color name="CrimsonTrans">#9ADC143C</color>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorWhite">#FFFFFFFF</color>

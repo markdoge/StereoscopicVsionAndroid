@@ -2,57 +2,137 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
             android:layout_gravity="center"
             android:text="@string/user1"
-            android:textSize="25dp"/>
+            android:textColor="@color/black"
+            android:textSize="25dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/blackTrans"
             android:layout_gravity="center"
             android:text="@string/user2"
-            android:textSize="15dp"/>
+            android:textColor="@color/blackTrans"
+            android:textSize="15dp" />
+
         <ImageButton
             android:id="@+id/lenstadmap"
             android:layout_width="162dp"
             android:layout_height="108dp"
-            android:src="@mipmap/stdmap"
             android:layout_gravity="center"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop"
+            android:src="@mipmap/stdmap" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10dp"
             android:text="@string/user3"
-            android:textColor="@color/blackTrans"/>
+            android:textColor="@color/blackTrans"
+            android:textSize="10dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15dp"
-            android:textColor="@color/grayTrans"/>
+            android:textColor="@color/grayTrans"
+            android:textSize="15dp" />
+
         <ImageButton
             android:id="@+id/formatpic2"
             android:layout_width="124dp"
             android:layout_height="175.4dp"
             android:layout_gravity="center"
             android:scaleType="centerCrop"
-            android:src="@drawable/acircles_pattern"/>
+            android:src="@drawable/acircles_pattern" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10dp"
             android:text="@string/user3"
-            android:textColor="@color/blackTrans"/>
+            android:textColor="@color/blackTrans"
+            android:textSize="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/calibrate_title2"
+            android:textColor="@color/CrimsonTrans"
+            android:textSize="30dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/user6"
+            android:textColor="@color/blackTrans"
+            android:textSize="18dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/user7"
+            android:textColor="@color/blackTrans"
+            android:textSize="18dp" />
+
+        <ImageView
+            android:layout_width="346.5dp"
+            android:layout_height="162dp"
+            android:layout_gravity="center"
+            android:src="@drawable/jiaocheng" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="\n" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="253dp"
+            android:orientation="horizontal">
 
 
+            <RadioButton
+                android:id="@+id/check_user"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/user_check"
+                android:textColor="@color/black"
+                android:textSize="10dp" />
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:text="\n"/>
+            <Button
+                android:layout_width="300dp"
+                android:layout_height="60dp"
+                android:background="@drawable/btn_xxx"
+                android:layout_gravity="center"
+                android:text="@string/user_commit"
+                android:textColor="@color/white"
+                android:id="@+id/user_commit"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:text="\n"/>
     </LinearLayout>
 </ScrollView>

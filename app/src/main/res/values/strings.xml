@@ -39,4 +39,12 @@
     <string name="calibrate_title1">Calibrate camera one</string>
     <string name="calibrate_title2">Calibrate camera two</string>
     <string name="calibrate_ext">back</string>
+    <string name="user_check">understand</string>
+    <string name="user_commit">I Agree</string>
+    <string name="user5">How to calibrate your camera</string>
+    <string name="user6">"keep the point photo in you screen and when colorful lines which in the point photo,tap your screen. Then move your phone to change the point photo just as the green windows in the following picture shows. "</string>
+    <string name="user7">tap at least 20 times then tap the Calibrate button. After calculate you can see more operation in the list</string>
+    <string name="user_alert">please select understand</string>
+    <string name="main_alter">please agree Privacy Policy and User Terms</string>
+    <string name="calibrate1">capture:  </string>
 </resources>

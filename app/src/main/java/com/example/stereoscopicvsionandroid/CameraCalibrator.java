@@ -33,8 +33,10 @@ public class CameraCalibrator {
     private double mRms;
     private double mSquareSize = 0.0181;
     private Size mImageSize;
+    private String text;
 
-    public CameraCalibrator(int width, int height) {
+    public CameraCalibrator(int width, int height, String text_) {
+        text=text_;
         mImageSize = new Size(width, height);
         mFlags = Calib3d.CALIB_FIX_PRINCIPAL_POINT +
                  Calib3d.CALIB_ZERO_TANGENT_DIST +
@@ -140,8 +142,8 @@ public class CameraCalibrator {
     private void renderFrame(Mat rgbaFrame) {
         drawPoints(rgbaFrame);
 
-        Imgproc.putText(rgbaFrame, "Captured: " + mCornersBuffer.size(), new Point(rgbaFrame.cols() / 3 * 2, rgbaFrame.rows() * 0.1),
-                Core.FONT_HERSHEY_SIMPLEX, 1.0, new Scalar(255, 255, 0));
+        Imgproc.putText(rgbaFrame, text + mCornersBuffer.size(), new Point(rgbaFrame.cols() / 3 * 2, rgbaFrame.rows() * 0.25),
+                Core.FONT_HERSHEY_SIMPLEX, 2.0, new Scalar(0, 255, 127));
     }
 
     public Mat getCameraMatrix() {

@@ -6,8 +6,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
+import android.widget.Toast;
+
 import privacyPolicyTool.AppUtil;
+import privacyPolicyTool.CheckCommit;
 
 public class PrivacyPolicyActivity extends Activity implements View.OnClickListener {
 
@@ -15,6 +20,8 @@ public class PrivacyPolicyActivity extends Activity implements View.OnClickListe
     private ImageButton imageView_my;
     private ImageButton imageView;
     private final String LANGUAGE_CN = "zh-CN";
+    private RadioButton radioButton;
+    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +37,9 @@ public class PrivacyPolicyActivity extends Activity implements View.OnClickListe
         imageView = findViewById(R.id.mobtechico);
         imageView_my.setOnClickListener(this);
         imageView.setOnClickListener(this);
+        radioButton=findViewById(R.id.check_pr);
+        button=findViewById(R.id.pr_commit);
+        button.setOnClickListener(this);
         String language = AppUtil.getLanguage(PrivacyPolicyActivity.this);
         Log.d(TAG, "当前语言：" + language);
     }
@@ -53,6 +63,20 @@ public class PrivacyPolicyActivity extends Activity implements View.OnClickListe
             Uri uri = Uri.parse("https://github.com/markdoge/StereoscopicVsionAndroid.git");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
+        }
+        if (id==button.getId()){
+            onCommit();
+        }
+    }
+    private void onCommit(){
+        if (radioButton.isChecked()){
+            CheckCommit checkCommit = new CheckCommit();
+            checkCommit.setPrivacyPolitics();
+            Intent intent = new Intent(PrivacyPolicyActivity.this,MainActivity.class);
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(PrivacyPolicyActivity.this,R.string.user_alert,Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -55,5 +55,43 @@
             android:layout_marginRight="-100dp"
             android:id="@+id/mobtechico"
             android:layout_gravity="center"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="253dp"
+            android:orientation="horizontal">
+
+
+            <RadioButton
+                android:id="@+id/check_pr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/user_check"
+                android:textColor="@color/black"
+                android:textSize="10dp" />
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:text="\n"/>
+        <Button
+            android:layout_width="300dp"
+            android:layout_height="60dp"
+            android:background="@drawable/btn_xxx"
+            android:layout_gravity="center"
+            android:text="@string/user_commit"
+            android:textColor="@color/white"
+            android:id="@+id/pr_commit"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:text="\n"/>
     </LinearLayout>
 </ScrollView>
