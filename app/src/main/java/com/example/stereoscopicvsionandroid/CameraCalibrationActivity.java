@@ -21,7 +21,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.widget.Toast;
+import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuItemImpl;
@@ -38,6 +38,7 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
     private int mHeight;
     private org.opencv.android.JavaCameraView javaCameraView;
     private MenuItemImpl menuItem;
+    private Button doneBtn;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -70,6 +71,13 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
     }
 
     private void init() {
+        doneBtn = findViewById(R.id.calibrate1_done);
+        doneBtn.setVisibility(View.GONE);
+        doneBtn.setOnClickListener(view -> {
+            onResume();
+            Intent intent = new Intent(CameraCalibrationActivity.this, CameraCalibration1Activity.class);
+            startActivity(intent);
+        });
         try {
             mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_calibration_java_surface_view);
         } catch (Exception e) {
@@ -134,16 +142,11 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.done:
-                onResume();
-                Intent intent = new Intent(CameraCalibrationActivity.this, CameraCalibration1Activity.class);
-                startActivity(intent);
-                return true;
-
             case R.id.calibration:
                 mOnCameraFrameRender =
                         new OnCameraFrameRender(new CalibrationFrameRender(mCalibrator));
                 item.setChecked(true);
+                doneBtn.setVisibility(View.GONE);
                 return true;
             case R.id.undistortion:
                 mOnCameraFrameRender =
@@ -202,6 +205,8 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
                         }
                     }
                 }.execute();
+                doneBtn.setVisibility(View.VISIBLE);
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

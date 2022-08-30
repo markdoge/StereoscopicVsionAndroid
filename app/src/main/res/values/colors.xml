@@ -20,4 +20,7 @@
     <color name="whiteTrans">#80FFFFFF</color>
     <color name="blackTrans">#AA000000</color>
     <color name="blueTrans">#996495ED</color>
+    <color name="clayBlack">#232323</color>
+    <color name="SeaShell">	#FFF5EE</color>
+    <color name="AliceBlue">#59F0F8FF</color>
 </resources>

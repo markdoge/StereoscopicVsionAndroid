@@ -48,4 +48,6 @@
     <string name="user_alert">请选择我已了解</string>
     <string name="main_alter">请同意《隐私政策》与《用户协议》</string>
     <string name="calibrate1">已捕获:  </string>
+    <string name="calibrate3">完成</string>
+    <string name="calibrate2">下个镜头</string>
 </resources>

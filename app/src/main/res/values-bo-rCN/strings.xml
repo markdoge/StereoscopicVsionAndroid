@@ -48,4 +48,6 @@
     <string name="user_alert">nan</string>
     <string name="main_alter">nan</string>
     <string name="calibrate1">nan</string>
+    <string name="calibrate3">nan</string>
+    <string name="calibrate2">nan</string>
 </resources>

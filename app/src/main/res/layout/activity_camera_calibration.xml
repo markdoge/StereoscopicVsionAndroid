@@ -1,12 +1,23 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:opencv="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <org.opencv.android.JavaCameraView
+        android:id="@+id/camera_calibration_java_surface_view"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/camera_calibration_java_surface_view" />
+        android:layout_height="fill_parent" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/calibrate1_done"
+        android:layout_width="120dp"
+        android:layout_height="45dp"
+        android:background="@drawable/btn_xxx"
+        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40dp"
+        android:text="@string/calibrate3"
+        android:textColor="@color/SeaShell" />
+
+</RelativeLayout>

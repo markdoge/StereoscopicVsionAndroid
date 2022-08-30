@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/calibrate_num"
             android:title="@string/calibrate1"
             app:showAsAction="ifRoom|withText"/>
         <item
@@ -17,16 +18,16 @@
                     <item
                         android:id="@+id/calibration"
                         android:checked="true"
+                        android:icon="@drawable/icon1"
                         android:title="@string/calibration" />
                     <item
                         android:id="@+id/undistortion"
+                        android:icon="@drawable/icon2"
                         android:title="@string/undistortion" />
                     <item
                         android:id="@+id/comparison"
+                        android:icon="@drawable/icon3"
                         android:title="@string/comparison" />
-                    <item
-                        android:id="@+id/done"
-                        android:title="返回"/>
                 </group>
             </menu>
         </item>

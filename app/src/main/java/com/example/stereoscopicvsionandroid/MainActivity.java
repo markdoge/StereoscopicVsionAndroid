@@ -2,8 +2,10 @@ package com.example.stereoscopicvsionandroid;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.*;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.*;
 import android.hardware.SensorManager;
@@ -45,7 +47,7 @@ import java.util.*;
 import privacyPolicyTool.*;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends Activity implements View.OnClickListener {
     private GetCamera getCamera;
     private TextureView v1;
     private TextureView v2;
@@ -104,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         if (OpenCVLoader.initDebug()) {
         } else {
             Log.d("TAG", "OpenCVLoader初始化失败");

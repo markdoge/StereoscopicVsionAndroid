@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,6 +37,7 @@ public class CameraCalibration1Activity extends AppCompatActivity implements CvC
     private int mHeight;
     private org.opencv.android.JavaCameraView javaCameraView;
     private MenuItemImpl menuItem;
+    private Button doneBtn;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -64,6 +66,13 @@ public class CameraCalibration1Activity extends AppCompatActivity implements CvC
     }
 
     private void init() {
+        doneBtn=findViewById(R.id.calibrate1_done);
+        doneBtn.setVisibility(View.GONE);
+        doneBtn.setOnClickListener(v->{
+            onResume();
+            Intent intent = new Intent(CameraCalibration1Activity.this, MainActivity.class);
+            startActivity(intent);
+        });
         try {
 
             mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_calibration_java_surface_view);
@@ -128,30 +137,29 @@ public class CameraCalibration1Activity extends AppCompatActivity implements CvC
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.done:
-                onResume();
-                Intent intent = new Intent(CameraCalibration1Activity.this, MainActivity.class);
-                startActivity(intent);
-                return true;
             case R.id.calibration:
                 mOnCameraFrameRender =
                         new OnCameraFrameRender(new CalibrationFrameRender(mCalibrator));
                 item.setChecked(true);
+                doneBtn.setVisibility(View.GONE);
                 return true;
             case R.id.undistortion:
                 mOnCameraFrameRender =
                         new OnCameraFrameRender(new UndistortionFrameRender(mCalibrator));
                 item.setChecked(true);
+                doneBtn.setVisibility(View.GONE);
                 return true;
             case R.id.comparison:
                 mOnCameraFrameRender =
                         new OnCameraFrameRender(new ComparisonFrameRender(mCalibrator, mWidth, mHeight, getResources()));
                 item.setChecked(true);
+                doneBtn.setVisibility(View.GONE);
                 return true;
             case R.id.calibrate:
                 final Resources res = getResources();
                 if (mCalibrator.getCornersBufferSize() < 2) {
                     (Toast.makeText(this, res.getString(R.string.more_samples), Toast.LENGTH_SHORT)).show();
+                    doneBtn.setVisibility(View.GONE);
                     return true;
                 }
 
@@ -191,6 +199,7 @@ public class CameraCalibration1Activity extends AppCompatActivity implements CvC
                         }
                     }
                 }.execute();
+                doneBtn.setVisibility(View.VISIBLE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

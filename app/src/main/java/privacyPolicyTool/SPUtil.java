@@ -8,15 +8,10 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 public class SPUtil {
-
-    /**
-     * 保存在手机里面的文件名
-     */
     public static final String FILE_NAME = "share_data";
 
     /**
      * 保存数据的方法，我们需要拿到保存数据的具体类型，然后根据类型调用不同的保存方法
-     *
      * @param context 上下文对象
      * @param key     保存数据的key值
      * @param object  保存数据的类型
@@ -44,7 +39,6 @@ public class SPUtil {
 
     /**
      * 得到保存数据的方法，我们根据默认值得到保存的数据的具体类型，然后调用相对于的方法获取值
-     *
      * @param context       上下文对象
      * @param key           保存数据的key值
      * @param defaultObject 保存数据的类型
@@ -68,7 +62,6 @@ public class SPUtil {
 
     /**
      * 移除某个key值已经对应的值
-     *
      * @param context 上下文对象
      * @param key     保存数据的key值
      */
@@ -81,7 +74,6 @@ public class SPUtil {
 
     /**
      * 清除所有数据
-     *
      * @param context 上下文对象
      */
     public static void clear(Context context) {
@@ -93,7 +85,6 @@ public class SPUtil {
 
     /**
      * 查询某个key是否已经存在
-     *
      * @param context 上下文对象
      * @param key     保存数据的key值
      * @return key是否已经存在
@@ -105,7 +96,6 @@ public class SPUtil {
 
     /**
      * 返回所有的键值对
-     *
      * @param context 上下文对象
      * @return 所有的键值对
      */
@@ -114,9 +104,8 @@ public class SPUtil {
         return sp.getAll();
     }
 
-    /**
-     * 创建一个解决SharedPreferencesCompat.apply方法的一个兼容类
-     */
+
+    //创建一个解决SharedPreferencesCompat.apply方法的一个兼容类
     private static class SharedPreferencesCompat {
 
         private static final Method sApplyMethod = findApplyMethod();

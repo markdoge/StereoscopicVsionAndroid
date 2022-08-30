@@ -4,12 +4,12 @@
     <!-- 矩形的圆角弧度 -->
     <corners android:radius="360dip" />
     <!-- 矩形的填充色 -->
-    <solid android:color="@color/colorBlue"/>
+    <solid android:color="@color/AliceBlue"/>
     <size android:width="150dp"
     android:height="40dp"/>
     <!-- 矩形的边框的宽度,每段虚线的长度，和两段虚线之间的颜色和颜色 -->
     <stroke
         android:width="1dp"
-        android:color="@color/purple_700"
+        android:color="@color/SeaShell"
         />
 </shape>

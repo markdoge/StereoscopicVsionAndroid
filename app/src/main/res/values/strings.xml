@@ -47,4 +47,6 @@
     <string name="user_alert">please select understand</string>
     <string name="main_alter">please agree Privacy Policy and User Terms</string>
     <string name="calibrate1">capture:  </string>
+    <string name="calibrate2">Next Lens</string>
+    <string name="calibrate3">Done!</string>
 </resources>

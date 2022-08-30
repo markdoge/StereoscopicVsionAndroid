@@ -1,25 +1,21 @@
 package com.example.stereoscopicvsionandroid;
 
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.*;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.util.ArrayList;
 
 import albumFun.VideoLoader;
+import shareUnit.*;
 
 @RequiresApi(api = Build.VERSION_CODES.Q)
 public class VideoActivity extends AppCompatActivity implements View.OnClickListener {
@@ -39,6 +35,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
     private int currentNum = 0;
     private boolean isPlaying = false;
     private RelativeLayout toolbar;
+    private VideoContentUri videoContentUri = new VideoContentUri();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,30 +98,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private Uri getVideoContentUri(Context context, String filePath) {
-        Cursor cursor = context.getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                new String[]{MediaStore.Video.Media._ID}, MediaStore.Video.Media.DATA + "=?",
-                new String[]{filePath}, null);
-        Uri uri = null;
-
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                int id = cursor.getInt(cursor.getColumnIndex(MediaStore.Video.Media._ID));
-                Uri baseUri = Uri.parse("content://media/external/video/media");
-                uri = Uri.withAppendedPath(baseUri, "" + id);
-            }
-            cursor.close();
-        }
-
-        //如果使用fileProvider获取失败，则使用此方法
-        if (uri == null) {
-            ContentValues values = new ContentValues();
-            values.put(MediaStore.Video.Media.DATA, filePath);
-            uri = context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
-        }
-
-        return uri;
-    }
 
     private void outVideo() {
         if (isPlaying == false) {
@@ -196,14 +169,21 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void shareVideo() {
+        FileUtil fileUtil = new FileUtil();
         Intent sendIntent = new Intent();
+        try {
+            File videoFile = new File(videoLocation.get(currentNum));
+            Uri videoUri = fileUtil.getFileUri(VideoActivity.this, ShareContentType.VIDEO, videoFile);
+            String videoRealUri = fileUtil.getFileRealPath(VideoActivity.this,videoUri);
+            Uri uri = videoContentUri.getVideoContentUri(VideoActivity.this,videoRealUri);
+            sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        }catch (IllegalArgumentException fe){
+            Log.e("VideoActivity", fe.toString());
+        }
         sendIntent.setAction(Intent.ACTION_SEND);
-        // 比如发送二进制文件数据流内容（比如图片、视频、音频文件等等）
-        // 指定发送的内容 (EXTRA_STREAM 对于文件 Uri )
-        Uri fileUri = getVideoContentUri(VideoActivity.this, videoLocation.get(currentNum));
+        Uri fileUri = videoContentUri.getVideoContentUri(VideoActivity.this, videoLocation.get(currentNum));
         sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-        // 指定发送内容的类型 (MIME type)
-        sendIntent.setType("video/mp4");
+        sendIntent.setType(ShareContentType.VIDEO);
         startActivity(Intent.createChooser(sendIntent, ""));
     }
 

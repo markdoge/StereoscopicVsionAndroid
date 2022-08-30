@@ -12,9 +12,6 @@ public class AppUtil {
 
     private final static String TAG = "TAG";
 
-    /**
-     * 获取当前app version code
-     */
     public static long getAppVersionCode(Context context) {
         long appVersionCode = 0;
         try {
@@ -23,18 +20,17 @@ public class AppUtil {
                     .getPackageInfo(context.getPackageName(), 0);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 appVersionCode = packageInfo.getLongVersionCode();
-            } else {
+            }
+            else {
                 appVersionCode = packageInfo.versionCode;
             }
-        } catch (PackageManager.NameNotFoundException e) {
+        }
+        catch (PackageManager.NameNotFoundException e) {
             Log.d(TAG, "[getAppVersionCode]-error：" + e.getMessage());
         }
         return appVersionCode;
     }
 
-    /**
-     * 获取当前app version name
-     */
     public static String getAppVersionName(Context context) {
         String appVersionName = "";
         try {
@@ -42,7 +38,8 @@ public class AppUtil {
                     .getPackageManager()
                     .getPackageInfo(context.getPackageName(), 0);
             appVersionName = packageInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
+        }
+        catch (PackageManager.NameNotFoundException e) {
             Log.d(TAG, "[getAppVersionName]-error：" + e.getMessage());
         }
         return appVersionName;
@@ -50,7 +47,6 @@ public class AppUtil {
 
     /**
      * 获取当前语言
-     *
      * @param context
      * @return
      */
@@ -59,10 +55,10 @@ public class AppUtil {
         Locale locale;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             locale = context.getResources().getConfiguration().getLocales().get(0);
-        } else {
+        }
+        else {
             locale = context.getResources().getConfiguration().locale;
         }
-
         return locale.getLanguage() + "-" + locale.getCountry();
     }
 }
