@@ -8,6 +8,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -23,6 +24,8 @@ import android.view.View.OnTouchListener;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuItemImpl;
+
 import albumFun.JsonBuilder;
 
 public class CameraCalibrationActivity extends AppCompatActivity implements CvCameraViewListener2, OnTouchListener {
@@ -34,6 +37,7 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
     private int mWidth;
     private int mHeight;
     private org.opencv.android.JavaCameraView javaCameraView;
+    private MenuItemImpl menuItem;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -106,12 +110,14 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
             mOpenCvCameraView.disableView();
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         Log.d(TAG, "menu success");
         getMenuInflater().inflate(R.menu.calibration, menu);
-
+        menuItem = (MenuItemImpl) menu.getItem(0);
+        menuItem.setTitle(getResources().getString(R.string.calibrate1) + String.valueOf(0));
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -133,6 +139,7 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
                 Intent intent = new Intent(CameraCalibrationActivity.this, CameraCalibration1Activity.class);
                 startActivity(intent);
                 return true;
+
             case R.id.calibration:
                 mOnCameraFrameRender =
                         new OnCameraFrameRender(new CalibrationFrameRender(mCalibrator));
@@ -184,12 +191,12 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
                                 res.getString(R.string.calibration_successful) + " " + mCalibrator.getAvgReprojectionError() :
                                 res.getString(R.string.calibration_unsuccessful);
                         (Toast.makeText(CameraCalibrationActivity.this, resultMessage, Toast.LENGTH_SHORT)).show();
-                        Log.d("TAG",resultMessage);
+                        Log.d("TAG", resultMessage);
 
                         if (mCalibrator.isCalibrated()) {
                             CalibrationResult.save(CameraCalibrationActivity.this,
                                     mCalibrator.getCameraMatrix(), mCalibrator.getDistortionCoefficients());
-                            Log.d("TAG","after save");
+                            Log.d("TAG", "after save");
                             CalibrationResult.tryLoad(CameraCalibrationActivity.this,
                                     mCalibrator.getCameraMatrix(), mCalibrator.getDistortionCoefficients());
                         }
@@ -205,7 +212,7 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
         if (mWidth != width || mHeight != height) {
             mWidth = width;
             mHeight = height;
-            mCalibrator = new CameraCalibrator(mWidth, mHeight,this.getString(R.string.calibrate1));
+            mCalibrator = new CameraCalibrator(mWidth, mHeight, this.getString(R.string.calibrate1));
             if (CalibrationResult.tryLoad(this, mCalibrator.getCameraMatrix(), mCalibrator.getDistortionCoefficients())) {
                 mCalibrator.setCalibrated();
             }
@@ -221,10 +228,16 @@ public class CameraCalibrationActivity extends AppCompatActivity implements CvCa
         return mOnCameraFrameRender.render(inputFrame);
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        Log.d(TAG, "onTouch invoked");
-
+        int num = mCalibrator.getCornersBufferSize() + 1;
+        String titles = getResources().getString(R.string.calibrate1) + String.valueOf(num);
+        try {
+            menuItem.setTitle(titles);
+        } catch (Exception e) {
+            Log.d("TAG", e.toString());
+        }
         mCalibrator.addCorners();
         return false;
     }

@@ -1,5 +1,6 @@
 package com.example.stereoscopicvsionandroid;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -15,6 +16,7 @@ import android.view.View.OnTouchListener;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuItemImpl;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -33,21 +35,17 @@ public class CameraCalibration1Activity extends AppCompatActivity implements CvC
     private int mWidth;
     private int mHeight;
     private org.opencv.android.JavaCameraView javaCameraView;
+    private MenuItemImpl menuItem;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
-            switch (status) {
-                case LoaderCallbackInterface.SUCCESS: {
-                    Log.d(TAG, "OpenCV loaded successfully");
-                    mOpenCvCameraView.enableView();
-                    mOpenCvCameraView.setOnTouchListener(CameraCalibration1Activity.this);
-                }
-                break;
-                default: {
-                    super.onManagerConnected(status);
-                }
-                break;
+            if (status==LoaderCallbackInterface.SUCCESS){
+                Log.d(TAG, "OpenCV loaded successfully");
+                mOpenCvCameraView.enableView();
+                mOpenCvCameraView.setOnTouchListener(CameraCalibration1Activity.this);
+            }else {
+                super.onManagerConnected(status);
             }
         }
     };
@@ -66,18 +64,17 @@ public class CameraCalibration1Activity extends AppCompatActivity implements CvC
     }
 
     private void init() {
-        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         try {
 
             mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_calibration_java_surface_view);
         } catch (Exception e) {
-            Log.d("TAG", "findViewById Exception: " + e.toString());
+            Log.d("TAG", "findViewById Exception: " + e);
 
         }
         try {
             mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         } catch (Exception e) {
-            Log.d("TAG", "setVisibility Exception: " + e.toString());
+            Log.d("TAG", "setVisibility Exception: " + e);
         }
         mOpenCvCameraView.setCvCameraViewListener(this);
     }
@@ -107,12 +104,14 @@ public class CameraCalibration1Activity extends AppCompatActivity implements CvC
             mOpenCvCameraView.disableView();
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         Log.d(TAG, "menu success");
         getMenuInflater().inflate(R.menu.calibration1, menu);
-
+        menuItem=(MenuItemImpl)menu.getItem(0);
+        menuItem.setTitle(getResources().getString(R.string.calibrate1) + "0");
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -218,10 +217,12 @@ public class CameraCalibration1Activity extends AppCompatActivity implements CvC
         return mOnCameraFrameRender.render(inputFrame);
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         Log.d(TAG, "onTouch invoked");
-
+        int num = mCalibrator.getCornersBufferSize();
+        menuItem.setTitle(getResources().getString(R.string.calibrate1) + num);
         mCalibrator.addCorners();
         return false;
     }

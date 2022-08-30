@@ -47,5 +47,5 @@
     <string name="user7">点击至少20次，然后点击校准按钮。计算后，您可以在列表中看到更多操作</string>
     <string name="user_alert">请选择我已了解</string>
     <string name="main_alter">请同意《隐私政策》与《用户协议》</string>
-    <string name="calibrate1">capture:  </string>
+    <string name="calibrate1">已捕获:  </string>
 </resources>
