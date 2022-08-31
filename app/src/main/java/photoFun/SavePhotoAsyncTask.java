@@ -30,7 +30,7 @@ public class SavePhotoAsyncTask extends AsyncTask {
     protected Object doInBackground(Object[] objects) {
         Log.d("AsynTask","doInBackround");
         date = new Date();
-        simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        simpleDateFormat = new SimpleDateFormat("yyMMdd HH:mm:ss");
         String times = simpleDateFormat.format(date);
         picNameL = times + "Left.png";
         picNameR = times + "Right.png";

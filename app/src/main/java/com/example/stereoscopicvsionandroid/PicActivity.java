@@ -33,6 +33,9 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
     private SeekBar setDestece;
     private PhotoLoader photoLoader;
     private Intent intent;
+    private static final String picPath=Environment.getExternalStorageDirectory().getPath()+File.separator+
+            Environment.DIRECTORY_PICTURES
+            + File.separator +"stereo/pic";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,15 +61,14 @@ public class PicActivity extends AppCompatActivity implements OnClickAction {
         FData.setVisibility(FData.GONE);
         fText.setVisibility(fText.GONE);
         try {
-            photoLoader=new PhotoLoader(Environment.getExternalStorageDirectory().getPath()+"/DCIM/stereo/picture");
-            Log.d("TAG","path is "+Environment.getExternalStorageDirectory().getPath()+"/DCIM/stereo/picture");
+            Log.d(TAG,"path is "+picPath);
+            photoLoader=new PhotoLoader(picPath);
             resources =photoLoader.getBitmap();
             fileList=photoLoader.getPicLocation();
             photoNum= resources.size();
             imageView.setImageBitmap(resources.get(0));
         }catch (Exception e){
-            e.printStackTrace();
-            Log.d("TAG","file not found");
+            Log.d(TAG,e.toString());
         }
     }
     private void appFunction(){

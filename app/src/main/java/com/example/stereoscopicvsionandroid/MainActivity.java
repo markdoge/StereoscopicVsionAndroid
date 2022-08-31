@@ -80,7 +80,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private Toast videoFinishToast;
     private int mode = 0;//0,1,2分别表示测距、立体、景深
     private StereoBMUtil stereoBMUtil;
-    private BitmapSaver bitmapSaver;
     private Bitmap pic1;
     private Bitmap pic2;
     private VideoLoader videoLoader;
@@ -414,7 +413,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
             }
             return false;
         });
-        bitmapSaver = new BitmapSaver("MainActive");
     }
 
     private void Mruler() {
@@ -860,6 +858,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             alterCam();
         } else if (id == R.id.document) {
             if (text.getSelectedString().equals("景深合成")) {
+                Log.d("PicTAG","goto pic");
                 Intent intent = new Intent(MainActivity.this, PicActivity.class);
                 startActivity(intent);
             }

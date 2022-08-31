@@ -28,7 +28,6 @@ public class PhotoLoader {
         }
     }
     public ArrayList<Bitmap> getBitmap(){
-
         return bitmaps;
     }
 
