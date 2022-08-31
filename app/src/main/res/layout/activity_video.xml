@@ -24,9 +24,38 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="40dp"
+        android:layout_gravity="top"
+        android:background="@color/transparent"
+        android:gravity="center_vertical">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="8dp"
+            android:orientation="vertical">
+            <ImageButton
+                android:id="@+id/outVideo"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/funExit"
+                android:textColor="@color/white"
+                android:textSize="8dp" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/video_tool_bar"
-        android:background="@color/blackTrans"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
         android:layout_gravity="bottom"
+        android:background="@color/blackTrans"
         android:gravity="center_vertical">
 
         <LinearLayout
@@ -34,28 +63,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="40dp"
-            android:orientation="vertical">
-
-            <ImageButton
-                android:id="@+id/outVideo"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:scaleType="centerCrop" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/funExit"
-                android:textColor="@color/white"
-                android:gravity="center"
-                android:textSize="8dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:orientation="vertical">
 
             <ImageButton
@@ -68,8 +75,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/funShare"
                 android:gravity="center"
+                android:text="@string/funShare"
                 android:textColor="@color/white"
                 android:textSize="8dp" />
         </LinearLayout>
@@ -83,16 +90,16 @@
             <ImageButton
                 android:id="@+id/delVideo"
                 android:layout_width="30dp"
-                android:layout_marginRight="40dp"
                 android:layout_height="30dp"
+                android:layout_marginRight="40dp"
                 android:scaleType="centerCrop" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/funDel"
-                android:gravity="center"
                 android:layout_marginRight="40dp"
+                android:gravity="center"
+                android:text="@string/funDel"
                 android:textColor="@color/white"
                 android:textSize="8dp" />
         </LinearLayout>

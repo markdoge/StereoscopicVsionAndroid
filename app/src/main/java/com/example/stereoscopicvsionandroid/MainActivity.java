@@ -88,6 +88,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private ArrayList<String> videoLocation;
     private LinearLayout sencor_bar;
     private JsonBuilder jsonBuilder = new JsonBuilder();
+    private SavePhotoAsyncTask savePhotoAsyncTask;
 
     static {
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_0, 270);
@@ -543,10 +544,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
             if (text.getSelectedString().equals("景深合成") && event.getAction() == MotionEvent.ACTION_DOWN) {
                 btncam.setBackgroundResource(R.color.transparent);
                 pic1 = v2.getBitmap();
-                bitmapSaver.saveLensFormatPic(MainActivity.this, pic1, "Left2.png", "stereo/pic");
-                alterCam();
                 pic2 = v1.getBitmap();
-                bitmapSaver.saveLensFormatPic(MainActivity.this, pic2, "Left1.png", "stereo/pic");
+                savePhotoAsyncTask = new SavePhotoAsyncTask(MainActivity.this,pic1,pic2);
+                savePhotoAsyncTask.execute();
 
             }
             if (text.getSelectedString().equals("景深合成") && event.getAction() == MotionEvent.ACTION_UP) {
