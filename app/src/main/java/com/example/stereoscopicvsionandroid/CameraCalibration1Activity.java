@@ -66,6 +66,7 @@ public class CameraCalibration1Activity extends AppCompatActivity implements CvC
     }
 
     private void init() {
+
         doneBtn=findViewById(R.id.calibrate1_done);
         doneBtn.setVisibility(View.GONE);
         doneBtn.setOnClickListener(v->{

@@ -43,7 +43,7 @@ public class BitmapSaver {
             values.putNull(MediaStore.MediaColumns.DATE_EXPIRES);
             resolver.update(uri, values, null, null);
         }catch (Exception e){
-            Log.d("TAG","Exception:"+e.toString());
+            Log.d("Main","Exception:"+e.toString());
         }
     }
     public static void saveLensFormatPic(Context context, Bitmap bitmap,String BitmapName){

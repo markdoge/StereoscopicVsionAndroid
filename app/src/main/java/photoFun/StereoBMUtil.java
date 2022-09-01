@@ -3,18 +3,25 @@ package photoFun;
 import static org.opencv.android.Utils.bitmapToMat;
 import static org.opencv.android.Utils.matToBitmap;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import org.opencv.android.Utils;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.calib3d.StereoBM;
 import org.opencv.core.Core;
+import org.opencv.core.CvException;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+
+import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
+import java.util.Random;
 
 public class StereoBMUtil {
     private static final String TAG = StereoBMUtil.class.getName();
@@ -115,16 +122,13 @@ public class StereoBMUtil {
     }
 
     public double getCoordinate(int dstX, int dstY) {
-        double z;
-        if (xyz.empty())
-            Log.d("Main", "md 空的");
+        double f1;
         try {
-            z = xyz.get(dstY, dstX)[2] / 100;
-        } catch (Exception e) {
-            Log.d("Main", "can't get");
-            z = 66.6;
+            f1 = xyz.get(dstX,dstY)[2];
         }
-        Log.d("Main", "get z:" + z);
-        return z;
+        catch (Exception e){
+            f1 = Double.MAX_VALUE;
+        }
+        return f1;
     }
 }
