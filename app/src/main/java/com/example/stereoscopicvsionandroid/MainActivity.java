@@ -388,17 +388,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 // 获取该点的三维坐标
                 dstX = (int) dst[0];
                 dstY = (int) dst[1];
+                Log.d("Main","get dstx"+dstX);
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) sencor_bar.getLayoutParams();
                 params.setMargins((int) event.getX() - 90, (int) event.getY() - 90, 0, 0);// 通过自定义坐标来放置你的控件
                 sencor_bar.setLayoutParams(params);
                 sencor_bar.setVisibility(sencor_bar.VISIBLE);
-                try {
-                    double[] cx = stereoBMUtil.getCoordinate(dstX, dstY);
-                }
-                catch (Exception e){
-                    c=1;
-                    Log.d("Main","c error: "+e.toString());
-                }
+
+                c = stereoBMUtil.getCoordinate(dstX, dstY);
+
                 try {
                     textView.setText(String.valueOf(c) + "cm");
                 }

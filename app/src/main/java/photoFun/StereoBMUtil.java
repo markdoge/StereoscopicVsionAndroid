@@ -114,11 +114,16 @@ public class StereoBMUtil {
         return resultBitmap;
     }
 
-    public double[] getCoordinate(int dstX, int dstY) {
-        Log.d("Main", "get xyz:" + xyz);
+    public double getCoordinate(int dstX, int dstY) {
+        double z;
         if (xyz.empty())
-            Log.d("Main","md 空的");
-        double[] z = xyz.get(dstY, dstX);
+            Log.d("Main", "md 空的");
+        try {
+            z = xyz.get(dstY, dstX)[2] / 100;
+        } catch (Exception e) {
+            Log.d("Main", "can't get");
+            z = 66.6;
+        }
         Log.d("Main", "get z:" + z);
         return z;
     }
