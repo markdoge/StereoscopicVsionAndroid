@@ -7,6 +7,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.opencv.android.Utils;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.calib3d.StereoBM;
@@ -20,7 +23,13 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Random;
 
 public class StereoBMUtil {
@@ -39,6 +48,50 @@ public class StereoBMUtil {
     private Mat xyz;
 
     public StereoBMUtil() {
+        File filel = new File("calibrate1.json");
+        File filer = new File("calibrate2.json");
+        double[] MatrixL = new double[9];
+        double[] distortionCoefficientsL = new double[5];
+        double[] MatrixR = new double[9];
+        double[] distortionCoefficientsR = new double[5];
+        try(FileInputStream fileInputStream = new FileInputStream(filel)) {
+            int size = fileInputStream.available();
+            byte[] buffer = new byte[size];
+            fileInputStream.read(buffer);
+            String jsonString = new String(buffer, StandardCharsets.UTF_8);
+            jsonString.replaceAll("\n", "");
+            jsonString.replaceAll("\r", "");
+            JSONObject o = new JSONObject(jsonString);
+            JSONArray a = o.getJSONArray("cameraMatrix");
+            for (int i = 0; i < a.length(); i++) {
+                MatrixL[i] = a.getDouble(i);
+            }
+            JSONArray b = o.getJSONArray("distortionCoefficients");
+            for (int i = 0; i < b.length(); i++) {
+                distortionCoefficientsL[i] = b.getDouble(i);
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        try(FileInputStream fileInputStream = new FileInputStream(filer)) {
+            int size = fileInputStream.available();
+            byte[] buffer = new byte[size];
+            fileInputStream.read(buffer);
+            String jsonString = new String(buffer, StandardCharsets.UTF_8);
+            jsonString.replaceAll("\n", "");
+            jsonString.replaceAll("\r", "");
+            JSONObject o = new JSONObject(jsonString);
+            JSONArray a = o.getJSONArray("cameraMatrix");
+            for (int i = 0; i < a.length(); i++) {
+                MatrixR[i] = a.getDouble(i);
+            }
+            JSONArray b = o.getJSONArray("distortionCoefficients");
+            for (int i = 0; i < b.length(); i++) {
+                distortionCoefficientsR[i] = b.getDouble(i);
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
         Mat cameraMatrixL = new Mat(3, 3, CvType.CV_64F);
         Mat distCoeffL = new Mat(5, 1, CvType.CV_64F);
         Mat cameraMatrixR = new Mat(3, 3, CvType.CV_64F);
@@ -46,13 +99,13 @@ public class StereoBMUtil {
         Mat T = new Mat(3, 1, CvType.CV_64F);
         Mat rec = new Mat(3, 1, CvType.CV_64F);
         // 左目相机标定参数 fc_left_x  0  cc_left_x  0  fc_left_y  cc_left_y  0  0  1
-        cameraMatrixL.put(0, 0, 849.38718, 0, 720.28472, 0, 850.60613, 373.88887, 0, 0, 1);
+        cameraMatrixL.put(0, 0, MatrixL[0], MatrixL[1], MatrixL[2], MatrixL[3], MatrixL[4], MatrixL[5], MatrixL[6], MatrixL[7], MatrixL[8]);
         //左目相机标定参数 kc_left_01,  kc_left_02,  kc_left_03,  kc_left_04,   kc_left_05
-        distCoeffL.put(0, 0, 0.01053, 0.02881, 0.00144, 0.00192, 0.00000);
+        distCoeffL.put(0, 0, distortionCoefficientsL[0], distortionCoefficientsL[1], distortionCoefficientsL[2], distortionCoefficientsL[3], distortionCoefficientsL[4]);
         //右目相机标定参数 fc_right_x  0  cc_right_x  0  fc_right_y  cc_right_y  0  0  1
-        cameraMatrixR.put(0, 0, 847.54814, 0, 664.36648, 0, 847.75828, 368.46946, 0, 0, 1);
+        cameraMatrixR.put(0, 0, MatrixR[0], MatrixR[1], MatrixR[2], MatrixR[3], MatrixR[4], MatrixR[5], MatrixR[6], MatrixR[7], MatrixR[8]);
         //右目相机标定参数 kc_right_01,  kc_right_02,  kc_right_03,  kc_right_04,   kc_right_05
-        distCoeffR.put(0, 0, 0.00905, 0.02094, 0.00082, 0.00183, 0.00000);
+        distCoeffR.put(0, 0, distortionCoefficientsR[0], distortionCoefficientsR[1], distortionCoefficientsR[2], distortionCoefficientsR[3], distortionCoefficientsR[4]);
         //T平移向量
         T.put(0, 0, -59.32102, 0.27563, -0.79807);
         //rec旋转向量
