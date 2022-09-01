@@ -111,7 +111,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         if (OpenCVLoader.initDebug()) {
         } else {
-            Log.d("TAG", "OpenCVLoader初始化失败");
+            Log.d("Main", "OpenCVLoader初始化失败");
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -304,6 +304,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     @SuppressLint("ClickableViewAccessibility")
     private void init() {
+        try {
+            stereoBMUtil = new StereoBMUtil();
+        } catch (Exception e) {
+            Log.d("Main", e.toString());
+        }
         getCamera = new GetCamera(MainActivity.this);
         sencor_bar = findViewById(R.id.censor_bar);
         videoSize = getCamera.getVideoSize();
@@ -368,38 +373,39 @@ public class MainActivity extends Activity implements View.OnClickListener {
         v1.setOnTouchListener((v, event) -> {
             int eventType = event.getAction();
             if (mode != 0) return false;
-            double[] c = new double[0];
+            double c = 0;
+
+            int dstX;
+            int dstY;
             if (eventType == MotionEvent.ACTION_DOWN) {
                 //在这里调用深度图算法
+                Bitmap leftBitmap = v1.getBitmap();
+                Bitmap rightBitmap = v2.getBitmap();
+                Bitmap result = stereoBMUtil.compute(leftBitmap, rightBitmap);
+                float[] dst = new float[2];
+                Matrix inverseMatrix = new Matrix();
+                inverseMatrix.mapPoints(dst, new float[]{event.getX(), event.getY()});
+                // 获取该点的三维坐标
+                dstX = (int) dst[0];
+                dstY = (int) dst[1];
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) sencor_bar.getLayoutParams();
+                params.setMargins((int) event.getX() - 90, (int) event.getY() - 90, 0, 0);// 通过自定义坐标来放置你的控件
+                sencor_bar.setLayoutParams(params);
+                sencor_bar.setVisibility(sencor_bar.VISIBLE);
                 try {
-                    Bitmap leftBitmap = v1.getBitmap();
-                    Bitmap rightBitmap = v2.getBitmap();
-                    Bitmap result = stereoBMUtil.compute(leftBitmap, rightBitmap);
-                    float[] dst = new float[2];
-                    Matrix inverseMatrix = new Matrix();
-                    inverseMatrix.mapPoints(dst, new float[]{event.getX(), event.getY()});
-                    int dstX = (int) dst[0];
-                    int dstY = (int) dst[1];
-                    // 获取该点的三维坐标
-                    c = stereoBMUtil.getCoordinate(dstX, dstY);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    double[] cx = stereoBMUtil.getCoordinate(dstX, dstY);
                 }
-            }
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) sencor_bar.getLayoutParams();
-            params.setMargins((int) event.getX() - 90, (int) event.getY() - 90, 0, 0);// 通过自定义坐标来放置你的控件
-            sencor_bar.setLayoutParams(params);
-            sencor_bar.setVisibility(sencor_bar.VISIBLE);
-            try {
-                textView.setText(c[2] + "cm");
-            } catch (Exception e) {
-                double text = new Random().nextDouble() * 100 + 20;
-                BigDecimal bd = new BigDecimal(text);
-                text = bd.setScale(2, RoundingMode.UP).doubleValue();
-                textView.setText(String.valueOf(text) + " cm");
-                Log.d("MainActive", "error:" + e.toString());
+                catch (Exception e){
+                    c=1;
+                    Log.d("Main","c error: "+e.toString());
+                }
+                try {
+                    textView.setText(String.valueOf(c) + "cm");
+                }
+                catch (Exception e) {
+                    Log.d("Main", "error:" + e.toString());
 
+                }
             }
             handler.postDelayed(runnable, 2200);
             imageView.setVisibility(imageView.VISIBLE);
@@ -545,6 +551,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 btncam.setBackgroundResource(R.color.transparent);
                 pic1 = v2.getBitmap();
                 pic2 = v1.getBitmap();
+                Log.d("Main", "get pic:" + pic1.toString());
                 savePhotoAsyncTask = new SavePhotoAsyncTask(MainActivity.this, pic1, pic2);
                 savePhotoAsyncTask.execute();
 

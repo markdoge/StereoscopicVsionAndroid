@@ -4,6 +4,7 @@ import static org.opencv.android.Utils.bitmapToMat;
 import static org.opencv.android.Utils.matToBitmap;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import org.opencv.calib3d.Calib3d;
 import org.opencv.calib3d.StereoBM;
@@ -114,9 +115,11 @@ public class StereoBMUtil {
     }
 
     public double[] getCoordinate(int dstX, int dstY) {
-        double x = xyz.get(dstY, dstX)[0];
-        double y = xyz.get(dstY, dstX)[1];
-        double z = xyz.get(dstY, dstX)[2];
-        return new double[]{x, y, z};
+        Log.d("Main", "get xyz:" + xyz);
+        if (xyz.empty())
+            Log.d("Main","md 空的");
+        double[] z = xyz.get(dstY, dstX);
+        Log.d("Main", "get z:" + z);
+        return z;
     }
 }
